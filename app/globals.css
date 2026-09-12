@@ -1918,3 +1918,38 @@ a:focus-visible {
   display: block;
   font-size: 11px;
 }
+
+.card-view-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 16px;
+}
+.card-view-controls > span {
+  font-size: 13px;
+  color: #53604f;
+  margin-right: 4px;
+}
+.card-view-controls button {
+  min-height: 44px;
+  padding: 10px 14px;
+  color: #294a3e;
+  border: 1px solid #d1decb;
+  border-radius: 7px;
+  background: white;
+}
+.card-view-controls button[aria-pressed='true'] {
+  background: #294a3e;
+  color: white;
+  border-color: #294a3e;
+}
+.card-view-controls small {
+  flex: 1 1 230px;
+  font-size: 12px;
+  color: #65715f;
+  line-height: 1.6;
+}
+.opportunity .compact-date {
+  margin-top: 10px;
+}

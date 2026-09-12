@@ -3,6 +3,7 @@ import { marketClock, type MarketCalendar } from './marketClock';
 import { PriceSparkline } from './PriceSparkline';
 import { DataIssues } from './DataIssues';
 import { usePublishedSnapshot } from './usePublishedSnapshot';
+import { useCardView } from './useCardView';
 import { useSavedStocks } from './useSavedStocks';
 import {
   Star,
@@ -431,6 +432,7 @@ function Detail({
 }
 export default function Home() {
   const { saved, storageError, toggle } = useSavedStocks();
+  const { cardView, changeView, viewError } = useCardView();
   const { snapshot, refreshing, loadError, checkedAt, updateMessage, refresh } =
     usePublishedSnapshot<Snapshot>();
   const [symbol, setSymbol] = useState(route);
@@ -1264,6 +1266,33 @@ export default function Home() {
                     只顯示本次基本面通過的自選股票；其餘收藏仍保留在上方「我的自選清單」。
                   </p>
                 )}
+                <div
+                  className="card-view-controls"
+                  role="group"
+                  aria-label="卡片顯示方式"
+                >
+                  <span>卡片顯示</span>
+                  <button
+                    aria-pressed={cardView === 'compact'}
+                    onClick={() => changeView('compact')}
+                  >
+                    精簡卡片
+                  </button>
+                  <button
+                    aria-pressed={cardView === 'expanded'}
+                    onClick={() => changeView('expanded')}
+                  >
+                    資訊卡片
+                  </button>
+                  <small>
+                    只改變顯示方式，符合標的全數保留；偏好記在此瀏覽器。
+                  </small>
+                </div>
+                {viewError && (
+                  <p className="footnote" role="status">
+                    {viewError}
+                  </p>
+                )}
                 <p className="list-count" role="status">
                   顯示 {matching.length} / {opportunities.length}{' '}
                   檔基本面通過標的{narrowed ? ' · 已套用篩選' : ' · 全部列出'}
@@ -1349,46 +1378,55 @@ export default function Home() {
                                     : `${s.technical.change > 0 ? '+' : ''}${percent(s.technical.change)}`}
                                 </span>
                               </span>
-                              <PriceSparkline
-                                symbol={s.symbol}
-                                bars={s.technical.bars}
-                              />
+                              {cardView === 'expanded' && (
+                                <PriceSparkline
+                                  symbol={s.symbol}
+                                  bars={s.technical.bars}
+                                />
+                              )}
                             </button>
-                            <div className="card-quick-data">
-                              <span
-                                className={`entry-chip ${s.status === 'READY' ? 'ready' : ''}`}
-                              >
-                                <Clock3 size={13} aria-hidden="true" />
-                                {s.status === 'INCOMPLETE'
-                                  ? '資料待補'
-                                  : !s.dualPass
-                                    ? '等待趨勢'
-                                    : s.status === 'READY'
-                                      ? '進場條件就緒'
-                                      : s.status === 'APPROACHING'
-                                        ? '接近觀察區'
-                                        : '等待回撤'}
-                              </span>
-                              <dl>
-                                <div>
-                                  <dt>距觀察區</dt>
-                                  <dd>{percent(s.entry?.distance)}</dd>
-                                </div>
-                                <div>
-                                  <dt>報酬／風險</dt>
-                                  <dd>
-                                    {s.entry?.riskReward == null
-                                      ? '—'
-                                      : `${s.entry.riskReward.toFixed(2)} : 1`}
-                                  </dd>
-                                </div>
-                              </dl>
-                              <p className="card-data-date">
+                            {cardView === 'expanded' ? (
+                              <div className="card-quick-data">
+                                <span
+                                  className={`entry-chip ${s.status === 'READY' ? 'ready' : ''}`}
+                                >
+                                  <Clock3 size={13} aria-hidden="true" />
+                                  {s.status === 'INCOMPLETE'
+                                    ? '資料待補'
+                                    : !s.dualPass
+                                      ? '等待趨勢'
+                                      : s.status === 'READY'
+                                        ? '進場條件就緒'
+                                        : s.status === 'APPROACHING'
+                                          ? '接近觀察區'
+                                          : '等待回撤'}
+                                </span>
+                                <dl>
+                                  <div>
+                                    <dt>距觀察區</dt>
+                                    <dd>{percent(s.entry?.distance)}</dd>
+                                  </div>
+                                  <div>
+                                    <dt>報酬／風險</dt>
+                                    <dd>
+                                      {s.entry?.riskReward == null
+                                        ? '—'
+                                        : `${s.entry.riskReward.toFixed(2)} : 1`}
+                                    </dd>
+                                  </div>
+                                </dl>
+                                <p className="card-data-date">
+                                  行情 {s.technical.priceDate || '未知'} ·
+                                  非即時
+                                  <br />
+                                  報酬／風險為歷史高點估算，不含費用
+                                </p>
+                              </div>
+                            ) : (
+                              <p className="card-data-date compact-date">
                                 行情 {s.technical.priceDate || '未知'} · 非即時
-                                <br />
-                                報酬／風險為歷史高點估算，不含費用
                               </p>
-                            </div>
+                            )}
                             <SaveButton
                               symbol={s.symbol}
                               saved={saved.includes(s.symbol)}
