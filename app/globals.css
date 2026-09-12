@@ -1272,3 +1272,115 @@ td,
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.browse-tools {
+  margin: 22px 0;
+}
+.group-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.group-nav a {
+  color: #315442;
+  border: 1px solid #cddbc7;
+  background: #f4f8f0;
+  text-decoration: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+.group-nav a:hover {
+  background: #e4eedd;
+}
+.group-nav b {
+  margin-left: 6px;
+}
+.list-controls {
+  display: grid;
+  grid-template-columns: minmax(180px, 2fr) minmax(140px, 1fr) minmax(
+      160px,
+      1fr
+    ) auto;
+  gap: 12px;
+  align-items: end;
+}
+.list-controls label {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+  color: #53604f;
+  font-size: 12px;
+}
+.list-controls input,
+.list-controls select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #cddbc7;
+  border-radius: 7px;
+  background: white;
+  color: #2f4032;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 14px;
+}
+.reset-list {
+  border-radius: 7px;
+  background: #e4eedd;
+  color: #315442;
+  padding: 12px 16px;
+}
+.list-count {
+  color: #65715f;
+  font-size: 12px;
+  margin-top: 12px;
+}
+.waiting-summary {
+  margin-top: 16px;
+  padding: 12px;
+  background: #faf5e8;
+  border-left: 3px solid #c6a55e;
+  border-radius: 4px;
+}
+.waiting-summary strong {
+  font-size: 13px;
+  color: #745b2a;
+}
+.waiting-summary p {
+  margin: 5px 0 0;
+  color: #6c624e;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.waiting-summary.ready {
+  background: #edf6ec;
+  border-color: #538466;
+}
+#group-dual,
+#group-fundamental,
+#daily-changes,
+#watchlist {
+  scroll-margin-top: 25px;
+}
+input:focus-visible,
+select:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #378b67;
+  outline-offset: 3px;
+}
+@media (max-width: 700px) {
+  .list-controls {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .list-controls label:first-child {
+    grid-column: 1 / -1;
+  }
+  .reset-list {
+    grid-column: 1 / -1;
+  }
+  .group-nav a {
+    flex: 1 1 40%;
+  }
+}

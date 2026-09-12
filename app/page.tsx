@@ -140,6 +140,41 @@ function CheckList({ checks }: { checks: any[] }) {
     </div>
   );
 }
+function WaitingSummary({ s }: { s: Stock }) {
+  const missing = s.technical.checks
+    .filter((c: any) => c.status !== 'pass')
+    .map((c: any) => c.label);
+  if (!s.technical.available)
+    missing.push(s.technical.reason || '技術資料不足');
+  if (s.dualPass) {
+    if (s.entry.distance == null) missing.push('尚無有效成交密集區');
+    else if (s.entry.distance > 0.02) missing.push('等待回撤至區間 2% 內');
+    if (s.entry.riskReward == null || s.entry.riskReward < 2)
+      missing.push('報酬／風險未達 2 倍');
+    missing.push(
+      ...s.entry.confirmation
+        .filter((c: any) => c.status !== 'pass')
+        .map((c: any) => c.label),
+    );
+  }
+  if (s.status === 'INCOMPLETE') missing.push('資料完整性或時效待確認');
+  return (
+    <aside className={`waiting-summary ${s.status === 'READY' ? 'ready' : ''}`}>
+      <strong>
+        {s.status === 'READY'
+          ? '進場條件已齊備'
+          : s.dualPass
+            ? '距離進場還缺'
+            : '技術面還缺'}
+      </strong>
+      <p>
+        {missing.length
+          ? missing.join('、')
+          : '條件已通過，仍需檢查企業風險與進場價位。'}
+      </p>
+    </aside>
+  );
+}
 function StockConditions({ s }: { s: Stock }) {
   const e = s.entry;
   const entryChecks = [
@@ -441,6 +476,9 @@ export default function Home() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [q, setQ] = useState('');
+  const [listQuery, setListQuery] = useState('');
+  const [sector, setSector] = useState('ALL');
+  const [sort, setSort] = useState('status');
   const [results, setResults] = useState<any[] | null>(null);
   const [searching, setSearching] = useState(false);
   const [filter, setFilter] = useState('ALL');
@@ -552,19 +590,51 @@ export default function Home() {
         statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status) ||
         a.symbol.localeCompare(b.symbol),
     );
+  const sectors = [
+    ...new Set(opportunities.map((s) => s.sector || 'Unknown')),
+  ].sort();
+  const matching = opportunities
+    .filter(
+      (s) =>
+        (sector === 'ALL' || s.sector === sector) &&
+        `${s.symbol} ${s.name}`
+          .toLowerCase()
+          .includes(listQuery.trim().toLowerCase()),
+    )
+    .sort((a, b) => {
+      if (sort === 'symbol') return a.symbol.localeCompare(b.symbol);
+      if (sort === 'distance')
+        return (
+          (a.entry.distance ?? Infinity) - (b.entry.distance ?? Infinity) ||
+          a.symbol.localeCompare(b.symbol)
+        );
+      if (sort === 'rr')
+        return (
+          (b.entry.riskReward ?? -Infinity) -
+            (a.entry.riskReward ?? -Infinity) ||
+          a.symbol.localeCompare(b.symbol)
+        );
+      return (
+        statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status) ||
+        a.symbol.localeCompare(b.symbol)
+      );
+    });
+  const narrowed = !!listQuery.trim() || sector !== 'ALL';
   const groups = [
     {
       key: 'dual',
       title: '基本面＋技術面皆符合',
       description:
         '企業品質與上升趨勢都通過，再依進場位置、確認訊號與風險報酬區分狀態。',
-      stocks: opportunities.filter((s) => s.dualPass),
+      total: opportunities.filter((s) => s.dualPass).length,
+      stocks: matching.filter((s) => s.dualPass),
     },
     {
       key: 'fundamental',
       title: '基本面符合、技術面待確認',
       description: '企業品質已通過，但目前技術趨勢尚未全部符合，持續觀察。',
-      stocks: opportunities.filter((s) => !s.dualPass),
+      total: opportunities.filter((s) => !s.dualPass).length,
+      stocks: matching.filter((s) => !s.dualPass),
     },
   ];
   const filtered =
@@ -689,7 +759,7 @@ export default function Home() {
           </>
         ) : (
           <>
-            <div className="section-heading">
+            <div className="section-heading" id="overview">
               <div>
                 <div className="eyebrow">QUALIFYING OPPORTUNITIES</div>
                 <h2>
@@ -708,6 +778,76 @@ export default function Home() {
                 !fresh &&
                 ' 目前顯示前次掃描結果，請留意下方資料時間。'}
             </p>
+            {snapshot && (
+              <div className="browse-tools">
+                <nav className="group-nav" aria-label="快速前往">
+                  <a href="#group-dual">
+                    雙重符合 <b>{groups[0].total}</b>
+                  </a>
+                  <a href="#group-fundamental">
+                    僅基本面符合 <b>{groups[1].total}</b>
+                  </a>
+                  <a href="#daily-changes">
+                    每日變化 <b>{changes.length}</b>
+                  </a>
+                  <a href="#watchlist">觀察池</a>
+                </nav>
+                <div className="list-controls">
+                  <label>
+                    <span>篩選符合清單</span>
+                    <input
+                      aria-label="篩選符合清單"
+                      placeholder="輸入代號或公司名"
+                      value={listQuery}
+                      onChange={(e) => setListQuery(e.target.value)}
+                    />
+                  </label>
+                  <label>
+                    <span>產業</span>
+                    <select
+                      aria-label="篩選產業"
+                      value={sector}
+                      onChange={(e) => setSector(e.target.value)}
+                    >
+                      <option value="ALL">全部產業</option>
+                      {sectors.map((v) => (
+                        <option key={v} value={v}>
+                          {v}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span>排序</span>
+                    <select
+                      aria-label="符合清單排序"
+                      value={sort}
+                      onChange={(e) => setSort(e.target.value)}
+                    >
+                      <option value="status">進場狀態優先</option>
+                      <option value="symbol">代號 A–Z</option>
+                      <option value="distance">距離觀察區：近到遠</option>
+                      <option value="rr">報酬／風險：高到低</option>
+                    </select>
+                  </label>
+                  <button
+                    className="reset-list"
+                    onClick={() => {
+                      setListQuery('');
+                      setSector('ALL');
+                      setSort('status');
+                    }}
+                  >
+                    重設
+                  </button>
+                </div>
+                <p className="list-count" role="status">
+                  顯示 {matching.length} / {opportunities.length}{' '}
+                  檔基本面通過標的{narrowed ? ' · 已套用篩選' : ' · 全部列出'}
+                  。排序僅方便比較，不代表推薦順序。
+                </p>
+              </div>
+            )}
             {loadError && <div className="notice">{loadError}</div>}
             {!snapshot && !loadError ? (
               <div className="loading" role="status">
@@ -724,7 +864,11 @@ export default function Home() {
                     <div>
                       <h2 id={`group-${group.key}`}>
                         {group.title}{' '}
-                        <span className="count">{group.stocks.length}</span>
+                        <span className="count">
+                          {narrowed
+                            ? `${group.stocks.length} / ${group.total}`
+                            : group.total}
+                        </span>
                       </h2>
                       <p className="footnote">{group.description}</p>
                     </div>
@@ -759,6 +903,7 @@ export default function Home() {
                               <p>{s.reasons.join(' · ')}</p>
                               <strong>{money(s.technical.price)}</strong>
                             </button>
+                            <WaitingSummary s={s} />
                             <StockConditions s={s} />
                           </article>
                         );
@@ -766,14 +911,22 @@ export default function Home() {
                     </div>
                   ) : (
                     <div className="empty-state">
-                      <p>本次掃描沒有符合此區條件的標的。</p>
+                      <p>
+                        {narrowed
+                          ? '此區沒有符合目前搜尋或產業篩選的標的，重設即可恢復完整清單。'
+                          : '本次掃描沒有符合此區條件的標的。'}
+                      </p>
                     </div>
                   )}
                 </section>
               ))
             ) : null}
             {snapshot && (
-              <section className="panel daily-changes" aria-label="每日變化">
+              <section
+                id="daily-changes"
+                className="panel daily-changes"
+                aria-label="每日變化"
+              >
                 <div className="panel-title">
                   <h2>
                     每日變化 <span className="count">{changes.length}</span>
@@ -843,7 +996,7 @@ export default function Home() {
                 檔 · 取得失敗 {snapshot?.errors.length || 0} 檔
               </span>
             </div>
-            <div className="watch-heading">
+            <div className="watch-heading" id="watchlist">
               <div>
                 <h2>觀察池全覽</h2>
                 <p>完整掃描結果 · 可查閱每個通過或未通過的條件</p>
