@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { PriceSparkline } from './PriceSparkline';
 import { DataIssues } from './DataIssues';
 import { useSavedStocks } from './useSavedStocks';
 import {
@@ -1210,7 +1211,7 @@ export default function Home() {
                 <p className="list-count" role="status">
                   顯示 {matching.length} / {opportunities.length}{' '}
                   檔基本面通過標的{narrowed ? ' · 已套用篩選' : ' · 全部列出'}
-                  。排序僅方便比較，不代表推薦順序。
+                  。排序僅方便比較，不代表推薦順序。迷你圖價格軸各自縮放，漲跌幅請看期間百分比。
                 </p>
               </div>
             )}
@@ -1293,6 +1294,10 @@ export default function Home() {
                                     : `${s.technical.change > 0 ? '+' : ''}${percent(s.technical.change)}`}
                                 </span>
                               </span>
+                              <PriceSparkline
+                                symbol={s.symbol}
+                                bars={s.technical.bars}
+                              />
                             </button>
                             <div className="card-quick-data">
                               <span
