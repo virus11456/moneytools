@@ -1767,3 +1767,58 @@ a:focus-visible {
     flex: 1;
   }
 }
+
+.card-price-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+}
+.card-price-line > strong {
+  font-size: 18px;
+}
+.card-price-line > span {
+  font-size: 13px;
+}
+.opportunity > .card-quick-data {
+  display: block;
+  margin-top: 12px;
+}
+.entry-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f7f0db;
+  color: #826824;
+  border-radius: 5px;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+.entry-chip.ready {
+  background: #e4efdf;
+  color: #315b3e;
+}
+.card-quick-data dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 12px 0;
+  margin: 10px 0 0;
+  border-top: 1px solid #e4e9de;
+}
+.card-quick-data dt {
+  color: #65715f;
+  font-size: 12px;
+}
+.card-quick-data dd {
+  margin: 5px 0 0;
+  color: #294a3e;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+.opportunity .card-data-date {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #65715f;
+  margin: 0 0 10px;
+}

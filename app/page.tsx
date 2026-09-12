@@ -1277,8 +1277,58 @@ export default function Home() {
                                 <span>{s.name}</span>
                               </h3>
 
-                              <strong>{money(s.technical.price)}</strong>
+                              <span className="card-price-line">
+                                <strong>{money(s.technical.price)}</strong>
+                                <span
+                                  className={
+                                    s.technical.change == null
+                                      ? 'muted'
+                                      : s.technical.change >= 0
+                                        ? 'positive'
+                                        : 'negative'
+                                  }
+                                >
+                                  {s.technical.change == null
+                                    ? '漲跌未知'
+                                    : `${s.technical.change > 0 ? '+' : ''}${percent(s.technical.change)}`}
+                                </span>
+                              </span>
                             </button>
+                            <div className="card-quick-data">
+                              <span
+                                className={`entry-chip ${s.status === 'READY' ? 'ready' : ''}`}
+                              >
+                                <Clock3 size={13} aria-hidden="true" />
+                                {s.status === 'INCOMPLETE'
+                                  ? '資料待補'
+                                  : !s.dualPass
+                                    ? '等待趨勢'
+                                    : s.status === 'READY'
+                                      ? '進場條件就緒'
+                                      : s.status === 'APPROACHING'
+                                        ? '接近觀察區'
+                                        : '等待回撤'}
+                              </span>
+                              <dl>
+                                <div>
+                                  <dt>距觀察區</dt>
+                                  <dd>{percent(s.entry?.distance)}</dd>
+                                </div>
+                                <div>
+                                  <dt>報酬／風險</dt>
+                                  <dd>
+                                    {s.entry?.riskReward == null
+                                      ? '—'
+                                      : `${s.entry.riskReward.toFixed(2)} : 1`}
+                                  </dd>
+                                </div>
+                              </dl>
+                              <p className="card-data-date">
+                                行情 {s.technical.priceDate || '未知'} · 非即時
+                                <br />
+                                報酬／風險為歷史高點估算，不含費用
+                              </p>
+                            </div>
                             <SaveButton
                               symbol={s.symbol}
                               saved={saved.includes(s.symbol)}
