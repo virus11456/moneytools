@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useSavedStocks } from './useSavedStocks';
 import {
+  Star,
   Search,
   ArrowUpRight,
   ArrowLeft,
@@ -80,6 +82,27 @@ const route = () =>
   decodeURIComponent(
     window.location.pathname.match(/^\/stock\/([^/]+)$/)?.[1] || '',
   );
+function SaveButton({
+  symbol,
+  saved,
+  toggle,
+}: {
+  symbol: string;
+  saved: boolean;
+  toggle: (symbol: string) => void;
+}) {
+  return (
+    <button
+      className={`save-stock ${saved ? 'saved' : ''}`}
+      aria-label={`${saved ? '取消收藏' : '收藏'} ${symbol}`}
+      aria-pressed={saved}
+      onClick={() => toggle(symbol)}
+    >
+      <Star size={16} fill={saved ? 'currentColor' : 'none'} />
+      {saved ? '已收藏' : '收藏'}
+    </button>
+  );
+}
 function Badge({ status }: { status: string }) {
   return (
     <span className={`badge ${status.toLowerCase()}`}>
@@ -301,7 +324,17 @@ function PriceChart({ s }: { s: Stock }) {
     </div>
   );
 }
-function Detail({ s, back }: { s: Stock; back: () => void }) {
+function Detail({
+  s,
+  back,
+  saved,
+  toggle,
+}: {
+  s: Stock;
+  back: () => void;
+  saved: boolean;
+  toggle: (symbol: string) => void;
+}) {
   const e = s.entry;
   const t = s.technical;
   return (
@@ -325,6 +358,10 @@ function Detail({ s, back }: { s: Stock; back: () => void }) {
             {percent(t.change)} <small>最近交易日</small>
           </span>
         </div>
+      </div>
+      <div className="detail-save">
+        <SaveButton symbol={s.symbol} saved={saved} toggle={toggle} />
+        <span>收藏於此瀏覽器</span>
       </div>
       <div className="decision">
         <Badge status={s.status} />
@@ -469,6 +506,7 @@ function Detail({ s, back }: { s: Stock; back: () => void }) {
   );
 }
 export default function Home() {
+  const { saved, storageError, toggle } = useSavedStocks();
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [loadError, setLoadError] = useState('');
   const [symbol, setSymbol] = useState(route);
@@ -755,10 +793,118 @@ export default function Home() {
                 <RefreshCw className="spin" /> 正在取得 {symbol} 的行情與財報…
               </div>
             )}
-            {stock && <Detail s={stock} back={() => go()} />}
+            {stock && (
+              <Detail
+                s={stock}
+                back={() => go()}
+                saved={saved.includes(stock.symbol)}
+                toggle={toggle}
+              />
+            )}
           </>
         ) : (
           <>
+            {snapshot && (
+              <section
+                className={`freshness-strip ${fresh ? '' : 'stale'}`}
+                aria-label="資料更新狀態"
+              >
+                <div>
+                  <Clock3 size={18} />
+                  <strong>{fresh ? '今日掃描已完成' : '目前為前次掃描'}</strong>
+                  <span>{time(snapshot.generatedAt)} · 台北</span>
+                </div>
+                <p>
+                  取得 {snapshot.coverage} / {snapshot.universe.length} 檔 ·
+                  資料不足／不適用{' '}
+                  {
+                    snapshot.stocks.filter((s) => s.status === 'INCOMPLETE')
+                      .length
+                  }{' '}
+                  檔 · 取得失敗 {snapshot.errors.length}{' '}
+                  檔。行情為完整交易日日線，非即時報價。
+                </p>
+                {!fresh && (
+                  <p>符合清單保留最近一次結果；今天的新變化尚未確認。</p>
+                )}
+              </section>
+            )}
+            <section
+              className="saved-section panel"
+              id="saved-stocks"
+              aria-label="我的自選清單"
+            >
+              <div className="panel-title">
+                <h2>
+                  我的自選清單 <span className="count">{saved.length}</span>
+                </h2>
+                <Star size={18} />
+              </div>
+              <p className="subtitle">
+                點股票旁的星號收藏，重開此瀏覽器仍會保留。收藏不會改變篩選規則，也不會自動加入每日掃描。
+              </p>
+              {storageError && (
+                <p role="alert" className="notice">
+                  {storageError}
+                </p>
+              )}
+              {saved.length ? (
+                <div className="saved-grid">
+                  {saved.map((ticker) => {
+                    const item = snapshot?.stocks.find(
+                      (s) => s.symbol === ticker,
+                    );
+                    const event = newToday.find((e) => e.symbol === ticker);
+                    const scanned = snapshot?.universe.includes(ticker);
+                    return (
+                      <article className="saved-item" key={ticker}>
+                        <button
+                          className="saved-open"
+                          onClick={() => go(ticker)}
+                        >
+                          <strong>{ticker}</strong>
+                          <span>{item?.name || '開啟個股分析'}</span>
+                          {item ? (
+                            <>
+                              <Badge status={item.status} />
+                              <small>
+                                {item.fundamentals.passed
+                                  ? item.dualPass
+                                    ? '基本面＋技術面皆符合'
+                                    : '基本面符合、技術面待確認'
+                                  : '目前未通過完整篩選'}{' '}
+                                · 行情 {item.technical.priceDate || '日期未知'}
+                              </small>
+                            </>
+                          ) : (
+                            <small>
+                              {!snapshot
+                                ? '等待每日資料載入；可點開查詢'
+                                : scanned
+                                  ? '本次資料取得失敗，點開重新查詢'
+                                  : '不在每日掃描範圍，點開取得分析'}
+                            </small>
+                          )}
+                          {event && <span className="today-tag">today</span>}
+                        </button>
+                        <SaveButton
+                          symbol={ticker}
+                          saved={true}
+                          toggle={toggle}
+                        />
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="saved-empty">
+                  尚未收藏股票。可以先搜尋想追蹤的公司，或在下方清單點「收藏」。
+                </p>
+              )}
+              <p className="footnote">
+                收藏只儲存在此裝置的瀏覽器，不會跨裝置同步；清除網站資料會移除收藏。
+              </p>
+            </section>
             <div className="section-heading" id="overview">
               <div>
                 <div className="eyebrow">QUALIFYING OPPORTUNITIES</div>
@@ -903,6 +1049,11 @@ export default function Home() {
                               <p>{s.reasons.join(' · ')}</p>
                               <strong>{money(s.technical.price)}</strong>
                             </button>
+                            <SaveButton
+                              symbol={s.symbol}
+                              saved={saved.includes(s.symbol)}
+                              toggle={toggle}
+                            />
                             <WaitingSummary s={s} />
                             <StockConditions s={s} />
                           </article>
@@ -1033,6 +1184,7 @@ export default function Home() {
                     <th>趨勢</th>
                     <th>距離觀察區</th>
                     <th>目前狀態</th>
+                    <th>收藏</th>
                     <th />
                   </tr>
                 </thead>
@@ -1082,6 +1234,13 @@ export default function Home() {
                       <td>{percent(s.entry.distance)}</td>
                       <td>
                         <Badge status={s.status} />
+                      </td>
+                      <td>
+                        <SaveButton
+                          symbol={s.symbol}
+                          saved={saved.includes(s.symbol)}
+                          toggle={toggle}
+                        />
                       </td>
                       <td>
                         <button
