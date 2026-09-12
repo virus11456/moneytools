@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { DataIssues } from './DataIssues';
 import { useSavedStocks } from './useSavedStocks';
 import {
   Star,
@@ -168,99 +169,6 @@ function CheckList({ checks }: { checks: any[] }) {
           <span className="check-value">{conditionValue(c)}</span>
         </div>
       ))}
-    </div>
-  );
-}
-function WaitingSummary({ s }: { s: Stock }) {
-  const missing = s.technical.checks
-    .filter((c: any) => c.status !== 'pass')
-    .map((c: any) => c.label);
-  if (!s.technical.available)
-    missing.push(s.technical.reason || '技術資料不足');
-  if (s.dualPass) {
-    if (s.entry.distance == null) missing.push('尚無有效成交密集區');
-    else if (s.entry.distance > 0.02) missing.push('等待回撤至區間 2% 內');
-    if (s.entry.riskReward == null || s.entry.riskReward < 2)
-      missing.push('報酬／風險未達 2 倍');
-    missing.push(
-      ...s.entry.confirmation
-        .filter((c: any) => c.status !== 'pass')
-        .map((c: any) => c.label),
-    );
-  }
-  if (s.status === 'INCOMPLETE') missing.push('資料完整性或時效待確認');
-  return (
-    <aside className={`waiting-summary ${s.status === 'READY' ? 'ready' : ''}`}>
-      <strong>
-        {s.status === 'READY'
-          ? '進場條件已齊備'
-          : s.dualPass
-            ? '距離進場還缺'
-            : '技術面還缺'}
-      </strong>
-      <p>
-        {missing.length
-          ? missing.join('、')
-          : '條件已通過，仍需檢查企業風險與進場價位。'}
-      </p>
-    </aside>
-  );
-}
-function StockConditions({ s }: { s: Stock }) {
-  const e = s.entry;
-  const entryChecks = [
-    {
-      key: 'distance',
-      label: 'READY 距離條件',
-      value: e.distance,
-      status:
-        e.distance == null ? 'missing' : e.distance <= 0.02 ? 'pass' : 'fail',
-      detail: 'READY 距離 ≤ 2%；APPROACHING ≤ 5%',
-    },
-    {
-      key: 'rr',
-      label: '報酬／風險',
-      value: e.riskReward,
-      status:
-        e.riskReward == null ? 'missing' : e.riskReward >= 2 ? 'pass' : 'fail',
-      detail: 'READY 需 ≥ 2 倍；參考歷史高點，不含費用',
-    },
-    ...e.confirmation,
-  ];
-  return (
-    <div className="card-conditions">
-      <h4>
-        基本面 ·{' '}
-        {s.fundamentals.checks.filter((c: any) => c.status === 'pass').length} /{' '}
-        {s.fundamentals.checks.length} 條通過
-      </h4>
-      <CheckList checks={s.fundamentals.checks} />
-      <p className="condition-date">
-        財報年度截止 {s.financials.fiscalDate || '未知'} ·{' '}
-        {s.financialCurrency || '幣別未知'}
-      </p>
-      <h4>
-        技術趨勢 ·{' '}
-        {s.technical.checks.filter((c: any) => c.status === 'pass').length} /{' '}
-        {s.technical.checks.length} 條通過
-      </h4>
-      <CheckList checks={s.technical.checks} />
-      {!s.technical.available && <p>{s.technical.reason}</p>}
-      <p className="condition-date">
-        收盤 {money(s.technical.price)} · MA50 {money(s.technical.sma50)} ·
-        MA200 {money(s.technical.sma200)}
-        <br />
-        行情截止 {s.technical.priceDate || '未知'}
-      </p>
-      <h4>進場確認</h4>
-      <CheckList checks={entryChecks} />
-      <p className="condition-date">
-        觀察區 {money(e.zoneLow)}–{money(e.zoneHigh)} · 失效價{' '}
-        {money(e.invalidation)}
-      </p>
-      {s.status === 'INCOMPLETE' && (
-        <p className="notice">資料不足，暫不能確認完整條件。</p>
-      )}
     </div>
   );
 }
@@ -1118,6 +1026,7 @@ export default function Home() {
                     每日變化 <b>{changes.length}</b>
                   </a>
                   <a href="#watchlist">觀察池</a>
+                  <a href="#data-issues">資料問題明細</a>
                 </nav>
                 <div className="list-controls">
                   <label>
@@ -1268,7 +1177,11 @@ export default function Home() {
                               aria-label={`分析 ${s.symbol} 詳情`}
                             >
                               <div>
-                                <Badge status={s.status} />
+                                <span
+                                  className={`stage-badge ${s.dualPass ? 'dual' : ''}`}
+                                >
+                                  {s.dualPass ? '兩階段都符合' : '第一階段符合'}
+                                </span>
                                 {added && (
                                   <span className="today-tag">today</span>
                                 )}
@@ -1279,7 +1192,6 @@ export default function Home() {
                                 <span>{s.name}</span>
                               </h3>
 
-                              <p>{s.reasons.join(' · ')}</p>
                               <strong>{money(s.technical.price)}</strong>
                             </button>
                             <SaveButton
@@ -1287,8 +1199,30 @@ export default function Home() {
                               saved={saved.includes(s.symbol)}
                               toggle={toggle}
                             />
-                            <WaitingSummary s={s} />
-                            <StockConditions s={s} />
+                            <div className="stage-icons" aria-label="條件摘要">
+                              <span
+                                className="stage-icon passed"
+                                title="第一階段：基本面通過"
+                              >
+                                <ShieldCheck size={17} aria-hidden="true" />
+                                基本面通過
+                              </span>
+                              <span
+                                className={`stage-icon ${s.dualPass ? 'passed' : 'pending'}`}
+                                title={
+                                  s.dualPass
+                                    ? '第二階段：技術趨勢通過；進場條件仍需另行確認'
+                                    : '第二階段：技術趨勢尚未全部通過'
+                                }
+                              >
+                                {s.dualPass ? (
+                                  <Check size={17} aria-hidden="true" />
+                                ) : (
+                                  <Clock3 size={17} aria-hidden="true" />
+                                )}
+                                {s.dualPass ? '技術面通過' : '技術面待確認'}
+                              </span>
+                            </div>
                           </article>
                         );
                       })}
@@ -1412,6 +1346,7 @@ export default function Home() {
                 檔 · 取得失敗 {snapshot?.errors.length || 0} 檔
               </span>
             </div>
+            {snapshot && <DataIssues snapshot={snapshot} go={go} />}
             <div className="watch-heading" id="watchlist">
               <div>
                 <h2>觀察池全覽</h2>

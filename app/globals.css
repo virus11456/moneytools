@@ -1572,3 +1572,154 @@ a:focus-visible {
   outline: 2px solid #294a3e;
   outline-offset: 2px;
 }
+
+.data-issues {
+  margin: 20px 0;
+  scroll-margin-top: 20px;
+}
+.data-issues summary {
+  cursor: pointer;
+  font-weight: 600;
+  line-height: 1.7;
+  padding: 10px 0;
+}
+.issue-controls {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+.issue-controls label {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  font-size: 13px;
+}
+.issue-controls input,
+.issue-controls select {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  background: white;
+  border: 1px solid #d5dfcb;
+  border-radius: 8px;
+  font: inherit;
+}
+.issue-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.issue-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #e3e0cf;
+  border-radius: 8px;
+  background: #fffefa;
+  overflow-wrap: anywhere;
+}
+.issue-card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+.issue-card h3 small {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  margin-top: 6px;
+}
+.issue-card ul {
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.issue-card button {
+  padding: 12px 0;
+  min-height: 44px;
+  text-align: left;
+  color: #294a3e;
+}
+@media (max-width: 1100px) {
+  .issue-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .list-controls {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .reset-list {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 700px) {
+  .issue-grid,
+  .issue-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .list-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .quick-filters button,
+  .saved-only,
+  .group-nav a {
+    min-height: 44px;
+  }
+  .search-form input,
+  .list-controls input,
+  .list-controls select,
+  .issue-controls input,
+  .issue-controls select {
+    font-size: 16px;
+  }
+  .search-results > button {
+    flex-wrap: wrap;
+  }
+  .local-suggestions > button > span:not(.badge) {
+    flex: 1 1 60%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .panel-title {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .change-row,
+  .condition-delta {
+    overflow-wrap: anywhere;
+  }
+}
+
+.stage-badge {
+  display: inline-flex;
+  padding: 7px 10px;
+  border-radius: 5px;
+  background: #e5edf5;
+  color: #456783;
+  font-size: 13px;
+  font-weight: 600;
+}
+.stage-badge.dual {
+  background: #e4efdf;
+  color: #315b3e;
+}
+.opportunities {
+  align-items: start;
+}
+
+.stage-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding-top: 14px;
+}
+.stage-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.stage-icon.passed {
+  color: #315b3e;
+}
+.stage-icon.pending {
+  color: #826824;
+}
