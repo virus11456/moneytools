@@ -1,0 +1,37 @@
+name: Daily US stock scan
+on:
+  schedule:
+    - cron: '15 23 * * *' # 07:15 Asia/Taipei next day; GitHub scheduling may be delayed.
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['moneytools/**', 'scripts/scan.py', 'universe.json', 'requirements.txt', '.github/workflows/daily-scan.yml']
+permissions:
+  contents: write
+concurrency:
+  group: moneytools-daily-scan
+  cancel-in-progress: false
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -v
+      - run: python scripts/scan.py
+      - name: Preserve scan history and publish updated data
+        run: |
+          git config user.name "virus11456"
+          git config user.email "24470905+virus11456@users.noreply.github.com"
+          git add public/data/daily.json public/data/previous.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "data: daily US stock scan"
+          git pull --rebase origin main
+          git push origin HEAD:main
