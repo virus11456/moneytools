@@ -187,7 +187,7 @@ function Detail({ s, back }: { s: Stock; back: () => void }) {
   return (
     <>
       <button className="back" onClick={back}>
-        <ArrowLeft size={16} /> 回到每日機會
+        <ArrowLeft size={16} /> 回到符合條件標的
       </button>
       <div className="detail-heading">
         <div>
@@ -453,7 +453,30 @@ export default function Home() {
     }
   }
   const fresh = snapshot?.scanDate === today;
-  const opportunities = fresh ? snapshot?.newOpportunities || [] : [];
+  const newToday = fresh ? snapshot?.newOpportunities || [] : [];
+  const statusOrder = ['READY', 'APPROACHING', 'QUALITY', 'INCOMPLETE'];
+  const opportunities = (snapshot?.stocks || [])
+    .filter((s) => s.fundamentals.passed)
+    .sort(
+      (a, b) =>
+        statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status) ||
+        a.symbol.localeCompare(b.symbol),
+    );
+  const groups = [
+    {
+      key: 'dual',
+      title: '基本面＋技術面皆符合',
+      description:
+        '企業品質與上升趨勢都通過，再依進場位置、確認訊號與風險報酬區分狀態。',
+      stocks: opportunities.filter((s) => s.dualPass),
+    },
+    {
+      key: 'fundamental',
+      title: '基本面符合、技術面待確認',
+      description: '企業品質已通過，但目前技術趨勢尚未全部符合，持續觀察。',
+      stocks: opportunities.filter((s) => !s.dualPass),
+    },
+  ];
   const filtered =
     snapshot?.stocks.filter((s) => filter === 'ALL' || s.status === filter) ||
     [];
@@ -556,7 +579,8 @@ export default function Home() {
               日平均成交金額 ≥ $10M。財報限 550 日內、行情限 5
               個日曆日內；金融、不動產及非美元財報不適用。沒有總分，也沒有價格預測。
               <br />
-              新機會：相較上次有效觀察，新進入上述狀態（包括狀態切換），且行情日或財報期已更新；首筆觀察僅建立基準，失敗不重置狀態。
+              所有 READY、APPROACHING、QUALITY
+              標的都會列出。今日新增標記：相較上次有效觀察，新進入上述狀態（包括狀態切換），且行情日或財報期已更新；首筆觀察僅建立基準，失敗不重置狀態。
             </p>
           </section>
         )}
@@ -578,9 +602,9 @@ export default function Home() {
           <>
             <div className="section-heading">
               <div>
-                <div className="eyebrow">DAILY NEW OPPORTUNITIES</div>
+                <div className="eyebrow">QUALIFYING OPPORTUNITIES</div>
                 <h2>
-                  今日新機會{' '}
+                  符合條件標的{' '}
                   <span className="count">{opportunities.length}</span>
                 </h2>
               </div>
@@ -588,87 +612,75 @@ export default function Home() {
                 {today} <span>Asia/Taipei</span>
               </span>
             </div>
-            <div className="stats">
-              {['READY', 'APPROACHING', 'QUALITY'].map((status, i) => (
-                <div className="stat" key={status}>
-                  <div>
-                    <Badge status={status} />
-                    <span>{labels[status]}</span>
-                  </div>
-                  <strong>
-                    {opportunities
-                      .filter((o) => o.status === status)
-                      .length.toString()
-                      .padStart(2, '0')}
-                  </strong>
-                  <p>
-                    {
-                      [
-                        '確認訊號與風險報酬皆通過',
-                        '接近區間，等待最後確認',
-                        '品質符合，耐心等待位置',
-                      ][i]
-                    }
-                  </p>
-                </div>
-              ))}
-            </div>
+            <p className="footnote">
+              列出最近一次掃描中所有基本面符合的標的，分為雙重條件通過與技術面待確認兩區。
+              今日新增 {newToday.length} 檔；已符合的標的會持續保留。
+              {snapshot &&
+                !fresh &&
+                ' 目前顯示前次掃描結果，請留意下方資料時間。'}
+            </p>
             {loadError && <div className="notice">{loadError}</div>}
             {!snapshot && !loadError ? (
               <div className="loading" role="status">
                 正在載入每日掃描…
               </div>
-            ) : opportunities.length ? (
-              <div className="opportunities">
-                {opportunities.map((o) => {
-                  const s = snapshot?.stocks.find((s) => s.symbol === o.symbol);
-                  return (
-                    <button
-                      key={o.symbol}
-                      className="opportunity"
-                      onClick={() => go(o.symbol)}
-                    >
-                      <div>
-                        <Badge status={o.status} />
-                        <ArrowUpRight size={20} />
-                      </div>
-                      <h3>
-                        {o.symbol}
-                        <span>{s?.name}</span>
-                      </h3>
-                      <p>
-                        {o.previousStatus} → {o.status}
-                      </p>
-                      <p>{o.reasons.join(' · ')}</p>
-                      <strong>{money(s?.technical.price)}</strong>
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="empty-state">
-                <span className="empty-icon">
-                  <Activity size={25} />
-                </span>
-                <div>
-                  <h3>
-                    {snapshot?.baseline
-                      ? '第一份掃描，先建立比較基準'
-                      : !fresh
-                        ? '等待今天的掃描結果'
-                        : '今天還沒有新的條件變化'}
-                  </h3>
-                  <p>
-                    {snapshot?.baseline
-                      ? '現有符合條件的股票列在下方；下次掃描開始，才會標記新進入的機會。'
-                      : !fresh
-                        ? '下方保留最近一次資料。過去的新機會不會冒充今天的機會。'
-                        : '已符合條件的舊標的不重複推送。耐心等待，也是研究的一部分。'}
-                  </p>
-                </div>
-                <span className="empty-label">只看新變化</span>
-              </div>
-            )}
+            ) : snapshot ? (
+              groups.map((group) => (
+                <section
+                  className="qualification-section"
+                  key={group.key}
+                  aria-labelledby={`group-${group.key}`}
+                >
+                  <div className="section-heading">
+                    <div>
+                      <h2 id={`group-${group.key}`}>
+                        {group.title}{' '}
+                        <span className="count">{group.stocks.length}</span>
+                      </h2>
+                      <p className="footnote">{group.description}</p>
+                    </div>
+                  </div>
+                  {group.stocks.length ? (
+                    <div className="opportunities">
+                      {group.stocks.map((s) => {
+                        const added = newToday.find(
+                          (event) =>
+                            event.symbol === s.symbol &&
+                            event.status === s.status,
+                        );
+                        return (
+                          <button
+                            key={s.symbol}
+                            className="opportunity"
+                            onClick={() => go(s.symbol)}
+                          >
+                            <div>
+                              <Badge status={s.status} />
+                              <ArrowUpRight size={20} />
+                            </div>
+                            <h3>
+                              {s.symbol}
+                              <span>{s.name}</span>
+                            </h3>
+                            {added && (
+                              <p className="pass-text">
+                                今日新增 · {added.previousStatus} → {s.status}
+                              </p>
+                            )}
+                            <p>{s.reasons.join(' · ')}</p>
+                            <strong>{money(s.technical.price)}</strong>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="empty-state">
+                      <p>本次掃描沒有符合此區條件的標的。</p>
+                    </div>
+                  )}
+                </section>
+              ))
+            ) : null}
             <div className="scan-meta">
               <span>
                 <RefreshCw size={14} /> 最近掃描 {time(snapshot?.generatedAt)}
