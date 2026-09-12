@@ -533,6 +533,8 @@ export default function Home() {
   const [error, setError] = useState('');
   const [q, setQ] = useState('');
   const [listQuery, setListQuery] = useState('');
+  const [setupFilter, setSetupFilter] = useState('ALL');
+  const [savedOnly, setSavedOnly] = useState(false);
   const [sector, setSector] = useState('ALL');
   const [sort, setSort] = useState('status');
   const [results, setResults] = useState<any[] | null>(null);
@@ -655,6 +657,8 @@ export default function Home() {
     .filter(
       (s) =>
         (sector === 'ALL' || s.sector === sector) &&
+        (setupFilter === 'ALL' || s.status === setupFilter) &&
+        (!savedOnly || saved.includes(s.symbol)) &&
         `${s.symbol} ${s.name}`
           .toLowerCase()
           .includes(listQuery.trim().toLowerCase()),
@@ -677,7 +681,11 @@ export default function Home() {
         a.symbol.localeCompare(b.symbol)
       );
     });
-  const narrowed = !!listQuery.trim() || sector !== 'ALL';
+  const narrowed =
+    !!listQuery.trim() ||
+    sector !== 'ALL' ||
+    setupFilter !== 'ALL' ||
+    savedOnly;
   const groups = [
     {
       key: 'dual',
@@ -1072,11 +1080,63 @@ export default function Home() {
                       setListQuery('');
                       setSector('ALL');
                       setSort('status');
+                      setSetupFilter('ALL');
+                      setSavedOnly(false);
                     }}
                   >
-                    重設
+                    顯示全部／重設
                   </button>
                 </div>
+                <div
+                  className="quick-filters"
+                  role="group"
+                  aria-label="符合清單快速篩選"
+                >
+                  <label className="saved-only">
+                    <input
+                      type="checkbox"
+                      checked={savedOnly}
+                      onChange={(e) => setSavedOnly(e.target.checked)}
+                    />
+                    只看自選
+                  </label>
+                  {[
+                    ['ALL', '全部狀態'],
+                    ['READY', 'READY · 條件就緒'],
+                    ['APPROACHING', 'APPROACHING · 接近觀察區'],
+                    ['QUALITY', 'QUALITY · 品質通過'],
+                    ['INCOMPLETE', '資料不足'],
+                  ]
+                    .filter(
+                      ([value]) =>
+                        value !== 'INCOMPLETE' ||
+                        opportunities.some((s) => s.status === value),
+                    )
+                    .map(([value, label]) => (
+                      <button
+                        key={value}
+                        aria-pressed={setupFilter === value}
+                        onClick={() => setSetupFilter(value)}
+                      >
+                        {label}{' '}
+                        <b>
+                          {value === 'ALL'
+                            ? opportunities.length
+                            : opportunities.filter((s) => s.status === value)
+                                .length}
+                        </b>
+                      </button>
+                    ))}
+                </div>
+                <p className="footnote">
+                  狀態旁數字為全部基本面通過標的的數量；可與搜尋、產業及自選交叉篩選。QUALITY
+                  可能仍在等趨勢或回撤，請查看所屬分區及條件明細。
+                </p>
+                {savedOnly && (
+                  <p className="footnote">
+                    只顯示本次基本面通過的自選股票；其餘收藏仍保留在上方「我的自選清單」。
+                  </p>
+                )}
                 <p className="list-count" role="status">
                   顯示 {matching.length} / {opportunities.length}{' '}
                   檔基本面通過標的{narrowed ? ' · 已套用篩選' : ' · 全部列出'}
@@ -1154,7 +1214,7 @@ export default function Home() {
                     <div className="empty-state">
                       <p>
                         {narrowed
-                          ? '此區沒有符合目前搜尋或產業篩選的標的，重設即可恢復完整清單。'
+                          ? '此區沒有符合目前篩選的標的，點「顯示全部／重設」即可恢復完整清單。'
                           : '本次掃描沒有符合此區條件的標的。'}
                       </p>
                     </div>

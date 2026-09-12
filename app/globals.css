@@ -1521,3 +1521,41 @@ a:focus-visible {
 .condition-delta small {
   flex-basis: 100%;
 }
+
+.quick-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+.quick-filters button,
+.saved-only {
+  padding: 10px 14px;
+  border: 1px solid #d5dfcb;
+  border-radius: 8px;
+  background: white;
+  color: #294a3e;
+  font-size: 13px;
+}
+.quick-filters button[aria-pressed='true'] {
+  background: #294a3e;
+  color: white;
+  border-color: #294a3e;
+}
+.saved-only {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.saved-only input {
+  accent-color: #294a3e;
+  width: 18px;
+  height: 18px;
+}
+.quick-filters button:focus-visible,
+.saved-only:focus-within {
+  outline: 2px solid #294a3e;
+  outline-offset: 3px;
+}
