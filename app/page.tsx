@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { marketClock, type MarketCalendar } from './marketClock';
 import { PriceSparkline } from './PriceSparkline';
 import { DataIssues } from './DataIssues';
+import { usePublishedSnapshot } from './usePublishedSnapshot';
 import { useSavedStocks } from './useSavedStocks';
 import {
   Star,
@@ -430,8 +431,8 @@ function Detail({
 }
 export default function Home() {
   const { saved, storageError, toggle } = useSavedStocks();
-  const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
-  const [loadError, setLoadError] = useState('');
+  const { snapshot, refreshing, loadError, checkedAt, updateMessage, refresh } =
+    usePublishedSnapshot<Snapshot>();
   const [symbol, setSymbol] = useState(route);
   const [stock, setStock] = useState<Stock | null>(null);
   const [busy, setBusy] = useState(false);
@@ -461,17 +462,6 @@ export default function Home() {
     return () => clearInterval(id);
   }, []);
   useEffect(() => {
-    fetch('/data/market-calendar.json')
-      .then((r) => (r.ok ? r.json() : null))
-      .then(setCalendar)
-      .catch(() => setCalendar(null));
-    fetch('/data/daily.json')
-      .then((r) => {
-        if (!r.ok) throw Error();
-        return r.json();
-      })
-      .then(setSnapshot)
-      .catch(() => setLoadError('尚未取得每日快照。你仍可使用搜尋查詢個股。'));
     const pop = () => {
       searchEpoch.current += 1;
       setSearching(false);
@@ -483,6 +473,12 @@ export default function Home() {
     window.addEventListener('popstate', pop);
     return () => window.removeEventListener('popstate', pop);
   }, []);
+  useEffect(() => {
+    fetch('/data/market-calendar.json')
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setCalendar)
+      .catch(() => setCalendar(null));
+  }, [snapshot?.generatedAt]);
   useEffect(() => {
     if (!symbol) {
       setStock(null);
@@ -735,6 +731,27 @@ export default function Home() {
         <p className="footnote" id="stock-search-help">
           輸入即查已掃描股票；按搜尋可查其他美股。可用 Tab 選擇結果，Esc 收起。
         </p>
+        <div className="publication-controls">
+          <button type="button" onClick={() => refresh()} disabled={refreshing}>
+            <RefreshCw size={15} className={refreshing ? 'spin' : ''} />
+            {refreshing ? '檢查中…' : '檢查最新資料'}
+          </button>
+          <span role="status">
+            {refreshing
+              ? '正在讀取已發布結果'
+              : checkedAt
+                ? `${updateMessage} · ${time(checkedAt)}`
+                : '尚未成功檢查'}
+            <small>
+              開啟時每 5 分鐘檢查；只讀取已完成的結果，不會另外啟動掃描。
+            </small>
+          </span>
+        </div>
+        {loadError && (
+          <div className="notice" role="alert">
+            {loadError}
+          </div>
+        )}
         {showSuggestions && normalizedQuery && (
           <section
             className="search-results local-suggestions"
@@ -1254,7 +1271,6 @@ export default function Home() {
                 </p>
               </div>
             )}
-            {loadError && <div className="notice">{loadError}</div>}
             {!snapshot && !loadError ? (
               <div className="loading" role="status">
                 正在載入每日掃描…

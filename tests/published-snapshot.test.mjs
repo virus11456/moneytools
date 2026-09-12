@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {validateSnapshot, comparePublication} from '../app/publishedSnapshot.ts';
+const valid = {generatedAt:'2026-09-13T01:00:00Z',universe:['A'],errors:[],stocks:[{symbol:'A',technical:{},fundamentals:{},financials:{},entry:{}}]};
+assert.equal(validateSnapshot(valid),valid);
+assert.throws(()=>validateSnapshot({...valid,stocks:[]}));
+assert.throws(()=>validateSnapshot({...valid,generatedAt:'invalid'}));
+assert.throws(()=>validateSnapshot({...valid,stocks:[{symbol:'A'}]}));
+assert.equal(comparePublication(null,valid),'new');
+assert.equal(comparePublication(valid,{...valid}),'same');
+assert.equal(comparePublication(valid,{generatedAt:'2026-09-13T02:00:00Z'}),'new');
+assert.throws(()=>comparePublication(valid,{generatedAt:'2026-09-12T02:00:00Z'}));
+console.log('Publication checks passed: valid, incomplete, initial, unchanged, newer and stale versions.');
