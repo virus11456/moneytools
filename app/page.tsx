@@ -129,9 +129,11 @@ function CheckList({ checks }: { checks: any[] }) {
                   ? percent(c.value)
                   : c.key === 'volume' || c.key === 'rr'
                     ? `${c.value.toFixed(2)} 倍`
-                    : typeof c.value === 'number'
-                      ? c.value.toFixed(2)
-                      : '—'}
+                    : c.key === 'ma50rise' || c.key === 'ma200rise'
+                      ? `${c.value >= 0 ? '+' : ''}${money(c.value)} 差額`
+                      : typeof c.value === 'number'
+                        ? c.value.toFixed(2)
+                        : '—'}
           </span>
         </div>
       ))}
@@ -143,7 +145,7 @@ function StockConditions({ s }: { s: Stock }) {
   const entryChecks = [
     {
       key: 'distance',
-      label: '接近成交密集區',
+      label: 'READY 距離條件',
       value: e.distance,
       status:
         e.distance == null ? 'missing' : e.distance <= 0.02 ? 'pass' : 'fail',

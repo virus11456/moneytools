@@ -41,3 +41,8 @@ class DailyChangesTests(unittest.TestCase):
     def test_method_change_rebaselines(self):
         before=scan([stock()]);before['methodVersion']='old';after=scan([stock(dual=True,price='2026-09-11')],before)
         self.assertEqual(after['dailyChanges'],[])
+
+    def test_intraday_entry_upgrade_preserves_today_gate(self):
+        before=scan([stock()]);added=scan([stock(dual=True,status='APPROACHING',price='2026-09-11')],before)
+        upgraded=scan([stock(dual=True,status='READY',price='2026-09-12')],added)
+        self.assertIn('DUAL_ADDED',upgraded['dailyChanges'][0]['kinds'])

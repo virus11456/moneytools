@@ -61,16 +61,18 @@ def daily_changes(previous, stocks, errors, generated_at):
             events.pop(symbol, None)
             continue
         elif (current['priceDate'], current['fiscalDate']) != (prior.get('priceDate'), prior.get('fiscalDate')):
+            # Compare with the day's first event origin so an entry update keeps today's new-gate label.
+            origin = events.get(symbol, {}).get('before', prior)
             kinds = []
-            if not prior['fundamental'] and current['fundamental']: kinds.append('FUNDAMENTAL_ADDED')
-            if not prior['dual'] and current['dual']: kinds.append('DUAL_ADDED')
-            if prior['fundamental'] and not current['fundamental']: kinds.append('FUNDAMENTAL_LOST')
-            elif prior['dual'] and not current['dual']: kinds.append('DUAL_LOST')
-            if prior['status'] != current['status'] and current['dual'] and prior['dual']: kinds.append('ENTRY_CHANGED')
+            if not origin['fundamental'] and current['fundamental']: kinds.append('FUNDAMENTAL_ADDED')
+            if not origin['dual'] and current['dual']: kinds.append('DUAL_ADDED')
+            if origin['fundamental'] and not current['fundamental']: kinds.append('FUNDAMENTAL_LOST')
+            elif origin['dual'] and not current['dual']: kinds.append('DUAL_LOST')
+            if origin['status'] != current['status'] and current['dual'] and origin['dual']: kinds.append('ENTRY_CHANGED')
             if kinds:
-                events[symbol] = dict(symbol=symbol, kinds=kinds, previousStatus=prior['status'], status=current['status'],
+                events[symbol] = dict(symbol=symbol, kinds=kinds, previousStatus=origin['status'], status=current['status'],
                     detectedAt=generated_at, previousPriceDate=prior.get('priceDate'), priceDate=current['priceDate'],
-                    reasons=s['reasons'], before=prior, after=current)
+                    reasons=s['reasons'], before=origin, after=current)
         # Keep an event only while the resulting gate state still applies.
         if symbol in events and any(events[symbol]['after'][k] != current[k] for k in ('fundamental','dual','status')):
             events.pop(symbol, None)
