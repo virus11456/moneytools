@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { DataIssues } from './DataIssues';
 import { useSavedStocks } from './useSavedStocks';
 import {
@@ -242,12 +242,10 @@ function PriceChart({ s }: { s: Stock }) {
 }
 function Detail({
   s,
-  back,
   saved,
   toggle,
 }: {
   s: Stock;
-  back: () => void;
   saved: boolean;
   toggle: (symbol: string) => void;
 }) {
@@ -255,9 +253,6 @@ function Detail({
   const t = s.technical;
   return (
     <>
-      <button className="back" onClick={back}>
-        <ArrowLeft size={16} /> 回到基本面通過總覽
-      </button>
       {s.dataStatus === 'retained' && (
         <div className="notice" role="status">
           <strong>待更新 · 以下為上次紀錄</strong>
@@ -442,6 +437,8 @@ export default function Home() {
   const [q, setQ] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchEpoch = useRef(0);
+  const listScroll = useRef(0);
+  const [reviewSymbols, setReviewSymbols] = useState<string[]>([]);
   const [listQuery, setListQuery] = useState('');
   const [setupFilter, setSetupFilter] = useState('ALL');
   const [savedOnly, setSavedOnly] = useState(false);
@@ -464,7 +461,14 @@ export default function Home() {
       })
       .then(setSnapshot)
       .catch(() => setLoadError('尚未取得每日快照。你仍可使用搜尋查詢個股。'));
-    const pop = () => setSymbol(route());
+    const pop = () => {
+      searchEpoch.current += 1;
+      setSearching(false);
+      setShowSuggestions(false);
+      setResults(null);
+      setReviewSymbols(window.history.state?.reviewSymbols || []);
+      setSymbol(route());
+    };
     window.addEventListener('popstate', pop);
     return () => window.removeEventListener('popstate', pop);
   }, []);
@@ -504,19 +508,26 @@ export default function Home() {
       });
     return () => ctrl.abort();
   }, [symbol, snapshot]);
-  function go(s = '') {
+  useLayoutEffect(() => {
+    window.scrollTo({
+      top: symbol ? 0 : listScroll.current,
+      behavior: 'instant',
+    });
+  }, [symbol]);
+  function go(s = '', sequence: string[] = []) {
+    if (!symbol && s) listScroll.current = window.scrollY;
+    setReviewSymbols(sequence);
     searchEpoch.current += 1;
     setSearching(false);
     setShowSuggestions(false);
     window.history.pushState(
-      {},
+      { reviewSymbols: sequence },
       '',
       s ? `/stock/${encodeURIComponent(s)}` : '/',
     );
     setSymbol(s);
     setResults(null);
     setError('');
-    window.scrollTo(0, 0);
   }
   async function search(e: React.FormEvent) {
     e.preventDefault();
@@ -812,14 +823,81 @@ export default function Home() {
                 <RefreshCw className="spin" /> 正在取得 {symbol} 的行情與財報…
               </div>
             )}
-            {stock && (
+            <div className="review-navigation">
+              <button onClick={() => go()}>
+                <ArrowLeft size={16} />
+                回到清單
+              </button>
+              {reviewSymbols.includes(symbol) && (
+                <>
+                  <span>
+                    目前篩選清單 · 第 {reviewSymbols.indexOf(symbol) + 1} /{' '}
+                    {reviewSymbols.length} 檔
+                  </span>
+                  <div className="review-arrows">
+                    <button
+                      disabled={reviewSymbols.indexOf(symbol) === 0}
+                      onClick={() =>
+                        go(
+                          reviewSymbols[reviewSymbols.indexOf(symbol) - 1],
+                          reviewSymbols,
+                        )
+                      }
+                    >
+                      <ArrowLeft size={16} />
+                      上一檔
+                    </button>
+                    <button
+                      disabled={
+                        reviewSymbols.indexOf(symbol) ===
+                        reviewSymbols.length - 1
+                      }
+                      onClick={() =>
+                        go(
+                          reviewSymbols[reviewSymbols.indexOf(symbol) + 1],
+                          reviewSymbols,
+                        )
+                      }
+                    >
+                      下一檔
+                      <ArrowRight size={16} />
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+            {stock && stock.symbol === symbol && (
               <Detail
                 s={stock}
-                back={() => go()}
                 saved={saved.includes(stock.symbol)}
                 toggle={toggle}
               />
             )}
+            {reviewSymbols.includes(symbol) &&
+              stock &&
+              stock.symbol === symbol && (
+                <div className="review-navigation bottom-review">
+                  <button onClick={() => go()}>回到清單</button>
+                  <span>
+                    第 {reviewSymbols.indexOf(symbol) + 1} /{' '}
+                    {reviewSymbols.length} 檔
+                  </span>
+                  <button
+                    disabled={
+                      reviewSymbols.indexOf(symbol) === reviewSymbols.length - 1
+                    }
+                    onClick={() =>
+                      go(
+                        reviewSymbols[reviewSymbols.indexOf(symbol) + 1],
+                        reviewSymbols,
+                      )
+                    }
+                  >
+                    看下一檔
+                    <ArrowRight size={16} />
+                  </button>
+                </div>
+              )}
           </>
         ) : (
           <>
@@ -1173,7 +1251,14 @@ export default function Home() {
                           <article key={s.symbol} className="opportunity">
                             <button
                               className="card-open"
-                              onClick={() => go(s.symbol)}
+                              onClick={() =>
+                                go(
+                                  s.symbol,
+                                  groups.flatMap((g) =>
+                                    g.stocks.map((item) => item.symbol),
+                                  ),
+                                )
+                              }
                               aria-label={`分析 ${s.symbol} 詳情`}
                             >
                               <div>

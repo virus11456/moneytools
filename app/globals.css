@@ -1723,3 +1723,47 @@ a:focus-visible {
 .stage-icon.pending {
   color: #826824;
 }
+
+.review-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  margin: 16px 0 24px;
+}
+.review-navigation button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #d1decb;
+  border-radius: 8px;
+  background: white;
+  color: #294a3e;
+}
+.review-navigation button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.review-navigation > span {
+  font-size: 13px;
+  color: #65715f;
+  flex: 1;
+}
+.review-arrows {
+  display: flex;
+  gap: 10px;
+}
+@media (max-width: 600px) {
+  .review-navigation > span {
+    flex-basis: 50%;
+  }
+  .review-arrows {
+    width: 100%;
+  }
+  .review-arrows button {
+    flex: 1;
+  }
+}
