@@ -682,7 +682,7 @@ export default function Home() {
             <span className="divider">/</span> 美股雙重分析
           </span>
           <span>
-            <Clock3 size={14} /> 每日 07:15 · 台北
+            <Clock3 size={14} /> 美股收盤後 75 分鐘
           </span>
         </div>
         <section className="search-area">
@@ -927,6 +927,10 @@ export default function Home() {
                   }{' '}
                   檔 · 取得失敗 {snapshot.errors.length}{' '}
                   檔。行情為完整交易日日線，非即時報價。
+                </p>
+                <p className="footnote">
+                  依 NYSE 交易日曆，正常收盤後 75 分鐘啟動；台北夏令 05:15／冬令
+                  06:15，提早收盤日提前。週末及休市日跳過，掃描與部署可能延遲。
                 </p>
                 {snapshot.recovery && (
                   <p>

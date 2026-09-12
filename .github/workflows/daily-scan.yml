@@ -1,11 +1,15 @@
 name: Daily US stock scan
 on:
   schedule:
-    - cron: '15 23 * * *' # 07:15 Asia/Taipei next day; GitHub scheduling may be delayed.
+    # Normal and 13:00 early closes, in both DST offsets. Only the matching slot scans.
+    - cron: '15 18 * * 1-5'
+    - cron: '15 19 * * 1-5'
+    - cron: '15 21 * * 1-5'
+    - cron: '15 22 * * 1-5'
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['moneytools/**', 'scripts/**', 'watchlist.json', 'requirements.txt', '.github/workflows/daily-scan.yml']
+    paths: ['moneytools/**', 'scripts/**', 'watchlist.json', 'requirements.txt', 'requirements-schedule.txt', '.github/workflows/daily-scan.yml']
 permissions:
   contents: write
 concurrency:
@@ -23,10 +27,21 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
-      - run: pip install -r requirements.txt
-      - run: python -m unittest discover -s tests -v
-      - run: python scripts/scan.py
+      - run: pip install -r requirements-schedule.txt
+      - name: Check exchange session and close time
+        id: market
+        env:
+          SCAN_EVENT: ${{ github.event_name }}
+          SCAN_CRON: ${{ github.event.schedule }}
+        run: python scripts/market_schedule.py
+      - if: steps.market.outputs.run == 'true'
+        run: pip install -r requirements.txt
+      - if: steps.market.outputs.run == 'true'
+        run: python -m unittest discover -s tests -v
+      - if: steps.market.outputs.run == 'true'
+        run: python scripts/scan.py
       - name: Preserve scan history and publish updated data
+        if: steps.market.outputs.run == 'true'
         run: |
           git config user.name "virus11456"
           git config user.email "24470905+virus11456@users.noreply.github.com"

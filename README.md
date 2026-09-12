@@ -16,7 +16,7 @@ A transparent, rule-based US-stock research dashboard with daily setup transitio
 
 `public/data/daily.json` stores the latest scan, last valid observed state per symbol and today's transitions. `public/data/previous.json` preserves the preceding snapshot; Git commit history provides durable history. The initial scan and newly added symbols establish a baseline, not a new opportunity. Qualifying category changes count as new entries only when the price date or fiscal period also advances. Reruns preserve same-day events, the next Taipei day clears them, and a stale browser snapshot cannot show yesterday's events as today's. Failed/incomplete fetches do not reset known state. A method-version change rebuilds the baseline. No invented backtest or previous-day financial data is used.
 
-`.github/workflows/daily-scan.yml` starts daily at `23:15 UTC` (07:15 Asia/Taipei the next day), also supports manual dispatch, runs tests, refreshes a validated public S&P 500 constituent list, merges the editable `watchlist.json`, and scans the resulting `universe.json` sequentially with 1.5-second pacing and a 5-second pause every 25 requests, and commits the snapshot back to `main`. GitHub schedules and Vercel builds can be delayed. A fully failed scan fails without overwriting the prior snapshot; partial failures are explicitly shown. The workflow has only repository contents write access and uses the built-in token. Vercel's Git integration deploys branch pushes; no extra paid data subscription is required. Deployment status should be checked after the first automated run.
+`.github/workflows/daily-scan.yml` starts 75 minutes after the NYSE core session closes, using `pandas_market_calendars` 5.4.0 to skip holidays/weekends and account for DST and 13:00 early closes. Four UTC candidate slots are gated by `scripts/market_schedule.py`; only the slot matching the session close runs a scan. A delayed matching trigger remains eligible on the same New York date. Normal sessions target 17:15 New York (05:15 Taipei in US daylight time / 06:15 in standard time), also supports manual dispatch, runs tests, refreshes a validated public S&P 500 constituent list, merges the editable `watchlist.json`, and scans the resulting `universe.json` sequentially with 1.5-second pacing and a 5-second pause every 25 requests, and commits the snapshot back to `main`. GitHub schedules and Vercel builds can be delayed. A fully failed scan fails without overwriting the prior snapshot; partial failures are explicitly shown. The workflow has only repository contents write access and uses the built-in token. Vercel's Git integration deploys branch pushes; no extra paid data subscription is required. Deployment status should be checked after the first automated run.
 
 ## Search and pages
 
@@ -29,7 +29,7 @@ Node 22.13+ and Python 3.12+ are required.
 ```sh
 pnpm install --frozen-lockfile
 python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
+.venv/bin/pip install -r requirements.txt -r requirements-schedule.txt
 .venv/bin/python scripts/scan.py
 .venv/bin/python scripts/dev_api.py
 # In another terminal:

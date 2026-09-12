@@ -37,7 +37,7 @@ def run():
     retained=retain_failed(previous,archive,errors,symbols,generated)
     state=transition(previous,results,errors,generated)
     changes=daily_changes(previous,results,errors,generated)
-    payload=dict(generatedAt=generated,schedule='每天台北時間 07:15 啟動；排程及部署可能延遲',market='US',
+    payload=dict(generatedAt=generated,schedule='NYSE 交易日收盤後 75 分鐘啟動；依夏令時間及提早收盤調整，排程及部署可能延遲',market='US',
         retainedStocks=retained,recovery=recovery,universe=symbols,universeMeta=universe_meta,coverage=len(results),validCoverage=sum(s['status']!='INCOMPLETE' for s in results),incompleteCoverage=sum(s['status']=='INCOMPLETE' for s in results),errors=errors,rules=RULES,stocks=results,source='Yahoo Finance / yfinance',methodVersion=VERSION,**state,**changes)
     target.parent.mkdir(parents=True,exist_ok=True)
     if previous:
