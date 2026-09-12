@@ -1493,3 +1493,13 @@ a:focus-visible {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.retained-section {
+  border-color: #e6d19e;
+  margin-bottom: 24px;
+  background: #fffaf0;
+}
+.retained-label {
+  color: #8b6524 !important;
+  font-weight: 600;
+}

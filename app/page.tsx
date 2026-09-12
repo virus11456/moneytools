@@ -26,6 +26,14 @@ type Snapshot = {
   coverage: number;
   errors: any[];
   stocks: Stock[];
+  retainedStocks?: Stock[];
+  recovery?: {
+    requested: number;
+    reused: number;
+    recovered: number;
+    unresolved: number;
+    rateLimitPauses: number;
+  };
   newOpportunities: any[];
   dailyChanges?: any[];
   changeBaselineSymbols?: string[];
@@ -342,6 +350,16 @@ function Detail({
       <button className="back" onClick={back}>
         <ArrowLeft size={16} /> 回到基本面通過總覽
       </button>
+      {s.dataStatus === 'retained' && (
+        <div className="notice" role="status">
+          <strong>待更新 · 以下為上次紀錄</strong>
+          <p>
+            本次補抓尚未成功，不能確認目前仍符合。原始取得時間{' '}
+            {time(s.fetchedAt)}，行情截止 {s.technical.priceDate || '未知'}
+            ；以下狀態與價位均屬歷史紀錄。
+          </p>
+        </div>
+      )}
       <div className="detail-heading">
         <div>
           <div className="eyebrow">
@@ -544,7 +562,9 @@ export default function Home() {
       setError('');
       return;
     }
-    const cached = snapshot?.stocks.find((s) => s.symbol === symbol);
+    const cached =
+      snapshot?.stocks.find((s) => s.symbol === symbol) ||
+      snapshot?.retainedStocks?.find((s) => s.symbol === symbol);
     if (cached) {
       setStock(cached);
       setError('');
@@ -806,12 +826,18 @@ export default function Home() {
           <>
             {snapshot && (
               <section
-                className={`freshness-strip ${fresh ? '' : 'stale'}`}
+                className={`freshness-strip ${fresh && !snapshot.errors.length ? '' : 'stale'}`}
                 aria-label="資料更新狀態"
               >
                 <div>
                   <Clock3 size={18} />
-                  <strong>{fresh ? '今日掃描已完成' : '目前為前次掃描'}</strong>
+                  <strong>
+                    {fresh
+                      ? snapshot.errors.length
+                        ? '今日掃描：仍有資料待補'
+                        : '今日掃描已完成'
+                      : '目前為前次掃描'}
+                  </strong>
                   <span>{time(snapshot.generatedAt)} · 台北</span>
                 </div>
                 <p>
@@ -824,6 +850,14 @@ export default function Home() {
                   檔 · 取得失敗 {snapshot.errors.length}{' '}
                   檔。行情為完整交易日日線，非即時報價。
                 </p>
+                {snapshot.recovery && (
+                  <p>
+                    同日重用 {snapshot.recovery.reused} 檔 · 本次請求{' '}
+                    {snapshot.recovery.requested} 檔 · 重試救回{' '}
+                    {snapshot.recovery.recovered}{' '}
+                    檔。重用資料保留原始取得時間；不重新標記為新機會。
+                  </p>
+                )}
                 {!fresh && (
                   <p>符合清單保留最近一次結果；今天的新變化尚未確認。</p>
                 )}
@@ -851,9 +885,11 @@ export default function Home() {
               {saved.length ? (
                 <div className="saved-grid">
                   {saved.map((ticker) => {
-                    const item = snapshot?.stocks.find(
-                      (s) => s.symbol === ticker,
-                    );
+                    const item =
+                      snapshot?.stocks.find((s) => s.symbol === ticker) ||
+                      snapshot?.retainedStocks?.find(
+                        (s) => s.symbol === ticker,
+                      );
                     const event = newToday.find((e) => e.symbol === ticker);
                     const scanned = snapshot?.universe.includes(ticker);
                     return (
@@ -866,6 +902,11 @@ export default function Home() {
                           <span>{item?.name || '開啟個股分析'}</span>
                           {item ? (
                             <>
+                              {item.dataStatus === 'retained' && (
+                                <small className="retained-label">
+                                  待更新 · 以下是上次狀態，非本次確認
+                                </small>
+                              )}
                               <Badge status={item.status} />
                               <small>
                                 {item.fundamentals.passed
@@ -905,6 +946,55 @@ export default function Home() {
                 收藏只儲存在此裝置的瀏覽器，不會跨裝置同步；清除網站資料會移除收藏。
               </p>
             </section>
+            {!!snapshot?.retainedStocks?.filter((s) => s.fundamentals.passed)
+              .length && (
+              <section
+                className="panel retained-section"
+                aria-label="待補資料的上次符合紀錄"
+              >
+                <h2>
+                  待補資料 · 上次符合{' '}
+                  <span className="count">
+                    {
+                      snapshot.retainedStocks.filter(
+                        (s) => s.fundamentals.passed,
+                      ).length
+                    }
+                  </span>
+                </h2>
+                <p className="subtitle">
+                  以下股票補抓尚未成功，保留上次紀錄供追蹤；不算入本次符合總數，也不標記
+                  today。
+                </p>
+                <div className="saved-grid">
+                  {snapshot.retainedStocks
+                    .filter((s) => s.fundamentals.passed)
+                    .map((s) => (
+                      <article className="saved-item" key={s.symbol}>
+                        <button
+                          className="saved-open"
+                          onClick={() => go(s.symbol)}
+                        >
+                          <strong>{s.symbol}</strong>
+                          <span>{s.name}</span>
+                          <small className="retained-label">
+                            待更新 · 上次 {s.status}
+                          </small>
+                          <small>
+                            行情 {s.technical.priceDate || '未知'} · 原始取得{' '}
+                            {time(s.fetchedAt)}
+                          </small>
+                        </button>
+                        <SaveButton
+                          symbol={s.symbol}
+                          saved={saved.includes(s.symbol)}
+                          toggle={toggle}
+                        />
+                      </article>
+                    ))}
+                </div>
+              </section>
+            )}
             <div className="section-heading" id="overview">
               <div>
                 <div className="eyebrow">QUALIFYING OPPORTUNITIES</div>
@@ -1264,7 +1354,7 @@ export default function Home() {
                 <summary>{snapshot.errors.length} 檔本次取得失敗</summary>
                 <p>
                   {snapshot.errors.map((e) => e.symbol).join('、')}
-                  。保留先前狀態，未列為新機會。
+                  。保留可用的上次紀錄並標記待更新，未列為新機會。
                 </p>
               </details>
             )}

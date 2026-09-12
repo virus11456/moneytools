@@ -16,7 +16,7 @@ A transparent, rule-based US-stock research dashboard with daily setup transitio
 
 `public/data/daily.json` stores the latest scan, last valid observed state per symbol and today's transitions. `public/data/previous.json` preserves the preceding snapshot; Git commit history provides durable history. The initial scan and newly added symbols establish a baseline, not a new opportunity. Qualifying category changes count as new entries only when the price date or fiscal period also advances. Reruns preserve same-day events, the next Taipei day clears them, and a stale browser snapshot cannot show yesterday's events as today's. Failed/incomplete fetches do not reset known state. A method-version change rebuilds the baseline. No invented backtest or previous-day financial data is used.
 
-`.github/workflows/daily-scan.yml` starts daily at `23:15 UTC` (07:15 Asia/Taipei the next day), also supports manual dispatch, runs tests, refreshes a validated public S&P 500 constituent list, merges the editable `watchlist.json`, and scans the resulting `universe.json` with three bounded workers and one retry per failed request, and commits the snapshot back to `main`. GitHub schedules and Vercel builds can be delayed. A fully failed scan fails without overwriting the prior snapshot; partial failures are explicitly shown. The workflow has only repository contents write access and uses the built-in token. Vercel's Git integration deploys branch pushes; no extra paid data subscription is required. Deployment status should be checked after the first automated run.
+`.github/workflows/daily-scan.yml` starts daily at `23:15 UTC` (07:15 Asia/Taipei the next day), also supports manual dispatch, runs tests, refreshes a validated public S&P 500 constituent list, merges the editable `watchlist.json`, and scans the resulting `universe.json` sequentially with 1.5-second pacing and a 5-second pause every 25 requests, and commits the snapshot back to `main`. GitHub schedules and Vercel builds can be delayed. A fully failed scan fails without overwriting the prior snapshot; partial failures are explicitly shown. The workflow has only repository contents write access and uses the built-in token. Vercel's Git integration deploys branch pushes; no extra paid data subscription is required. Deployment status should be checked after the first automated run.
 
 ## Search and pages
 
@@ -44,6 +44,12 @@ pnpm build
 ## Vercel
 
 Import `virus11456/moneytools`, keep root directory `./`, framework Vite, `pnpm build`, and output `dist`. Python handlers under `api/` deploy beside the static frontend. No API key is required. The repository stays private; the deployed dashboard contains public market research data and no account or trading data.
+
+## Recovery and historical records
+
+Same-Taipei-day results fetched less than six hours ago can be reused only if their price date matches the latest expected completed weekday session and no fundamental checks are missing. Original timestamps remain unchanged. Remaining symbols are requested sequentially. A rate-limit response stops the whole pass, with 45/90-second cooldowns before subsequent passes; persistent limits stop further requests rather than hammering the provider. Only unresolved symbols are retried, at most three passes. `recovery` reports request/reuse/retry outcomes. Market holidays may cause extra fetches, never false freshness.
+
+`retainedStocks` holds dated previous records for unresolved symbols, recovered from the preceding snapshots if available. They are separate from `stocks`, coverage, qualifying totals and new-today events. A failure does not imply fundamental deterioration. The UI displays previously qualifying retained records in a clearly labeled pending-data section, and displays a historical-data notice when opening them. No old timestamp is rewritten to pretend the data is new. API-on-demand lookup remains subject to the provider's rate limits.
 
 ## Sources and limitations
 
