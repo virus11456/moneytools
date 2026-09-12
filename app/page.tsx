@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSavedStocks } from './useSavedStocks';
 import {
   Star,
@@ -532,6 +532,8 @@ export default function Home() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [q, setQ] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchEpoch = useRef(0);
   const [listQuery, setListQuery] = useState('');
   const [setupFilter, setSetupFilter] = useState('ALL');
   const [savedOnly, setSavedOnly] = useState(false);
@@ -595,6 +597,9 @@ export default function Home() {
     return () => ctrl.abort();
   }, [symbol, snapshot]);
   function go(s = '') {
+    searchEpoch.current += 1;
+    setSearching(false);
+    setShowSuggestions(false);
     window.history.pushState(
       {},
       '',
@@ -620,21 +625,44 @@ export default function Home() {
       go(local[0].symbol);
       return;
     }
+    const epoch = ++searchEpoch.current;
     setSearching(true);
+    setShowSuggestions(false);
     try {
       const r = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
       const d = await r.json();
+      if (epoch !== searchEpoch.current) return;
       if (!r.ok) throw Error(d.error);
       if (d.results.length === 1) go(d.results[0].symbol);
       else setResults(d.results);
     } catch (e: any) {
+      if (epoch !== searchEpoch.current) return;
       if (/^[A-Za-z]{1,6}(?:[.-][A-Za-z])?$/.test(query))
         go(query.toUpperCase().replace('.', '-'));
       else setError(e.message);
     } finally {
-      setSearching(false);
+      if (epoch === searchEpoch.current) setSearching(false);
     }
   }
+  const normalizedQuery = q.trim().toLowerCase().replaceAll('.', '-');
+  const localSuggestions = normalizedQuery
+    ? (snapshot?.stocks || [])
+        .filter((s) =>
+          `${s.symbol} ${s.name}`
+            .toLowerCase()
+            .replaceAll('.', '-')
+            .includes(normalizedQuery),
+        )
+        .sort((a, b) => {
+          const rank = (s: Stock) =>
+            s.symbol.toLowerCase() === normalizedQuery
+              ? 0
+              : s.symbol.toLowerCase().startsWith(normalizedQuery)
+                ? 1
+                : 2;
+          return rank(a) - rank(b) || a.symbol.localeCompare(b.symbol);
+        })
+    : [];
   const fresh = snapshot?.scanDate === today;
   const changes = fresh ? snapshot?.dailyChanges || [] : [];
   const newToday = changes.filter((e) =>
@@ -748,7 +776,20 @@ export default function Home() {
               aria-label="搜尋股票代號或公司名稱"
               placeholder="搜尋股票代號或公司名稱，例如 NVDA、Apple"
               value={q}
-              onChange={(e) => setQ(e.target.value)}
+              onChange={(e) => {
+                searchEpoch.current += 1;
+                setSearching(false);
+                setQ(e.target.value);
+                setResults(null);
+                setError('');
+                setShowSuggestions(true);
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setShowSuggestions(false);
+              }}
+              autoComplete="off"
+              aria-describedby="stock-search-help"
               maxLength={80}
             />
             <button disabled={searching} aria-label="搜尋">
@@ -760,6 +801,48 @@ export default function Home() {
             </button>
           </form>
         </section>
+        <p className="footnote" id="stock-search-help">
+          輸入即查已掃描股票；按搜尋可查其他美股。可用 Tab 選擇結果，Esc 收起。
+        </p>
+        {showSuggestions && normalizedQuery && (
+          <section
+            className="search-results local-suggestions"
+            aria-label="已掃描股票搜尋結果"
+          >
+            <div className="panel-title">
+              <h2>
+                已掃描股票{' '}
+                <span className="count">{localSuggestions.length}</span>
+              </h2>
+              <button
+                type="button"
+                className="text-button"
+                onClick={() => setShowSuggestions(false)}
+              >
+                收起結果
+              </button>
+            </div>
+            <p className="footnote" role="status">
+              {localSuggestions.length
+                ? `顯示前 ${Math.min(8, localSuggestions.length)} 筆，共 ${localSuggestions.length} 筆符合文字。狀態依最近掃描，並非即時報價。`
+                : '已掃描清單沒有相符公司；按搜尋可查詢其他美股。'}
+            </p>
+            {localSuggestions.slice(0, 8).map((s) => (
+              <button
+                type="button"
+                key={s.symbol}
+                onClick={() => go(s.symbol)}
+                aria-label={`開啟 ${s.symbol} ${s.name} 分析`}
+              >
+                <strong>{s.symbol}</strong>
+                <span>{s.name}</span>
+                <Badge status={s.status} />
+                <small>行情 {s.technical.priceDate || '未知'}</small>
+                <ArrowUpRight size={18} />
+              </button>
+            ))}
+          </section>
+        )}
         {results !== null && (
           <section className="search-results" aria-live="polite">
             <div className="panel-title">

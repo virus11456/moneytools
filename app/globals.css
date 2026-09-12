@@ -1559,3 +1559,16 @@ a:focus-visible {
   outline: 2px solid #294a3e;
   outline-offset: 3px;
 }
+
+.local-suggestions > button {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.local-suggestions > button small {
+  color: #65715f;
+  font-size: 12px;
+}
+.local-suggestions > button:focus-visible {
+  outline: 2px solid #294a3e;
+  outline-offset: 2px;
+}
