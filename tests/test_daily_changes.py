@@ -46,3 +46,33 @@ class DailyChangesTests(unittest.TestCase):
         before=scan([stock()]);added=scan([stock(dual=True,status='APPROACHING',price='2026-09-11')],before)
         upgraded=scan([stock(dual=True,status='READY',price='2026-09-12')],added)
         self.assertIn('DUAL_ADDED',upgraded['dailyChanges'][0]['kinds'])
+
+class ConditionChangeTests(unittest.TestCase):
+    def checked(self, passed, price, value=1):
+        s=stock(price=price)
+        s['technical']['checks']=[dict(key='alignment',label='均線多頭排列',status='pass' if passed else 'fail',value=value,detail='收盤價 > MA50 > MA200')]
+        return s
+
+    def test_condition_change_without_group_change(self):
+        before=scan([self.checked(False,'2026-09-10',10)])
+        after=scan([self.checked(True,'2026-09-11',12)],before)
+        event=after['dailyChanges'][0]
+        self.assertEqual(event['kinds'],['CONDITIONS_CHANGED'])
+        self.assertEqual(event['conditionChanges'][0]['before']['value'],10)
+        self.assertEqual(event['conditionChanges'][0]['after']['value'],12)
+
+    def test_missing_is_not_a_failed_condition(self):
+        s=self.checked(False,'2026-09-10');s['technical']['checks'][0]['status']='missing'
+        before=scan([s]);after=scan([self.checked(True,'2026-09-11')],before)
+        self.assertEqual(after['dailyChanges'],[])
+
+    def test_legacy_gate_without_checks_does_not_invent_delta(self):
+        before=scan([self.checked(False,'2026-09-10')]);before['gateObserved']['AAA'].pop('checks')
+        after=scan([self.checked(True,'2026-09-11')],before)
+        self.assertEqual(after['dailyChanges'],[])
+
+    def test_reverted_condition_clears_same_day_event(self):
+        before=scan([self.checked(False,'2026-09-09')])
+        after=scan([self.checked(True,'2026-09-10')],before)
+        reverted=scan([self.checked(False,'2026-09-11')],after)
+        self.assertEqual(reverted['dailyChanges'],[])

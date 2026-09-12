@@ -47,6 +47,7 @@ const changeLabels: Record<string, string> = {
   FUNDAMENTAL_LOST: '基本面不再符合',
   DUAL_LOST: '技術面不再符合',
   ENTRY_CHANGED: '進場狀態改變',
+  CONDITIONS_CHANGED: '條件明細改變',
 };
 const labels: Record<string, string> = {
   READY: '條件就緒',
@@ -119,6 +120,24 @@ function Badge({ status }: { status: string }) {
     </span>
   );
 }
+function conditionValue(c: any) {
+  return c.status === 'missing'
+    ? '缺漏'
+    : c.key === 'revenue' ||
+        c.key === 'ocf' ||
+        c.key === 'fcf' ||
+        c.key === 'liquidity'
+      ? `$${big(c.value)}`
+      : c.key === 'growth' || c.key === 'margin' || c.key === 'distance'
+        ? percent(c.value)
+        : c.key === 'volume' || c.key === 'rr'
+          ? `${c.value.toFixed(2)} 倍`
+          : c.key === 'ma50rise' || c.key === 'ma200rise'
+            ? `${c.value >= 0 ? '+' : ''}${money(c.value)} 差額`
+            : typeof c.value === 'number'
+              ? c.value.toFixed(2)
+              : '—';
+}
 function CheckList({ checks }: { checks: any[] }) {
   return (
     <div className="checks">
@@ -146,26 +165,7 @@ function CheckList({ checks }: { checks: any[] }) {
             </strong>
             <p>{c.detail}</p>
           </div>
-          <span className="check-value">
-            {c.status === 'missing'
-              ? '缺漏'
-              : c.key === 'revenue' ||
-                  c.key === 'ocf' ||
-                  c.key === 'fcf' ||
-                  c.key === 'liquidity'
-                ? `$${big(c.value)}`
-                : c.key === 'growth' ||
-                    c.key === 'margin' ||
-                    c.key === 'distance'
-                  ? percent(c.value)
-                  : c.key === 'volume' || c.key === 'rr'
-                    ? `${c.value.toFixed(2)} 倍`
-                    : c.key === 'ma50rise' || c.key === 'ma200rise'
-                      ? `${c.value >= 0 ? '+' : ''}${money(c.value)} 差額`
-                      : typeof c.value === 'number'
-                        ? c.value.toFixed(2)
-                        : '—'}
-          </span>
+          <span className="check-value">{conditionValue(c)}</span>
         </div>
       ))}
     </div>
@@ -1175,7 +1175,8 @@ export default function Home() {
                   <span>{today} · 台北</span>
                 </div>
                 <p className="subtitle">
-                  相較上次有效觀察；資料失敗或不足不當作條件失效。
+                  同一天以首次變化前的有效紀錄比較，列出目前仍成立的變化。資料失敗或不足不當作條件失效；只有新通過基本面或雙重條件才標記
+                  today。
                 </p>
                 {changes.length ? (
                   changes.map((e) => (
@@ -1194,6 +1195,37 @@ export default function Home() {
                         {e.previousStatus} → {e.status}
                       </span>
                       <small>{e.reasons.join(' · ')}</small>
+                      <small>
+                        行情比較：
+                        {e.comparisonPriceDate ||
+                          e.previousPriceDate ||
+                          '尚無紀錄'}{' '}
+                        → {e.priceDate || '尚無紀錄'} · 偵測時間{' '}
+                        {time(e.detectedAt)}
+                      </small>
+                      {e.conditionChanges?.length ? (
+                        <span className="condition-deltas">
+                          {e.conditionChanges.map((c: any) => (
+                            <span className="condition-delta" key={c.key}>
+                              <strong>{c.label}</strong>
+                              <span>
+                                {c.before.status === 'pass' ? '通過' : '未通過'}{' '}
+                                →{' '}
+                                {c.after.status === 'pass' ? '通過' : '未通過'}
+                              </span>
+                              <span>
+                                {conditionValue(c.before)} →{' '}
+                                {conditionValue(c.after)}
+                              </span>
+                              <small>{c.after.detail}</small>
+                            </span>
+                          ))}
+                        </span>
+                      ) : (
+                        <small>
+                          尚無可比較的逐條條件紀錄；點開查看目前完整條件。
+                        </small>
+                      )}
                     </button>
                   ))
                 ) : (
