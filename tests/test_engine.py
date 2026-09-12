@@ -26,3 +26,18 @@ class EngineTests(unittest.TestCase):
         s=analyze(r,today=date(2026,9,12));self.assertNotEqual(s['status'],'READY');self.assertIsNone(s['entry']['riskReward'])
     def test_invalidation_is_below_zone(self):
         s=analyze(record(),today=date(2026,9,12));self.assertLess(s['entry']['invalidation'],s['entry']['zoneLow'])
+    def ready_record(self):
+        r=record()
+        for i,b in enumerate(r['bars']):
+            p=80+i*.12 if i<170 else 100+(i-170)*.08
+            b.update(close=p,high=p+.8,low=p-.8)
+        r['bars'][210]['high']=130
+        r['bars'][-1].update(close=108,high=109,low=105.5,volume=3000000)
+        return r
+    def test_ready_requires_all_entry_gates(self):
+        r=self.ready_record();s=analyze(r,today=date(2026,9,12));self.assertEqual(s['status'],'READY');self.assertGreaterEqual(s['entry']['riskReward'],2)
+        r['bars'][-1]['volume']=1000000
+        self.assertEqual(analyze(r,today=date(2026,9,12))['status'],'APPROACHING')
+    def test_confirmed_breakout_outside_two_percent_not_ready(self):
+        r=self.ready_record();r['bars'][-1]['close']=108.5
+        s=analyze(r,today=date(2026,9,12));self.assertTrue(all(c['status']=='pass' for c in s['entry']['confirmation']));self.assertEqual(s['status'],'APPROACHING')
