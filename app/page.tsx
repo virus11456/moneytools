@@ -25,6 +25,18 @@ type Snapshot = {
   errors: any[];
   stocks: Stock[];
   newOpportunities: any[];
+  dailyChanges?: any[];
+  changeBaselineSymbols?: string[];
+  universeMeta?: any;
+  validCoverage?: number;
+  incompleteCoverage?: number;
+};
+const changeLabels: Record<string, string> = {
+  FUNDAMENTAL_ADDED: '新通過基本面',
+  DUAL_ADDED: '新通過雙重條件',
+  FUNDAMENTAL_LOST: '基本面不再符合',
+  DUAL_LOST: '技術面不再符合',
+  ENTRY_CHANGED: '進場狀態改變',
 };
 const labels: Record<string, string> = {
   READY: '條件就緒',
@@ -91,7 +103,16 @@ function CheckList({ checks }: { checks: any[] }) {
             )}
           </span>
           <div>
-            <strong>{c.label}</strong>
+            <strong>
+              {c.label}{' '}
+              <small className={`condition-status ${c.status}`}>
+                {c.status === 'pass'
+                  ? '通過'
+                  : c.status === 'missing'
+                    ? '資料不足'
+                    : '未通過'}
+              </small>
+            </strong>
             <p>{c.detail}</p>
           </div>
           <span className="check-value">
@@ -102,14 +123,76 @@ function CheckList({ checks }: { checks: any[] }) {
                   c.key === 'fcf' ||
                   c.key === 'liquidity'
                 ? `$${big(c.value)}`
-                : c.key === 'growth' || c.key === 'margin'
+                : c.key === 'growth' ||
+                    c.key === 'margin' ||
+                    c.key === 'distance'
                   ? percent(c.value)
-                  : typeof c.value === 'number'
-                    ? c.value.toFixed(2)
-                    : '—'}
+                  : c.key === 'volume' || c.key === 'rr'
+                    ? `${c.value.toFixed(2)} 倍`
+                    : typeof c.value === 'number'
+                      ? c.value.toFixed(2)
+                      : '—'}
           </span>
         </div>
       ))}
+    </div>
+  );
+}
+function StockConditions({ s }: { s: Stock }) {
+  const e = s.entry;
+  const entryChecks = [
+    {
+      key: 'distance',
+      label: '接近成交密集區',
+      value: e.distance,
+      status:
+        e.distance == null ? 'missing' : e.distance <= 0.02 ? 'pass' : 'fail',
+      detail: 'READY 距離 ≤ 2%；APPROACHING ≤ 5%',
+    },
+    {
+      key: 'rr',
+      label: '報酬／風險',
+      value: e.riskReward,
+      status:
+        e.riskReward == null ? 'missing' : e.riskReward >= 2 ? 'pass' : 'fail',
+      detail: 'READY 需 ≥ 2 倍；參考歷史高點，不含費用',
+    },
+    ...e.confirmation,
+  ];
+  return (
+    <div className="card-conditions">
+      <h4>
+        基本面 ·{' '}
+        {s.fundamentals.checks.filter((c: any) => c.status === 'pass').length} /{' '}
+        {s.fundamentals.checks.length} 條通過
+      </h4>
+      <CheckList checks={s.fundamentals.checks} />
+      <p className="condition-date">
+        財報年度截止 {s.financials.fiscalDate || '未知'} ·{' '}
+        {s.financialCurrency || '幣別未知'}
+      </p>
+      <h4>
+        技術趨勢 ·{' '}
+        {s.technical.checks.filter((c: any) => c.status === 'pass').length} /{' '}
+        {s.technical.checks.length} 條通過
+      </h4>
+      <CheckList checks={s.technical.checks} />
+      {!s.technical.available && <p>{s.technical.reason}</p>}
+      <p className="condition-date">
+        收盤 {money(s.technical.price)} · MA50 {money(s.technical.sma50)} ·
+        MA200 {money(s.technical.sma200)}
+        <br />
+        行情截止 {s.technical.priceDate || '未知'}
+      </p>
+      <h4>進場確認</h4>
+      <CheckList checks={entryChecks} />
+      <p className="condition-date">
+        觀察區 {money(e.zoneLow)}–{money(e.zoneHigh)} · 失效價{' '}
+        {money(e.invalidation)}
+      </p>
+      {s.status === 'INCOMPLETE' && (
+        <p className="notice">資料不足，暫不能確認完整條件。</p>
+      )}
     </div>
   );
 }
@@ -187,7 +270,7 @@ function Detail({ s, back }: { s: Stock; back: () => void }) {
   return (
     <>
       <button className="back" onClick={back}>
-        <ArrowLeft size={16} /> 回到符合條件標的
+        <ArrowLeft size={16} /> 回到基本面通過總覽
       </button>
       <div className="detail-heading">
         <div>
@@ -453,7 +536,12 @@ export default function Home() {
     }
   }
   const fresh = snapshot?.scanDate === today;
-  const newToday = fresh ? snapshot?.newOpportunities || [] : [];
+  const changes = fresh ? snapshot?.dailyChanges || [] : [];
+  const newToday = changes.filter((e) =>
+    e.kinds.some(
+      (k: string) => k === 'FUNDAMENTAL_ADDED' || k === 'DUAL_ADDED',
+    ),
+  );
   const statusOrder = ['READY', 'APPROACHING', 'QUALITY', 'INCOMPLETE'];
   const opportunities = (snapshot?.stocks || [])
     .filter((s) => s.fundamentals.passed)
@@ -579,8 +667,7 @@ export default function Home() {
               日平均成交金額 ≥ $10M。財報限 550 日內、行情限 5
               個日曆日內；金融、不動產及非美元財報不適用。沒有總分，也沒有價格預測。
               <br />
-              所有 READY、APPROACHING、QUALITY
-              標的都會列出。今日新增標記：相較上次有效觀察，新進入上述狀態（包括狀態切換），且行情日或財報期已更新；首筆觀察僅建立基準，失敗不重置狀態。
+              所有基本面符合標的都會列出。today：今日新通過基本面或雙重條件，且行情日或財報期已更新。進場狀態切換與失去條件另列於每日變化；首筆觀察僅建立基準，資料失敗不重置狀態。
             </p>
           </section>
         )}
@@ -604,7 +691,7 @@ export default function Home() {
               <div>
                 <div className="eyebrow">QUALIFYING OPPORTUNITIES</div>
                 <h2>
-                  符合條件標的{' '}
+                  基本面通過總覽{' '}
                   <span className="count">{opportunities.length}</span>
                 </h2>
               </div>
@@ -614,7 +701,7 @@ export default function Home() {
             </div>
             <p className="footnote">
               列出最近一次掃描中所有基本面符合的標的，分為雙重條件通過與技術面待確認兩區。
-              今日新增 {newToday.length} 檔；已符合的標的會持續保留。
+              符合者全部列出；今日新符合 {newToday.length} 檔，以 today 標記。
               {snapshot &&
                 !fresh &&
                 ' 目前顯示前次掃描結果，請留意下方資料時間。'}
@@ -649,27 +736,29 @@ export default function Home() {
                             event.status === s.status,
                         );
                         return (
-                          <button
-                            key={s.symbol}
-                            className="opportunity"
-                            onClick={() => go(s.symbol)}
-                          >
-                            <div>
-                              <Badge status={s.status} />
-                              <ArrowUpRight size={20} />
-                            </div>
-                            <h3>
-                              {s.symbol}
-                              <span>{s.name}</span>
-                            </h3>
-                            {added && (
-                              <p className="pass-text">
-                                今日新增 · {added.previousStatus} → {s.status}
-                              </p>
-                            )}
-                            <p>{s.reasons.join(' · ')}</p>
-                            <strong>{money(s.technical.price)}</strong>
-                          </button>
+                          <article key={s.symbol} className="opportunity">
+                            <button
+                              className="card-open"
+                              onClick={() => go(s.symbol)}
+                              aria-label={`分析 ${s.symbol} 詳情`}
+                            >
+                              <div>
+                                <Badge status={s.status} />
+                                {added && (
+                                  <span className="today-tag">today</span>
+                                )}
+                                <ArrowUpRight size={20} />
+                              </div>
+                              <h3>
+                                {s.symbol}
+                                <span>{s.name}</span>
+                              </h3>
+
+                              <p>{s.reasons.join(' · ')}</p>
+                              <strong>{money(s.technical.price)}</strong>
+                            </button>
+                            <StockConditions s={s} />
+                          </article>
                         );
                       })}
                     </div>
@@ -681,14 +770,75 @@ export default function Home() {
                 </section>
               ))
             ) : null}
+            {snapshot && (
+              <section className="panel daily-changes" aria-label="每日變化">
+                <div className="panel-title">
+                  <h2>
+                    每日變化 <span className="count">{changes.length}</span>
+                  </h2>
+                  <span>{today} · 台北</span>
+                </div>
+                <p className="subtitle">
+                  相較上次有效觀察；資料失敗或不足不當作條件失效。
+                </p>
+                {changes.length ? (
+                  changes.map((e) => (
+                    <button
+                      className="change-row"
+                      key={e.symbol}
+                      onClick={() => go(e.symbol)}
+                    >
+                      <strong>{e.symbol}</strong>
+                      <span>
+                        {e.kinds
+                          .map((k: string) => changeLabels[k])
+                          .join(' · ')}
+                      </span>
+                      <span>
+                        {e.previousStatus} → {e.status}
+                      </span>
+                      <small>{e.reasons.join(' · ')}</small>
+                    </button>
+                  ))
+                ) : (
+                  <p>
+                    {fresh
+                      ? '今天尚無已確認的條件變化，符合的標的仍全部列在上方。'
+                      : '尚未取得今天的掃描；上方保留最近一次符合清單。'}
+                  </p>
+                )}
+                {!!snapshot.changeBaselineSymbols?.length && (
+                  <p className="footnote">
+                    本次 {snapshot.changeBaselineSymbols.length}{' '}
+                    檔首次建立比較基準；符合者照常列出，但不推定它們今天才符合。
+                  </p>
+                )}
+              </section>
+            )}
             <div className="scan-meta">
               <span>
                 <RefreshCw size={14} /> 最近掃描 {time(snapshot?.generatedAt)}
               </span>
               <span>比較基準 {time(snapshot?.previousScanAt)}</span>
               <span>
-                {snapshot?.coverage || 0} / {snapshot?.universe.length || 40}{' '}
+                {snapshot?.coverage || 0} / {snapshot?.universe.length || 0}{' '}
                 檔取得資料
+              </span>
+              <span>
+                可完整判定{' '}
+                {snapshot?.validCoverage ??
+                  snapshot?.stocks.filter((s) => s.status !== 'INCOMPLETE')
+                    .length ??
+                  0}{' '}
+                檔
+              </span>
+              <span>
+                資料不足／不適用{' '}
+                {snapshot?.incompleteCoverage ??
+                  snapshot?.stocks.filter((s) => s.status === 'INCOMPLETE')
+                    .length ??
+                  0}{' '}
+                檔 · 取得失敗 {snapshot?.errors.length || 0} 檔
               </span>
             </div>
             <div className="watch-heading">
@@ -815,8 +965,13 @@ export default function Home() {
             來源：Yahoo Finance /
             yfinance（免費、非官方介面）。可能延遲、缺漏或限流。
             <br />
-            每日掃描 40
-            檔觀察池，並非全美股。年度財報有落後性；研究工具不等同買賣指令。
+            每日掃描 {snapshot?.universe.length || '—'} 檔：
+            {snapshot?.universeMeta?.name || '已儲存觀察池'}，並非全美股。
+            <br />
+            名單取得 {time(snapshot?.universeMeta?.retrievedAt)}
+            ；公開名單可能落後官方調整。{snapshot?.universeMeta?.refreshWarning}
+            <br />
+            年度財報有落後性；研究工具不等同買賣指令。
           </p>
           <a
             href="https://github.com/virus11456/moneytools"

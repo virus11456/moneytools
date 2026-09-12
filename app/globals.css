@@ -1175,3 +1175,100 @@ td,
     font-size: 12px;
   }
 }
+
+/* Explicit gate cards: every condition remains visible without opening a stock. */
+.opportunities {
+  align-items: start;
+}
+.card-open {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+.card-open > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-open > div > svg {
+  margin-left: auto;
+}
+.today-tag {
+  background: #d7efde;
+  color: #176139;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 3px 8px;
+  font-weight: 700;
+}
+.opportunity > .card-conditions {
+  display: block;
+}
+.card-conditions h4 {
+  font-size: 14px;
+  margin: 22px 0 8px;
+  border-top: 1px solid #e3e8de;
+  padding-top: 15px;
+}
+.card-conditions .check {
+  grid-template-columns: 19px minmax(0, 1fr) auto;
+  gap: 7px;
+  padding: 11px 0;
+  align-items: start;
+}
+.card-conditions .check strong {
+  font-size: 13px;
+}
+.card-conditions .check p,
+.card-conditions .condition-date {
+  font-size: 12px;
+  color: #65715f;
+  line-height: 1.6;
+}
+.card-conditions .check-value {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.condition-status {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: #866441;
+}
+.condition-status.pass {
+  color: #21765b;
+}
+.condition-status.missing {
+  color: #81776a;
+}
+.daily-changes {
+  margin-top: 30px;
+}
+.change-row {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 0;
+  text-align: left;
+  background: none;
+  border-bottom: 1px solid #e3e8de;
+  color: inherit;
+}
+.change-row small {
+  flex-basis: 100%;
+  color: #65715f;
+}
+@media (max-width: 1100px) {
+  .opportunities {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .opportunities {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
