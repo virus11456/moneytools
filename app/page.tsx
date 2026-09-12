@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { marketClock, type MarketCalendar } from './marketClock';
 import { PriceSparkline } from './PriceSparkline';
 import { DataIssues } from './DataIssues';
 import { useSavedStocks } from './useSavedStocks';
@@ -450,11 +451,20 @@ export default function Home() {
   const [filter, setFilter] = useState('ALL');
   const [showRules, setShowRules] = useState(false);
   const [today, setToday] = useState(day);
+  const [now, setNow] = useState(Date.now);
+  const [calendar, setCalendar] = useState<MarketCalendar | null>(null);
   useEffect(() => {
-    const id = setInterval(() => setToday(day()), 60000);
+    const id = setInterval(() => {
+      setToday(day());
+      setNow(Date.now());
+    }, 60000);
     return () => clearInterval(id);
   }, []);
   useEffect(() => {
+    fetch('/data/market-calendar.json')
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setCalendar)
+      .catch(() => setCalendar(null));
     fetch('/data/daily.json')
       .then((r) => {
         if (!r.ok) throw Error();
@@ -583,6 +593,7 @@ export default function Home() {
           return rank(a) - rank(b) || a.symbol.localeCompare(b.symbol);
         })
     : [];
+  const scheduleInfo = marketClock(calendar, now, snapshot?.generatedAt);
   const fresh = snapshot?.scanDate === today;
   const changes = fresh ? snapshot?.dailyChanges || [] : [];
   const newToday = changes.filter((e) =>
@@ -904,20 +915,43 @@ export default function Home() {
           <>
             {snapshot && (
               <section
-                className={`freshness-strip ${fresh && !snapshot.errors.length ? '' : 'stale'}`}
+                className={`freshness-strip ${(scheduleInfo ? !scheduleInfo.overdue : fresh) && !snapshot.errors.length ? '' : 'stale'}`}
                 aria-label="資料更新狀態"
               >
                 <div>
                   <Clock3 size={18} />
                   <strong>
-                    {fresh
-                      ? snapshot.errors.length
-                        ? '今日掃描：仍有資料待補'
-                        : '今日掃描已完成'
-                      : '目前為前次掃描'}
+                    {scheduleInfo
+                      ? scheduleInfo.label
+                      : fresh
+                        ? snapshot.errors.length
+                          ? '今日掃描：仍有資料待補'
+                          : '今日掃描已完成'
+                        : '目前為前次掃描'}
                   </strong>
                   <span>{time(snapshot.generatedAt)} · 台北</span>
                 </div>
+                <div className="market-clock-grid">
+                  <div>
+                    <span>下一次預計開始 · 台北</span>
+                    <strong>
+                      {scheduleInfo?.next
+                        ? time(scheduleInfo.next.scanAt)
+                        : '日曆待更新'}
+                    </strong>
+                  </div>
+                  <div>
+                    <span>最近已收盤交易日 · 美東</span>
+                    <strong>
+                      {scheduleInfo?.closed?.date || '尚無可用日曆'}
+                    </strong>
+                  </div>
+                </div>
+                {scheduleInfo?.overdue && (
+                  <p>
+                    尚未看到本次排程完成的結果，可能正在掃描、部署或延遲；目前保留上次資料。
+                  </p>
+                )}
                 <p>
                   取得 {snapshot.coverage} / {snapshot.universe.length} 檔 ·
                   資料不足／不適用{' '}
@@ -929,7 +963,8 @@ export default function Home() {
                   檔。行情為完整交易日日線，非即時報價。
                 </p>
                 <p className="footnote">
-                  依 NYSE 交易日曆，正常收盤後 75 分鐘啟動；台北夏令 05:15／冬令
+                  依 NYSE 交易日曆，正常收盤後 75 分鐘啟動；美國夏令期間台北
+                  05:15／冬令
                   06:15，提早收盤日提前。週末及休市日跳過，掃描與部署可能延遲。
                 </p>
                 {snapshot.recovery && (
@@ -940,7 +975,7 @@ export default function Home() {
                     檔。重用資料保留原始取得時間；不重新標記為新機會。
                   </p>
                 )}
-                {!fresh && (
+                {!fresh && !scheduleInfo && (
                   <p>符合清單保留最近一次結果；今天的新變化尚未確認。</p>
                 )}
               </section>
