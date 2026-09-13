@@ -23,3 +23,16 @@ class VerifiedFinancialsTests(unittest.TestCase):
             r=self.record();r['financials']['revenue']=v;self.assertEqual(supplement(r),r)
     def test_absent_fetch_date_not_applied(self):
         r=self.record();del r['fetchedAt'];self.assertEqual(supplement(r),r)
+
+    def test_airbnb_cashflow_matches_filing_reconciliation(self):
+        r=dict(symbol='ABNB',financialCurrency='USD',fetchedAt='2026-09-13T03:00:00Z',financials=dict(fiscalDate='2025-12-31',revenue=12_241_000_000,operatingCashflow=4_646_000_000,capitalExpenditure=None))
+        out=supplement(r);f=out['financials']
+        self.assertEqual(f['capitalExpenditure'],-33_000_000)
+        self.assertEqual(f['operatingCashflow']-abs(f['capitalExpenditure']),4_613_000_000)
+    def test_humana_uses_consolidated_not_segment_profit(self):
+        r=dict(symbol='HUM',financialCurrency='USD',fetchedAt='2026-09-13T03:00:00Z',financials=dict(fiscalDate='2025-12-31',revenue=129_664_000_000,operatingCashflow=921_000_000,operatingIncome=None))
+        self.assertEqual(supplement(r)['financials']['operatingIncome'],2_704_000_000)
+    def test_all_supplements_expire_on_new_fiscal_period(self):
+        for entry in REVIEWED:
+            r=dict(symbol=entry['symbol'],financialCurrency='USD',fetchedAt='2027-09-13T00:00:00Z',financials=dict(entry['anchors'],fiscalDate='2026-12-31'))
+            self.assertEqual(supplement(r),r)

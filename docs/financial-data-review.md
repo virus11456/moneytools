@@ -30,3 +30,25 @@ Reviewed supplements are maintained in `moneytools/verified_financials.py`.
 They are not a second automatic data feed. New periods require new review.
 The SEC Company Facts endpoint returned HTTP 403 during this review, so no
 live SEC API fallback was enabled. Screening thresholds remain unchanged.
+
+## Further primary-filing review (2026-09-13)
+
+- **ABNB**: the 2025 10-K's FCF reconciliation explicitly reports PPE purchases
+  of USD 33m and FCF of USD 4,613m. Added a missing-only capex supplement of
+  USD -33m, guarded by revenue and operating cash flow from the same table.
+  https://www.sec.gov/Archives/edgar/data/1559720/000155972026000004/abnb-20251231.htm
+- **HUM**: the 2025 consolidated income statement reports Income from operations
+  of USD 2,704m, not the insurance segment's USD 1,664m. Added the consolidated
+  amount with period/currency/revenue/cash-flow guards. The earlier decision to
+  leave this gap open is superseded by this filing review.
+  https://www.sec.gov/Archives/edgar/data/49071/000004907126000009/hum-20251231.htm
+- **ELV**: the filing defines operating gain as a separate management/segment
+  metric, with a reconciliation to pretax income. Do not substitute it for GAAP
+  operating income. Remains missing.
+  https://www.sec.gov/Archives/edgar/data/1156039/000115603926000013/elv-20251231.htm
+- **VEEV**: 2026 10-K still aggregates the investing outflow under Long-term
+  assets. No unambiguous PPE-only cash amount adopted in this review.
+  https://www.sec.gov/Archives/edgar/data/1393052/000139305226000014/veev-20260131.htm
+- **FTV/LNT**: remain unresolved under the existing consistent-scope rules;
+  continuing operations and construction/acquisition aggregates are not treated
+  as interchangeable with the missing field merely to increase coverage.

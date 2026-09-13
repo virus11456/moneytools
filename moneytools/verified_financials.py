@@ -14,6 +14,22 @@ REVIEWED = [{
     'reviewedAt': '2026-09-13',
     'note': '公司年報原表單位為百萬美元；757.6 × 1,000,000。僅補來源缺漏，不覆蓋已提供數值。',
     'anchors': {'revenue': 5_195_300_000, 'capitalExpenditure': -118_800_000},
+}, {
+    'symbol': 'ABNB', 'fiscalDate': '2025-12-31', 'currency': 'USD',
+    'field': 'capitalExpenditure', 'label': '資本支出', 'value': -33_000_000,
+    'sourceUrl': 'https://www.sec.gov/Archives/edgar/data/1559720/000155972026000004/abnb-20251231.htm',
+    'sourceTitle': 'Airbnb 2025 Form 10-K · Free Cash Flow Reconciliation',
+    'sourceRow': 'Purchases of property and equipment', 'reviewedAt': '2026-09-13',
+    'note': '公司年報原表單位為百萬美元；設備購置支出 33 × 1,000,000，以現金流出負號記錄。',
+    'anchors': {'revenue': 12_241_000_000, 'operatingCashflow': 4_646_000_000},
+}, {
+    'symbol': 'HUM', 'fiscalDate': '2025-12-31', 'currency': 'USD',
+    'field': 'operatingIncome', 'label': '營業利益', 'value': 2_704_000_000,
+    'sourceUrl': 'https://www.sec.gov/Archives/edgar/data/49071/000004907126000009/hum-20251231.htm',
+    'sourceTitle': 'Humana 2025 Form 10-K · Consolidated Statements of Income',
+    'sourceRow': 'Income from operations', 'reviewedAt': '2026-09-13',
+    'note': '合併損益表原表單位為百萬美元；2,704 × 1,000,000。採合併營業利益，非單一部門或調整後獲利。',
+    'anchors': {'revenue': 129_664_000_000, 'operatingCashflow': 921_000_000},
 }]
 
 
