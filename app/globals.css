@@ -2091,3 +2091,5 @@ a:focus-visible {
 .comparison-kind.gained { background: #e3efdf; color: #315639; }
 .comparison-kind.lost { background: #f7e6df; color: #85432d; }
 .comparison-kind.data, .comparison-kind.rule { background: #fbf1d9; color: #795d18; }
+
+.condition-gap { color: #345842; font-weight: 500; overflow-wrap: anywhere; }

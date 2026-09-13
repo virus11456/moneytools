@@ -1,3 +1,4 @@
+import { conditionGap, remainingConditions } from './conditionProgress';
 import { AnalysisSession, emptyAnalysis } from './analysisSession';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { marketClock, type MarketCalendar } from './marketClock';
@@ -152,7 +153,7 @@ function conditionValue(c: any) {
               ? c.value.toFixed(2)
               : '—';
 }
-function CheckList({ checks }: { checks: any[] }) {
+function CheckList({ checks, stock }: { checks: any[]; stock: any }) {
   return (
     <div className="checks">
       {checks.map((c) => (
@@ -178,6 +179,7 @@ function CheckList({ checks }: { checks: any[] }) {
               </small>
             </strong>
             <p>{c.detail}</p>
+            {conditionGap(c, stock) && <p className="condition-gap">{conditionGap(c, stock)}</p>}
           </div>
           <span className="check-value">{conditionValue(c)}</span>
         </div>
@@ -383,7 +385,7 @@ function Detail({
             <span>{s.fundamentals.passed ? '通過' : '尚未通過'}</span>
           </div>
           <p className="subtitle">用同一財年的數據驗證企業品質</p>
-          <CheckList checks={s.fundamentals.checks} />
+          <CheckList stock={s} checks={s.fundamentals.checks} />
           <p className="footnote">
             財報年度截止 {s.financials.fiscalDate || '未知'} · 比較{' '}
             {s.financials.previousFiscalDate || '未知'} ·{' '}
@@ -398,7 +400,7 @@ function Detail({
             <span>{t.passed ? '上升趨勢確認' : '等待確認'}</span>
           </div>
           <p className="subtitle">價格、均線方向與流動性共同確認</p>
-          <CheckList checks={t.checks} />
+          <CheckList stock={s} checks={t.checks} />
           {!t.available && <p>{t.reason}</p>}
           <p className="footnote">
             MA50 {money(t.sma50)} · MA200 {money(t.sma200)}
@@ -413,8 +415,10 @@ function Detail({
             </h2>
           </div>
           <p className="subtitle">READY 還需距離區間 ≤ 2%、報酬 / 風險 ≥ 2</p>
+          <p className="condition-gap">距離：{conditionGap({key:'distance', value:e.distance}, s)}</p>
+          <p className="condition-gap">報酬／風險：{conditionGap({key:'rr', value:e.riskReward}, s)}</p>
           {e.confirmation.length ? (
-            <CheckList checks={e.confirmation} />
+            <CheckList stock={s} checks={e.confirmation} />
           ) : (
             <div className="empty small">尚無可用的支撐成交密集區</div>
           )}
@@ -1550,6 +1554,7 @@ export default function Home() {
                                 行情 {s.technical.priceDate || '未知'} · 非即時
                               </p>
                             )}
+                            <p className="card-data-date">{remainingConditions(s)}</p>
                             <SaveButton
                               symbol={s.symbol}
                               saved={saved.includes(s.symbol)}
