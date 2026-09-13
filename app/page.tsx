@@ -488,6 +488,7 @@ export default function Home() {
   const [listQuery, setListQuery] = useState('');
   const [setupFilter, setSetupFilter] = useState('ALL');
   const [savedOnly, setSavedOnly] = useState(false);
+  const [todayOnly, setTodayOnly] = useState(false);
   const [sector, setSector] = useState('ALL');
   const [sort, setSort] = useState('status');
   const [results, setResults] = useState<any[] | null>(null);
@@ -642,6 +643,8 @@ export default function Home() {
         statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status) ||
         a.symbol.localeCompare(b.symbol),
     );
+  const todaySymbols = new Set(newToday.map((event) => event.symbol));
+  const todayQualifiedCount = opportunities.filter((s) => todaySymbols.has(s.symbol)).length;
   const sectors = [
     ...new Set(opportunities.map((s) => s.sector || 'Unknown')),
   ].sort();
@@ -651,6 +654,7 @@ export default function Home() {
         (sector === 'ALL' || s.sector === sector) &&
         (setupFilter === 'ALL' || s.status === setupFilter) &&
         (!savedOnly || saved.includes(s.symbol)) &&
+        (!todayOnly || todaySymbols.has(s.symbol)) &&
         `${s.symbol} ${s.name}`
           .toLowerCase()
           .includes(listQuery.trim().toLowerCase()),
@@ -677,7 +681,7 @@ export default function Home() {
     !!listQuery.trim() ||
     sector !== 'ALL' ||
     setupFilter !== 'ALL' ||
-    savedOnly;
+    savedOnly || todayOnly;
   const groups = [
     {
       key: 'dual',
@@ -1317,6 +1321,7 @@ export default function Home() {
                       setSort('status');
                       setSetupFilter('ALL');
                       setSavedOnly(false);
+                      setTodayOnly(false);
                     }}
                   >
                     顯示全部／重設
@@ -1327,6 +1332,10 @@ export default function Home() {
                   role="group"
                   aria-label="符合清單快速篩選"
                 >
+                  <label className="saved-only">
+                    <input type="checkbox" checked={todayOnly} onChange={(e) => setTodayOnly(e.target.checked)} />
+                    只看 today 新符合（{todayQualifiedCount}）
+                  </label>
                   <label className="saved-only">
                     <input
                       type="checkbox"
@@ -1367,6 +1376,14 @@ export default function Home() {
                   狀態旁數字為全部基本面通過標的的數量；可與搜尋、產業及自選交叉篩選。QUALITY
                   可能仍在等趨勢或回撤，請查看所屬分區及條件明細。
                 </p>
+                {todayOnly && (
+                  <p className="footnote" role="status">
+                    {!fresh ? '尚無今天的掃描紀錄，today 清單暫時為空；可取消篩選查看最近符合者。'
+                      : snapshot?.baseline ? '首筆掃描建立比較基準，不標記 today；可取消篩選查看全部符合者。'
+                      : todayQualifiedCount === 0 ? '今天尚無新符合標的；原本符合者仍保留，取消 today 篩選即可查看。'
+                      : '只顯示今日新通過基本面或雙重條件、且目前仍符合基本面的標的；可搭配其他篩選。'}
+                  </p>
+                )}
                 {savedOnly && (
                   <p className="footnote">
                     只顯示本次基本面通過的自選股票；其餘收藏仍保留在上方「我的自選清單」。
