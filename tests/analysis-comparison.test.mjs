@@ -35,3 +35,20 @@ assert.equal(comparisonValue({key:'reclaim',status:'pass',value:100}),'100 USD')
 assert.equal(comparisonValue({key:'margin',status:'missing',value:null}),'資料不足');
 assert.match(html,/新符合/);
 console.log('Comparison categories and units passed');
+
+const {entryComparison}=mod.exports;
+assert.equal(entryComparison({},{}).filter(r=>r.changed).length,0);
+const levels=entryComparison({zoneLow:100,zoneHigh:110,distance:0,riskReward:2},{zoneLow:105,zoneHigh:110,distance:.02,riskReward:null});
+assert.equal(levels.find(r=>r.key==='zoneLow').change,'上調');
+assert.equal(levels.find(r=>r.key==='zoneHigh').changed,false);
+assert.equal(levels.find(r=>r.key==='distance').before,'0 %');
+assert.equal(levels.find(r=>r.key==='distance').after,'2 %');
+assert.equal(levels.find(r=>r.key==='riskReward').change,'暫無數值');
+assert.equal(entryComparison({}, {riskReward:0}).find(r=>r.key==='riskReward').after,'0 : 1');
+assert.equal(entryComparison({zoneLow:100},{zoneLow:100+1e-10})[0].changed,false);
+assert.equal(entryComparison({zoneLow:NaN},{zoneLow:null})[0].changed,false);
+const entryHtml=renderToStaticMarkup(React.createElement(AnalysisComparison,{scan:base,current:{...base,entry:{zoneLow:100},status:'QUALITY',dualPass:true}}));
+assert.match(entryHtml,/1 項觀察數值變動/);
+assert.match(entryHtml,/兩階段符合 · 等待回撤/);
+assert.match(entryHtml,/無法估算/);
+console.log('Entry comparison: missing data, zero, precision and status labels passed');
