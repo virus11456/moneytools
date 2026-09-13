@@ -1,11 +1,13 @@
-# 待發布：條件摘要與門檻差距
+# 條件摘要與門檻差距：發布紀錄
 
-分支：batch/condition-progress
+2026-09-14 核對：PR #1 的 7 個變更路徑已完整合併至 main，提交 `59bc49b60813c49ab234e6c7c74317d306f14e61`。分支 `batch/condition-progress` 與該 main 的檔案內容相同，沒有遺漏或刪除既有路徑。
 
-包含首頁剩餘條件、個股門檻差距、進場距離與風險報酬差距、邊界測試。尚未合併 main 或上線。
+該提交的 GitHub CI（run 34767360014）全部通過；Vercel 正式部署 `5mCpw2yhbWFrPqTh56aUJyxJszqe` 已於台北 2026-09-14 00:02 完成，綁定 moneytools-eight.vercel.app。
 
-vercel.json 僅停用本分支的自動部署，main 部署維持原設定。
+後續審查修正：回測未通過時顯示實際上下緣差距，避免印出不成立的不等式；極小非零差距不四捨五入為 0；剩餘條件摘要也檢查 methodVersion。前日最高價未保存於每日資料時，保持資料不足，不由收盤價推算。
 
-本機 condition-progress.test.mjs 與型別檢查通過。完整本機建置受到 macOS dataless 套件影響，尚未確認完成；需確認 GitHub CI 與手機/iPad UI 後再發布。
+本次重新安裝鎖定套件後，本機完整建置（TypeScript + Vite）、7 組前端測試及 67 個 Python 測試均通過。首頁與個股頁已檢查手機 390×844、iPad 768×1024、桌面 1440×1000；today 篩選重設恢復 60 檔。隔離測試資料確認嚴格大於 0、2%／2:1 等值邊界、缺資料及非美元顯示。測試資料不發布。
 
-每天 Vercel 建置最多 20 次（包括資料更新和重試），須核對額度並集中發布；尚未設定自動硬性限制。合併 main 將觸發正式部署。
+以上後續修正的正式上線狀態須以對應 GitHub 提交及 Vercel Ready 部署為準，不能僅由此文件推定。
+
+每天 Vercel 建置最多 20 次（包括資料更新和重試），發布前須核對當日用量並集中發布；尚未設定自動硬性限制。main 推送會觸發正式部署；vercel.json 只停用 batch/condition-progress 分支的自動部署。
