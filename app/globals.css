@@ -2086,3 +2086,8 @@ a:focus-visible {
   margin: 0.4rem 0;
   overflow-wrap: anywhere;
 }
+
+.comparison-kind { display: inline-block; padding: 3px 8px; margin: 0 8px 6px 0; border-radius: 5px; font-size: 12px; background: #edf0eb; color: #43564b; }
+.comparison-kind.gained { background: #e3efdf; color: #315639; }
+.comparison-kind.lost { background: #f7e6df; color: #85432d; }
+.comparison-kind.data, .comparison-kind.rule { background: #fbf1d9; color: #795d18; }

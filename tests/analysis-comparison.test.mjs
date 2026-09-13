@@ -18,3 +18,20 @@ assert.equal(compareAnalysis({...base,fetchedAt:'2026-09-14T00:00:00Z'},after).n
 const removed=structuredClone(base);removed.technical.checks=[];assert.equal(compareAnalysis(base,removed).differences.length,1);
 const html=renderToStaticMarkup(React.createElement(AnalysisComparison,{scan:base,current:after}));assert.match(html,/財報期間不同/);assert.match(html,/1 條條件有差異/);assert.match(html,/不寫入每日變化/);
 console.log('Analysis comparison tests passed');
+
+const {changeKind,comparisonValue}=mod.exports;
+assert.equal(changeKind({status:'fail'},{status:'pass'}),'gained');
+assert.equal(changeKind({status:'pass'},{status:'fail'}),'lost');
+assert.equal(changeKind({status:'missing'},{status:'pass'}),'data');
+assert.equal(changeKind({status:'pass'},{status:'missing'}),'data');
+assert.equal(changeKind(null,{status:'pass'}),'data');
+assert.equal(changeKind({status:'fail',detail:'old'},{status:'pass',detail:'new'}),'rule');
+assert.equal(changeKind({status:'pass',value:1},{status:'pass',value:2}),'value');
+assert.equal(comparisonValue({key:'growth',status:'pass',value:.15}),'15%');
+assert.equal(comparisonValue({key:'volume',status:'pass',value:1.2}),'1.2 倍');
+assert.equal(comparisonValue({key:'ocf',status:'pass',value:100},'EUR'),'100 EUR');
+assert.match(comparisonValue({key:'ocf',status:'pass',value:100}),/幣別未知/);
+assert.equal(comparisonValue({key:'reclaim',status:'pass',value:100}),'100 USD');
+assert.equal(comparisonValue({key:'margin',status:'missing',value:null}),'資料不足');
+assert.match(html,/新符合/);
+console.log('Comparison categories and units passed');
