@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {dataQuality} from '../app/dataQuality.ts';
+import {dataQuality, financialReview} from '../app/dataQuality.ts';
 const base = {sector:'Technology', financialCurrency:'USD', technical:{available:true,checks:[]}, financials:{revenue:10,previousRevenue:8,operatingIncome:2,operatingCashflow:3,capitalExpenditure:0}, fundamentals:{checks:[]},warnings:[]};
 assert.equal(dataQuality({...base,sector:'Financial Services'}).kind,'INDUSTRY');
 assert.equal(dataQuality({...base,sector:'Real Estate',financialCurrency:'EUR'}).kind,'INDUSTRY');
@@ -13,3 +13,11 @@ assert.equal(dataQuality(missing).kind,'MISSING');
 assert.ok(dataQuality(missing).reasons.some(r=>r.includes('不視為零')));
 assert.ok(dataQuality({...missing,sector:'Financial Services'}).reasons.some(r=>r.includes('資本支出')));
 console.log('Data quality classification passed');
+
+const reviewed={...missing,symbol:'VEEV',financials:{...missing.financials,fiscalDate:'2026-01-31'}};
+assert.equal(dataQuality(reviewed).kind,'REVIEW');
+assert.ok(financialReview(reviewed).url.startsWith('https://www.sec.gov/'));
+assert.equal(financialReview({...reviewed,financials:{...reviewed.financials,capitalExpenditure:0}}),null);
+assert.equal(financialReview({...reviewed,financials:{...reviewed.financials,fiscalDate:'2027-01-31'}}),null);
+assert.equal(financialReview({...reviewed,financialCurrency:'EUR'}),null);
+assert.equal(dataQuality({...reviewed,warnings:['財報日期缺漏或超過 550 天']}).kind,'STALE');

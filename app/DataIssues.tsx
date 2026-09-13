@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { dataQuality, issueLabels } from './dataQuality';
+import { dataQuality, issueLabels, financialReview } from './dataQuality';
 
 type Props = { snapshot: any; go: (symbol: string) => void };
 export function DataIssues({ snapshot, go }: Props) {
@@ -24,7 +24,9 @@ export function DataIssues({ snapshot, go }: Props) {
         symbol: e.symbol,
         name: old?.name || '',
         kind: 'FAILED',
-        next: '下次掃描會再嘗試；也可點開個股重新查詢。',
+        next: old
+          ? '下次掃描會再嘗試；目前可查看上次紀錄。'
+          : '下次掃描會再嘗試；也可點開個股重新查詢。',
         stock: old,
         retained: !!old,
         reasons: [
@@ -125,6 +127,18 @@ export function DataIssues({ snapshot, go }: Props) {
               ))}
             </ul>
             <p className="footnote">下一步：{i.next}</p>
+            {i.stock && financialReview(i.stock) && (
+              <p className="footnote">
+                <a
+                  href={financialReview(i.stock)!.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  原始財報與核對依據 ↗
+                </a>{' '}
+                · 核對日期 2026-09-13
+              </p>
+            )}
             {i.stock && (
               <p className="footnote">
                 {i.retained ? '上次紀錄 · ' : ''}行情{' '}

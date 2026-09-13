@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { marketClock, type MarketCalendar } from './marketClock';
 import { PriceSparkline } from './PriceSparkline';
 import { DataIssues } from './DataIssues';
+import { FinancialReview } from './FinancialReview';
 import { usePublishedSnapshot } from './usePublishedSnapshot';
 import {
   ActivityHistory,
@@ -346,6 +347,7 @@ function Detail({
           </p>
         </section>
       </div>
+      <FinancialReview stock={s} />
       {!!s.financialSupplements?.length && (
         <details className="panel financial-sources">
           <summary>財報補值來源 · 已核對公司年報</summary>
