@@ -1,7 +1,7 @@
 {
   "name": "S&P 500 公開成分股名單＋原有觀察股",
   "source": "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
-  "retrievedAt": "2026-09-13T03:03:10.114022+00:00",
+  "retrievedAt": "2026-09-13T03:11:31.997628+00:00",
   "constituentCount": 503,
   "additionalCount": 1,
   "warning": "公開整理名單可能落後官方成分調整，並非全美股。"
