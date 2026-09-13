@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {conditionGap,remainingConditions} from '../app/conditionProgress.ts';
+const stock={methodVersion:'2.0.0',financialCurrency:'USD'};
+assert.match(conditionGap({key:'growth',value:.12,status:'fail'},stock),/3 個百分點/);
+assert.match(conditionGap({key:'margin',value:0,status:'fail'},stock),/必須大於/);
+assert.match(conditionGap({key:'ocf',value:0,status:'fail'},stock),/必須大於/);
+assert.match(conditionGap({key:'revenue',value:90000000,status:'fail'},stock),/10,000,000 USD/);
+assert.match(conditionGap({key:'revenue',value:90000000,status:'fail'},{...stock,financialCurrency:'EUR'}),/不直接比較/);
+assert.match(conditionGap({key:'growth',value:null,status:'missing'},stock),/資料不足/);
+assert.match(conditionGap({key:'growth',value:.12,status:'fail'},{...stock,methodVersion:'3'}),/本版本/);
+assert.match(remainingConditions({status:'INCOMPLETE'}),/資料待確認/);
+assert.match(remainingConditions({fundamentals:{passed:true},technical:{checks:[{status:'fail',label:'均線上升'}]}}),/技術面待確認 1 項/);
+assert.match(remainingConditions({status:'APPROACHING',fundamentals:{passed:true},technical:{checks:[]},entry:{distance:.03,riskReward:1,confirmation:[{status:'fail'}]}}),/3 項/);
+console.log('Condition progress boundaries and missing-data tests passed');
+assert.match(conditionGap({key:'distance',value:.03},stock),/1 個百分點/);
+assert.match(conditionGap({key:'distance',value:.02},stock),/範圍內/);
+assert.match(conditionGap({key:'rr',value:null},stock),/資料不足/);
+assert.match(conditionGap({key:'rr',value:2},stock),/已達/);

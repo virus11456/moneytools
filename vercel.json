@@ -29,5 +29,10 @@
       "source": "/stock/:symbol",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "batch/condition-progress": false
+    }
+  }
 }
