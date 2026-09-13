@@ -2039,3 +2039,25 @@ a:focus-visible {
     gap: 16px;
   }
 }
+
+.issue-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.issue-counts button {
+  border: 1px solid #d8dfd1;
+  border-radius: 8px;
+  padding: 0.65rem 0.8rem;
+  background: #fff;
+  color: #294638;
+  min-height: 44px;
+}
+.issue-counts button[aria-pressed='true'] {
+  background: #e4ecdd;
+  border-color: #294638;
+}
+.issue-counts strong {
+  margin-left: 0.5rem;
+}

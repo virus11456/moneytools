@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {dataQuality} from '../app/dataQuality.ts';
+const base = {sector:'Technology', financialCurrency:'USD', technical:{available:true,checks:[]}, financials:{revenue:10,previousRevenue:8,operatingIncome:2,operatingCashflow:3,capitalExpenditure:0}, fundamentals:{checks:[]},warnings:[]};
+assert.equal(dataQuality({...base,sector:'Financial Services'}).kind,'INDUSTRY');
+assert.equal(dataQuality({...base,sector:'Real Estate',financialCurrency:'EUR'}).kind,'INDUSTRY');
+assert.equal(dataQuality({...base,financialCurrency:null}).kind,'CURRENCY');
+assert.equal(dataQuality({...base,technical:{available:false},warnings:['行情不足或超過 5 個日曆日，暫不入選']}).kind,'HISTORY');
+assert.equal(dataQuality({...base,warnings:['財報日期缺漏或超過 550 天']}).kind,'STALE');
+assert.equal(dataQuality({...base,warnings:['營收成長超過 20%，需另查成長能否持續']}).kind,'OTHER');
+assert.ok(!dataQuality(base).reasons.some(r=>r.startsWith('資本支出')));
+const missing={...base,financials:{...base.financials,capitalExpenditure:null},fundamentals:{checks:[{label:'自由現金流',status:'missing'}]}};
+assert.equal(dataQuality(missing).kind,'MISSING');
+assert.ok(dataQuality(missing).reasons.some(r=>r.includes('不視為零')));
+assert.ok(dataQuality({...missing,sector:'Financial Services'}).reasons.some(r=>r.includes('資本支出')));
+console.log('Data quality classification passed');

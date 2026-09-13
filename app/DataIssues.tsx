@@ -1,17 +1,7 @@
 import { useState } from 'react';
+import { dataQuality, issueLabels } from './dataQuality';
 
 type Props = { snapshot: any; go: (symbol: string) => void };
-function missingReasons(stock: any): string[] {
-  const missing = [
-    ...(stock.fundamentals?.checks || []),
-    ...(stock.technical?.checks || []),
-  ]
-    .filter((c) => c.status === 'missing')
-    .map((c) => `${c.label}：資料缺漏`);
-  if (!stock.technical?.available)
-    missing.push(stock.technical?.reason || '歷史行情不足，無法計算趨勢');
-  return [...new Set([...missing, ...(stock.warnings || [])])] as string[];
-}
 export function DataIssues({ snapshot, go }: Props) {
   const [kind, setKind] = useState('ALL');
   const [query, setQuery] = useState('');
@@ -22,9 +12,8 @@ export function DataIssues({ snapshot, go }: Props) {
     ...incomplete.map((s: any) => ({
       symbol: s.symbol,
       name: s.name,
-      kind: 'INCOMPLETE',
+      ...dataQuality(s),
       stock: s,
-      reasons: missingReasons(s),
       retained: false,
     })),
     ...snapshot.errors.map((e: any) => {
@@ -35,6 +24,7 @@ export function DataIssues({ snapshot, go }: Props) {
         symbol: e.symbol,
         name: old?.name || '',
         kind: 'FAILED',
+        next: '下次掃描會再嘗試；也可點開個股重新查詢。',
         stock: old,
         retained: !!old,
         reasons: [
@@ -49,7 +39,14 @@ export function DataIssues({ snapshot, go }: Props) {
         ],
       };
     }),
-  ].filter(
+  ];
+  const counts = Object.fromEntries(
+    Object.keys(issueLabels).map((key) => [
+      key,
+      issues.filter((i) => i.kind === key).length,
+    ]),
+  );
+  const visible = issues.filter(
     (i) =>
       (kind === 'ALL' || i.kind === kind) &&
       `${i.symbol} ${i.name}`
@@ -59,12 +56,30 @@ export function DataIssues({ snapshot, go }: Props) {
   return (
     <details className="panel data-issues" id="data-issues">
       <summary>
-        資料檢查明細 · 不足／不適用 {incomplete.length} 檔 · 取得失敗{' '}
+        資料檢查明細 · 產業不適用 {counts.INDUSTRY} 檔 · 資料待確認{' '}
+        {incomplete.length - counts.INDUSTRY} 檔 · 取得失敗{' '}
         {snapshot.errors.length} 檔
       </summary>
       <p className="subtitle">
         資料不足與不適用不代表公司不好；取得失敗也不代表條件失效。以下列出缺漏項目及相關提醒，點開可查看完整分析。
       </p>
+      <p className="footnote">
+        每檔依主要原因計數一次；同時存在的其他缺漏會列在卡片中。分類依這次掃描資料，不代表公司品質差。
+      </p>
+      <div className="issue-counts">
+        {Object.entries(issueLabels)
+          .filter(([key]) => counts[key] > 0)
+          .map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              aria-pressed={kind === key}
+              onClick={() => setKind(kind === key ? 'ALL' : key)}
+            >
+              {label} <strong>{counts[key]}</strong>
+            </button>
+          ))}
+      </div>
       <div className="issue-controls">
         <label>
           搜尋問題股票
@@ -83,25 +98,24 @@ export function DataIssues({ snapshot, go }: Props) {
             onChange={(e) => setKind(e.target.value)}
           >
             <option value="ALL">全部問題</option>
-            <option value="INCOMPLETE">資料不足／不適用</option>
-            <option value="FAILED">取得失敗</option>
+            {Object.entries(issueLabels).map(([key, label]) => (
+              <option key={key} value={key}>
+                {label}（{counts[key]}）
+              </option>
+            ))}
           </select>
         </label>
       </div>
       <p className="footnote" role="status">
-        顯示 {issues.length} 檔 · 原始取得日期保留，不以本次掃描時間替代。
+        顯示 {visible.length} 檔 · 原始取得日期保留，不以本次掃描時間替代。
       </p>
       <div className="issue-grid">
-        {issues.map((i) => (
+        {visible.map((i) => (
           <article className="issue-card" key={i.symbol}>
             <h3>
               {i.symbol} <small>{i.name}</small>
             </h3>
-            <p className="retained-label">
-              {i.kind === 'FAILED'
-                ? '取得失敗 · 待補抓'
-                : '資料不足／規則不適用'}
-            </p>
+            <p className="retained-label">{issueLabels[i.kind]}</p>
             <ul>
               {(i.reasons.length
                 ? i.reasons
@@ -110,6 +124,7 @@ export function DataIssues({ snapshot, go }: Props) {
                 <li key={n}>{r}</li>
               ))}
             </ul>
+            <p className="footnote">下一步：{i.next}</p>
             {i.stock && (
               <p className="footnote">
                 {i.retained ? '上次紀錄 · ' : ''}行情{' '}
@@ -129,7 +144,7 @@ export function DataIssues({ snapshot, go }: Props) {
           </article>
         ))}
       </div>
-      {!issues.length && <p>此分類沒有符合搜尋的資料問題。</p>}
+      {!visible.length && <p>此分類沒有符合搜尋的資料問題。</p>}
     </details>
   );
 }
