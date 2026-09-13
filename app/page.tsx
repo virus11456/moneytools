@@ -1,3 +1,4 @@
+import { AnalysisSession, emptyAnalysis } from './analysisSession';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { marketClock, type MarketCalendar } from './marketClock';
 import { PriceSparkline } from './PriceSparkline';
@@ -468,8 +469,12 @@ export default function Home() {
   const { snapshot, refreshing, loadError, checkedAt, updateMessage, refresh } =
     usePublishedSnapshot<Snapshot>();
   const [symbol, setSymbol] = useState(route);
-  const [stock, setStock] = useState<Stock | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [analysis, setAnalysis] = useState(emptyAnalysis);
+  const analysisSession = useRef<AnalysisSession | null>(null);
+  if (!analysisSession.current)
+    analysisSession.current = new AnalysisSession(setAnalysis);
+  const stock = analysis.symbol === symbol ? analysis.stock : null;
+  const busy = analysis.symbol === symbol && analysis.busy;
   const [error, setError] = useState('');
   const [q, setQ] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -537,41 +542,12 @@ export default function Home() {
       .catch(() => setCalendar(null));
   }, [snapshot?.generatedAt]);
   useEffect(() => {
-    if (!symbol) {
-      setStock(null);
-      setError('');
-      return;
-    }
     const cached =
       snapshot?.stocks.find((s) => s.symbol === symbol) ||
       snapshot?.retainedStocks?.find((s) => s.symbol === symbol);
-    if (cached) {
-      setStock(cached);
-      setError('');
-      setBusy(false);
-      return;
-    }
-    const ctrl = new AbortController();
-    setBusy(true);
-    setError('');
-    setStock(null);
-    fetch(`/api/analyze?symbol=${encodeURIComponent(symbol)}`, {
-      signal: ctrl.signal,
-    })
-      .then(async (r) => {
-        const d = await r.json();
-        if (!r.ok) throw Error(d.error || '查詢失敗');
-        return d;
-      })
-      .then(setStock)
-      .catch((e) => {
-        if (e.name !== 'AbortError') setError(e.message);
-      })
-      .finally(() => {
-        if (!ctrl.signal.aborted) setBusy(false);
-      });
-    return () => ctrl.abort();
+    analysisSession.current!.open(symbol, cached);
   }, [symbol, snapshot]);
+  useEffect(() => () => analysisSession.current!.dispose(), []);
   useLayoutEffect(() => {
     window.scrollTo({
       top: symbol ? 0 : listScroll.current,
@@ -904,6 +880,33 @@ export default function Home() {
         )}
         {symbol ? (
           <>
+            <section className="publication-controls" aria-label="個股資料查詢">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => void analysisSession.current!.refresh()}
+              >
+                <RefreshCw size={16} className={busy ? 'spin' : ''} />
+                {busy ? '查詢中…' : '重新查詢此股票'}
+              </button>
+              <p className="footnote">
+                {stock
+                  ? analysis.source === 'query'
+                    ? '單次查詢結果'
+                    : '每日掃描紀錄'
+                  : '等待個股資料'}
+                {stock?.fetchedAt
+                  ? ` · 取得 ${time(stock.fetchedAt)}（台北）`
+                  : ''}
+                。單次查詢不改動首頁清單、today
+                標籤或每日變化；行情仍為完整交易日日線。
+              </p>
+              {analysis.symbol === symbol && analysis.error && (
+                <p className="notice" role="alert">
+                  {analysis.error}
+                </p>
+              )}
+            </section>
             {busy && (
               <div className="loading" role="status">
                 <RefreshCw className="spin" /> 正在取得 {symbol} 的行情與財報…
