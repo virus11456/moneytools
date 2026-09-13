@@ -346,6 +346,30 @@ function Detail({
           </p>
         </section>
       </div>
+      {!!s.financialSupplements?.length && (
+        <details className="panel financial-sources">
+          <summary>財報補值來源 · 已核對公司年報</summary>
+          <p className="footnote">
+            只補相同期間的缺漏欄位。若財報期間或核對數值改變，舊補值停止套用，需重新核對。
+          </p>
+          {s.financialSupplements.map((item: any) => (
+            <div key={item.field}>
+              <p>
+                <strong>
+                  {item.label}：{money(item.value, 0)}
+                </strong>{' '}
+                · 財報期 {item.fiscalDate}
+              </p>
+              <p className="footnote">
+                {item.note} 核對日期 {item.reviewedAt}。
+              </p>
+              <a href={item.sourceUrl} target="_blank" rel="noreferrer">
+                {item.sourceTitle} ↗
+              </a>
+            </div>
+          ))}
+        </details>
+      )}
       <div className="analysis-grid">
         <section className="panel">
           <div className="panel-title">

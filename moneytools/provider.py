@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import yfinance as yf
 from .engine import num
+from .verified_financials import supplement
 
 yf.set_tz_cache_location(os.path.join(tempfile.gettempdir(),'moneytools-yf'))
 
@@ -45,13 +46,13 @@ def fetch_record(symbol):
     def value(frame,row,col=period):
         return num(frame.loc[row,col]) if col is not None and row in frame.index and col in frame.columns else None
     equity=value(balance,'Stockholders Equity')
-    return dict(symbol=symbol,name=info.get('shortName',symbol),sector=info.get('sector','Unknown'),industry=info.get('industry','Unknown'),
+    return supplement(dict(symbol=symbol,name=info.get('shortName',symbol),sector=info.get('sector','Unknown'),industry=info.get('industry','Unknown'),
                 business=info.get('longBusinessSummary',''),currency=info.get('currency'),financialCurrency=info.get('financialCurrency'),
                 marketCap=num(info.get('marketCap')),exchange=info.get('exchange'),fetchedAt=datetime.now(ZoneInfo('UTC')).isoformat(),
                 source='Yahoo Finance / yfinance',financials=dict(fiscalDate=period.date().isoformat() if period is not None else None,
                 previousFiscalDate=previous.date().isoformat() if previous is not None else None,
                 revenue=value(income,'Total Revenue'),previousRevenue=value(income,'Total Revenue',previous),
                 operatingIncome=value(income,'Operating Income'),operatingCashflow=value(cash,'Operating Cash Flow'),
-                capitalExpenditure=value(cash,'Capital Expenditure'),netIncome=value(income,'Net Income'),equity=equity),bars=bars)
+                capitalExpenditure=value(cash,'Capital Expenditure'),netIncome=value(income,'Net Income'),equity=equity),bars=bars))
 
 def benchmark(): return history(yf.Ticker('SPY'))
