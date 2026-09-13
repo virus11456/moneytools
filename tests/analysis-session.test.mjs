@@ -22,3 +22,9 @@ pending[5].resolve({ok:false,json:async()=>({error:'限流'})});
 await new Promise(resolve=>setTimeout(resolve,0));
 assert.equal(session.state.stock.symbol,'CCC');assert.equal(session.state.busy,false);
 session.dispose();
+
+const bound=new AnalysisSession(()=>{},function() {
+  assert.equal(this,globalThis,'browser fetch must retain its global receiver');
+  return Promise.resolve({ok:true,json:async()=>row('DDD')});
+});
+bound.open('DDD',row('DDD'));await bound.refresh();assert.equal(bound.state.source,'query');bound.dispose();

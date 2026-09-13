@@ -24,7 +24,7 @@ export class AnalysisSession {
     request: typeof fetch = fetch,
   ) {
     this.emit = emit;
-    this.request = request;
+    this.request = request.bind(globalThis);
   }
   private update(patch: Partial<AnalysisState>) {
     this.state = { ...this.state, ...patch };
