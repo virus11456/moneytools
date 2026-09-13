@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { marketClock, type MarketCalendar } from './marketClock';
 import { PriceSparkline } from './PriceSparkline';
 import { DataIssues } from './DataIssues';
+import { AnalysisComparison } from './AnalysisComparison';
 import { FinancialReview } from './FinancialReview';
 import { usePublishedSnapshot } from './usePublishedSnapshot';
 import {
@@ -475,6 +476,9 @@ export default function Home() {
     analysisSession.current = new AnalysisSession(setAnalysis);
   const stock = analysis.symbol === symbol ? analysis.stock : null;
   const busy = analysis.symbol === symbol && analysis.busy;
+  const scanStock =
+    snapshot?.stocks.find((s) => s.symbol === symbol) ||
+    snapshot?.retainedStocks?.find((s) => s.symbol === symbol);
   const [error, setError] = useState('');
   const [q, setQ] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -889,6 +893,14 @@ export default function Home() {
                 <RefreshCw size={16} className={busy ? 'spin' : ''} />
                 {busy ? '查詢中…' : '重新查詢此股票'}
               </button>
+              {analysis.source === 'query' && scanStock && (
+                <button
+                  type="button"
+                  onClick={() => analysisSession.current!.showScan(scanStock)}
+                >
+                  切回每日紀錄
+                </button>
+              )}
               <p className="footnote">
                 {stock
                   ? analysis.source === 'query'
@@ -907,6 +919,9 @@ export default function Home() {
                 </p>
               )}
             </section>
+            {stock && analysis.source === 'query' && (
+              <AnalysisComparison scan={scanStock} current={stock} />
+            )}
             {busy && (
               <div className="loading" role="status">
                 <RefreshCw className="spin" /> 正在取得 {symbol} 的行情與財報…

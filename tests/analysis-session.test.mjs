@@ -28,3 +28,5 @@ const bound=new AnalysisSession(()=>{},function() {
   return Promise.resolve({ok:true,json:async()=>row('DDD')});
 });
 bound.open('DDD',row('DDD'));await bound.refresh();assert.equal(bound.state.source,'query');bound.dispose();
+bound.showScan(row('WRONG'));assert.equal(bound.state.source,'query');
+bound.showScan(row('DDD'));assert.equal(bound.state.source,'scan');assert.equal(bound.state.stock.symbol,'DDD');

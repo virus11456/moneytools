@@ -2061,3 +2061,28 @@ a:focus-visible {
 .issue-counts strong {
   margin-left: 0.5rem;
 }
+
+.comparison-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.comparison-metrics dt {
+  font-size: 0.8rem;
+  color: #74816f;
+}
+.comparison-metrics dd {
+  margin: 0.35rem 0 0;
+  overflow-wrap: anywhere;
+}
+.comparison-changes {
+  padding-left: 1.2rem;
+}
+.comparison-changes li {
+  margin: 1rem 0;
+}
+.comparison-changes p {
+  margin: 0.4rem 0;
+  overflow-wrap: anywhere;
+}

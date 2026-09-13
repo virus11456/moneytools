@@ -56,6 +56,11 @@ export class AnalysisSession {
     if (cached) this.update({ stock: cached, error: '', busy: false });
     else if (!this.state.stock) void this.refresh(false);
   }
+  showScan(cached: any) {
+    if (!cached || cached.symbol !== this.state.symbol) return;
+    this.dispose();
+    this.update({ stock: cached, source: 'scan', busy: false, error: '' });
+  }
   async refresh(force = true) {
     if (!this.state.symbol || this.controller) return;
     const symbol = this.state.symbol;
