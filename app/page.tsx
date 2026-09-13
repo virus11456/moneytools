@@ -3,6 +3,11 @@ import { marketClock, type MarketCalendar } from './marketClock';
 import { PriceSparkline } from './PriceSparkline';
 import { DataIssues } from './DataIssues';
 import { usePublishedSnapshot } from './usePublishedSnapshot';
+import {
+  ActivityHistory,
+  SavedActivity,
+  type ScanHistory,
+} from './ActivityHistory';
 import { useCardView } from './useCardView';
 import { useSavedStocks } from './useSavedStocks';
 import {
@@ -24,6 +29,7 @@ import {
 type Stock = any;
 type Snapshot = {
   generatedAt: string;
+  methodVersion: string;
   scanDate: string;
   baseline: boolean;
   previousScanAt?: string;
@@ -456,6 +462,7 @@ export default function Home() {
   const [today, setToday] = useState(day);
   const [now, setNow] = useState(Date.now);
   const [calendar, setCalendar] = useState<MarketCalendar | null>(null);
+  const [history, setHistory] = useState<ScanHistory | null>(null);
   useEffect(() => {
     const id = setInterval(() => {
       setToday(day());
@@ -475,6 +482,28 @@ export default function Home() {
     window.addEventListener('popstate', pop);
     return () => window.removeEventListener('popstate', pop);
   }, []);
+  useEffect(() => {
+    setHistory((current) =>
+      current?.methodVersion === snapshot?.methodVersion ? current : null,
+    );
+    const controller = new AbortController();
+    fetch('/data/history.json', {
+      cache: 'no-cache',
+      signal: controller.signal,
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((h) => {
+        if (
+          h?.version === 1 &&
+          h.methodVersion === snapshot?.methodVersion &&
+          Array.isArray(h.events) &&
+          Array.isArray(h.days)
+        )
+          setHistory(h);
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [snapshot?.generatedAt]);
   useEffect(() => {
     fetch('/data/market-calendar.json')
       .then((r) => (r.ok ? r.json() : null))
@@ -904,6 +933,16 @@ export default function Home() {
                 toggle={toggle}
               />
             )}
+            {stock && stock.symbol === symbol && (
+              <ActivityHistory
+                history={history}
+                symbols={[symbol]}
+                today={today}
+                go={(s) => {
+                  if (s !== symbol) go(s);
+                }}
+              />
+            )}
             {reviewSymbols.includes(symbol) &&
               stock &&
               stock.symbol === symbol && (
@@ -1018,6 +1057,16 @@ export default function Home() {
                   {storageError}
                 </p>
               )}
+              {!!saved.length && (
+                <SavedActivity
+                  saved={saved}
+                  changes={changes}
+                  fresh={fresh}
+                  stocks={snapshot?.stocks || []}
+                  errors={snapshot?.errors || []}
+                  go={go}
+                />
+              )}
               {saved.length ? (
                 <div className="saved-grid">
                   {saved.map((ticker) => {
@@ -1082,6 +1131,19 @@ export default function Home() {
                 收藏只儲存在此裝置的瀏覽器，不會跨裝置同步；清除網站資料會移除收藏。
               </p>
             </section>
+            {!!saved.length && (
+              <details className="saved-history">
+                <summary>自選近 30 天紀錄</summary>
+                <ActivityHistory
+                  history={history}
+                  symbols={saved}
+                  today={today}
+                  go={go}
+                  title="自選近期變化紀錄"
+                />
+              </details>
+            )}
+
             {!!snapshot?.retainedStocks?.filter((s) => s.fundamentals.passed)
               .length && (
               <section
