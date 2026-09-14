@@ -6,11 +6,11 @@
   "functions": {
     "api/analyze.py": {
       "maxDuration": 60,
-      "excludeFiles": "{node_modules/**,components/**,tests/**,app/**}"
+      "excludeFiles": "{node_modules/**,components/**,tests/**,app/**,public/**,dist/**,docs/**}"
     },
     "api/search.py": {
       "maxDuration": 30,
-      "excludeFiles": "{node_modules/**,components/**,tests/**,app/**}"
+      "excludeFiles": "{node_modules/**,components/**,tests/**,app/**,public/**,dist/**,docs/**}"
     }
   },
   "headers": [
@@ -45,3 +45,4 @@
     }
   }
 }
+
