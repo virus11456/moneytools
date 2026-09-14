@@ -6,8 +6,10 @@ import pandas_market_calendars as mcal
 
 
 def decision(now, event='schedule', scheduled_cron=''):
+    if event == 'workflow_dispatch':
+        return True, 'Manual refresh'
     if event != 'schedule':
-        return True, 'Manual or code-triggered refresh'
+        return False, f'Unsupported scan event: {event}'
     if now.tzinfo is None:
         raise ValueError('Timezone-aware time required')
     market_day = now.astimezone(ZoneInfo('America/New_York')).date()

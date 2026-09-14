@@ -36,3 +36,15 @@ class MarketScheduleTests(unittest.TestCase):
 
     def test_manual_refresh_still_available(self):
         self.assertTrue(decision(datetime.fromisoformat('2026-09-13T12:00:00+00:00'), event='workflow_dispatch')[0])
+
+    def test_code_release_cannot_start_scan(self):
+        now = datetime.fromisoformat('2026-09-14T21:15:00+00:00')
+        for event in ['push', 'pull_request', 'repository_dispatch', '']:
+            with self.subTest(event=event):
+                allowed, reason = decision(now, event=event, scheduled_cron='15 21 * * 1-5')
+                self.assertFalse(allowed)
+                self.assertIn('Unsupported scan event', reason)
+
+    def test_schedule_requires_aware_time(self):
+        with self.assertRaises(ValueError):
+            decision(datetime(2026, 9, 14, 21, 15), scheduled_cron='15 21 * * 1-5')

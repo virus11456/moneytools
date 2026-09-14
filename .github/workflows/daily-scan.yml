@@ -7,9 +7,7 @@ on:
     - cron: '15 21 * * 1-5'
     - cron: '15 22 * * 1-5'
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ['moneytools/**', 'scripts/**', 'watchlist.json', 'requirements.txt', 'requirements-schedule.txt', '.github/workflows/daily-scan.yml']
+  # Code releases use CI; refresh data only on the close schedule or manual dispatch.
 permissions:
   contents: write
 concurrency:
