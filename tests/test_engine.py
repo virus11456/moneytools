@@ -7,6 +7,25 @@ def record():
     bars=[dict(date=(end-timedelta(days=251-i)).isoformat(),close=80+i*.1,high=80+i*.1+.8,low=80+i*.1-.8,volume=2_000_000) for i in range(252)]
     return dict(symbol='TEST',financialCurrency='USD',sector='Technology',bars=bars,financials=dict(revenue=200e6,previousRevenue=150e6,operatingIncome=20e6,operatingCashflow=25e6,capitalExpenditure=-5e6,fiscalDate='2025-12-31'))
 class EngineTests(unittest.TestCase):
+    def test_reclaim_reference_preserves_exact_source_and_strict_boundary(self):
+        for difference,expected in [(0,'fail'),(-.01,'fail'),(.01,'pass')]:
+            with self.subTest(difference=difference):
+                r=record()
+                high=r['bars'][-2]['high']
+                r['bars'][-1]['close']=high+difference
+                s=analyze(r,today=date(2026,9,12))
+                c=next(c for c in s['entry']['confirmation'] if c['key']=='reclaim')
+                self.assertEqual(c['referenceValue'],high)
+                self.assertEqual(c['referenceDate'],r['bars'][-2]['date'])
+                self.assertEqual(c['status'],expected)
+    def test_reclaim_reference_uses_cleaned_previous_bar(self):
+        r=record()
+        r['bars'][-2]['volume']=None
+        s=analyze(r,today=date(2026,9,12))
+        c=next(c for c in s['entry']['confirmation'] if c['key']=='reclaim')
+        self.assertEqual(c['referenceDate'],r['bars'][-3]['date'])
+        self.assertEqual(c['referenceValue'],r['bars'][-3]['high'])
+        self.assertEqual(s['methodVersion'],'2.0.0')
     def test_quality_is_not_automatic_ready(self):
         s=analyze(record(),today=date(2026,9,12));self.assertTrue(s['fundamentals']['passed']);self.assertTrue(s['technical']['passed']);self.assertNotEqual(s['status'],'READY')
         self.assertEqual(s['financials']['freeCashflow'],20e6)

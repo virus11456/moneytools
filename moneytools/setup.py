@@ -26,7 +26,10 @@ def analyze(record, benchmark=None, today=None):
             invalid=low-.5*t['atr14']; target=max(b['high'] for b in bars[-64:-1])
             distance=max(0,p/high-1)
             rr=(target-p)/(p-invalid) if 0<invalid<p<target else None
-            confirmation=[check('reclaim','站回前日高點',p,p>bars[-2]['high'],'最新完整日線收盤高於前一交易日最高價'),
+            # Keep the exact comparison reference when daily chart bars are compacted.
+            reclaim=check('reclaim','站回前日高點',p,p>bars[-2]['high'],'最新完整日線收盤高於前一交易日最高價')
+            reclaim.update(referenceValue=bars[-2]['high'],referenceDate=bars[-2]['date'])
+            confirmation=[reclaim,
                           check('volume','成交量確認',volume_ratio,volume_ratio is not None and volume_ratio>=1,'最新日成交量 ≥ 前 20 日平均量'),
                           check('zone','回測支撐區',bars[-1]['low'],bars[-1]['low']<=high and p>=low,'最新日最低價觸及區間上緣，收盤守住下緣')]
             entry=dict(zoneLow=low,zoneHigh=high,invalidation=invalid,target=target,riskReward=rr,distance=distance,confirmation=confirmation,

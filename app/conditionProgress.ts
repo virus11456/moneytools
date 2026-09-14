@@ -35,8 +35,15 @@ export function conditionGap(c: any, stock: any): string {
     return `收盤 ${fmt(t.price)} / MA50 ${fmt(t.sma50)} / MA200 ${fmt(t.sma200)} USD；需依序嚴格遞減`;
   }
   if (c.key === 'reclaim') {
-    const bars=stock.technical?.bars || [], high=bars[bars.length-2]?.high;
-    return n(high) ? `前日高點 ${fmt(high)} USD；${v>high ? '已站回' : `距該價位 ${fmt(high-v)} USD，需收盤高於此價`}` : '前日高點資料不足';
+    const bars=stock.technical?.bars || [], previous=bars[bars.length-2];
+    // A saved reference must belong to the previous displayed trading day.
+    const saved = c.referenceValue !== undefined || c.referenceDate !== undefined;
+    const high = saved
+      ? (c.referenceDate && c.referenceDate === previous?.date ? c.referenceValue : undefined)
+      : previous?.high;
+    if (!n(high) || high <= 0) return '前日高點資料不足，暫不估算差距';
+    const day = previous?.date ? `（${previous.date}）` : '';
+    return `前日高點${day} ${fmt(high)} USD；${v>high ? `已站回，高於 ${fmt(v-high)} USD` : `距該價位 ${fmt(high-v)} USD，需收盤高於此價`}`;
   }
   return '';
 }

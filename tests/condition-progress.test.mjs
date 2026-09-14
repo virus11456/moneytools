@@ -52,4 +52,16 @@ const entryStock={...stock,status:'APPROACHING',fundamentals:{passed:true},techn
 assert.match(remainingConditions(entryStock),/待確認 1 項/);
 assert.match(remainingConditions({...entryStock,entry:{...entryStock.entry,distance:.020000001,riskReward:1.99999999}}),/待確認 3 項/);
 assert.match(remainingConditions({...entryStock,entry:{...entryStock.entry,riskReward:null}}),/報酬／風險待確認/);
+const compactStock={...stock,technical:{bars:[{date:'2026-09-10',close:99},{date:'2026-09-11',close:101}]}};
+const savedReclaim={key:'reclaim',value:101,status:'pass',referenceValue:100,referenceDate:'2026-09-10'};
+assert.match(conditionGap(savedReclaim,compactStock),/前日高點（2026-09-10） 100 USD；已站回，高於 1 USD/);
+assert.match(conditionGap({...savedReclaim,value:100,status:'fail'},compactStock),/距該價位 0 USD，需收盤高於/);
+assert.match(conditionGap({...savedReclaim,value:99,status:'fail'},compactStock),/距該價位 1 USD/);
+for(const referenceValue of [null,NaN,Infinity,0,-1,'100']) {
+  assert.match(conditionGap({...savedReclaim,referenceValue},compactStock),/資料不足/);
+}
+assert.match(conditionGap({...savedReclaim,referenceDate:'2026-09-09'},compactStock),/資料不足/);
+assert.match(conditionGap({...savedReclaim,referenceDate:undefined},compactStock),/資料不足/);
+assert.match(conditionGap(savedReclaim,{...stock,technical:{bars:[]}}),/資料不足/);
+assert.match(conditionGap({key:'reclaim',value:101},compactStock),/資料不足/);
 console.log('Condition progress boundaries and missing-data tests passed');
