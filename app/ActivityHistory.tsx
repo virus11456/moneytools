@@ -188,6 +188,13 @@ export function SavedActivity({
           ? '今日變化與上次有效紀錄比較。'
           : '尚未收到今天的掃描結果，暫不宣稱今日有新變化。'}
       </p>
+      {!!unknown.size && <p className="footnote">資料不足或取得失敗：{[...unknown].map(ticker =>
+        <button className="saved-event" key={ticker} onClick={() => go(ticker)}>{ticker} · 查看原因</button>
+      )}</p>}
+      {saved.filter(ticker => !items.some(s => s.symbol === ticker) && !errors.some(e => e.symbol === ticker)).length > 0 &&
+        <p className="footnote">本次沒有掃描結果：{saved.filter(ticker => !items.some(s => s.symbol === ticker) && !errors.some(e => e.symbol === ticker)).map(ticker =>
+          <button className="saved-event" key={ticker} onClick={() => go(ticker)}>{ticker} · 手動查詢</button>
+        )}單次查詢不會加入每日掃描。</p>}
       {events.map((e) => (
         <button
           className="saved-event"

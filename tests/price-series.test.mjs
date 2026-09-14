@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {priceSeries,visiblePriceZone} from '../app/priceSeries.ts';
+const bars=[{date:'2026-09-10',close:100},{date:'2026-09-11',close:110}];
+assert.equal(priceSeries(bars).bars,bars);
+assert.ok(Math.abs(priceSeries(bars).change-.1)<1e-12);
+assert.deepEqual(priceSeries(bars).chartLow,98);
+const flat=priceSeries(bars.map(b=>({...b,close:100})));
+assert.equal(flat.change,0);assert.ok(flat.chartHigh>flat.chartLow);
+for(const invalid of [null,{},[],bars.slice(0,1),[null,bars[1]],bars.toReversed(),[bars[0],bars[0]]]) assert.equal(priceSeries(invalid),null);
+for(const close of [null,0,-1,NaN,Infinity,'100',{},Number.MAX_VALUE]) assert.equal(priceSeries([bars[0],{...bars[1],close}]),null);
+for(const date of ['2026-02-30','invalid','2026-09-10',null]) assert.equal(priceSeries([bars[0],{...bars[1],date}]),null);
+assert.deepEqual(visiblePriceZone(95,105,98,112),{low:98,high:105});
+assert.deepEqual(visiblePriceZone(100,120,98,112),{low:100,high:112});
+for(const [low,high] of [[100,null],[null,100],[110,100],[0,100],[NaN,100],[100,Infinity],[120,130],[50,60]]) assert.equal(visiblePriceZone(low,high,98,112),null);
+console.log('Price series: insufficient, missing, flat, ordered dates and visible zone boundaries passed');

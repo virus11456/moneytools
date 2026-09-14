@@ -30,9 +30,12 @@ class ScanEvidenceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / 'universe.json').write_text('["TEST"]')
-            with patch.object(scan, 'ROOT', root), patch.object(scan, 'analyze', return_value=result), patch.object(scan.time, 'sleep'), contextlib.redirect_stdout(io.StringIO()):
+            with patch.dict('os.environ', {'GITHUB_ACTIONS':'true','GITHUB_REPOSITORY':'virus11456/moneytools','GITHUB_EVENT_NAME':'workflow_dispatch','GITHUB_RUN_ID':'123','GITHUB_RUN_ATTEMPT':'1'}, clear=True), patch.object(scan, 'ROOT', root), patch.object(scan, 'analyze', return_value=result), patch.object(scan.time, 'sleep'), contextlib.redirect_stdout(io.StringIO()):
                 scan.run()
             published = json.loads((root / 'public/data/daily.json').read_text())
+            self.assertEqual(published['scanProvenance']['trigger'], 'manual')
+            self.assertEqual(published['scanProvenance']['runId'], '123')
+            self.assertLessEqual(published['scanProvenance']['startedAt'], published['generatedAt'])
             stock = published['stocks'][0]
             self.assertEqual(next(c for c in stock['entry']['confirmation'] if c['key'] == 'reclaim'), reference)
             self.assertEqual(stock['technical']['bars'][-2]['date'], reference['referenceDate'])
@@ -40,3 +43,12 @@ class ScanEvidenceTests(unittest.TestCase):
             self.assertEqual(stock['status'], result['status'])
             self.assertEqual(stock['fetchedAt'], '2026-09-12T00:00:00+00:00')
             self.assertEqual(published['newOpportunities'], [])
+            with patch.dict('os.environ', {'GITHUB_ACTIONS':'true','GITHUB_REPOSITORY':'virus11456/moneytools','GITHUB_EVENT_NAME':'schedule','GITHUB_RUN_ID':'456','GITHUB_RUN_ATTEMPT':'1'}, clear=True), patch.object(scan, 'ROOT', root), patch.object(scan, 'analyze', return_value=result), patch.object(scan.time, 'sleep'), contextlib.redirect_stdout(io.StringIO()):
+                scan.run()
+            current = json.loads((root / 'public/data/daily.json').read_text())
+            archived = json.loads((root / 'public/data/previous.json').read_text())
+            self.assertEqual(current['scanProvenance']['trigger'], 'scheduled')
+            self.assertEqual(current['scanProvenance']['runId'], '456')
+            self.assertEqual(archived['scanProvenance'], published['scanProvenance'])
+            self.assertEqual(current['stocks'][0]['fetchedAt'], published['stocks'][0]['fetchedAt'])
+            self.assertEqual(current['newOpportunities'], [])

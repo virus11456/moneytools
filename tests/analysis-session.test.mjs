@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {AnalysisSession} from '../app/analysisSession.ts';
-const row=(symbol,date='2026-09-13T03:00:00Z')=>({symbol,fetchedAt:date,status:'WAIT',fundamentals:{},technical:{},entry:{},reasons:[]});
+const row=(symbol,date='2026-09-13T03:00:00Z')=>({symbol,fetchedAt:date,status:'WAIT',fundamentals:{passed:false,checks:[]},technical:{passed:false,checks:[],bars:[]},financials:{},entry:{confirmation:[]},reasons:[],warnings:[]});
 const pending=[];
 const session=new AnalysisSession(()=>{},(url,options)=>new Promise(resolve=>pending.push({url,options,resolve})));
 session.open('AAA',row('AAA'));assert.equal(pending.length,0);
@@ -30,3 +30,18 @@ const bound=new AnalysisSession(()=>{},function() {
 bound.open('DDD',row('DDD'));await bound.refresh();assert.equal(bound.state.source,'query');bound.dispose();
 bound.showScan(row('WRONG'));assert.equal(bound.state.source,'query');
 bound.showScan(row('DDD'));assert.equal(bound.state.source,'scan');assert.equal(bound.state.stock.symbol,'DDD');
+
+for (const payload of [null, {...row('EEE'), warnings: null}, {...row('EEE'), technical: {passed:'false',checks:[],bars:[]}}, {...row('EEE'), fetchedAt:'invalid'}]) {
+  const old=row('EEE');
+  const check=new AnalysisSession(()=>{},async()=>({ok:true,json:async()=>payload}));
+  check.open('EEE',old);await check.refresh();
+  assert.equal(check.state.stock,old);assert.equal(check.state.source,'scan');assert.match(check.state.error,/格式不完整/);check.dispose();
+}
+for (const [response, expected] of [
+  [{ok:false,status:429,json:async()=>{throw new SyntaxError('HTML')}}, /次數過多/],
+  [{ok:false,status:503,json:async()=>({error:'internal secret'})}, /暫時無法回應/],
+  [{ok:true,json:async()=>{throw new SyntaxError('Unexpected token')}}, /格式錯誤/],
+]) {
+  const check=new AnalysisSession(()=>{},async()=>response);const old=row('EEE');
+  check.open('EEE',old);await check.refresh();assert.equal(check.state.stock,old);assert.match(check.state.error,expected);assert.doesNotMatch(check.state.error,/HTML|secret|Unexpected/);check.dispose();
+}

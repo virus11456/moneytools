@@ -1,3 +1,5 @@
+// @ts-ignore Node's direct TypeScript tests require an explicit extension.
+import { validStock, timestamp } from './publishedSnapshot.ts';
 export type AnalysisState = {
   symbol: string;
   stock: any;
@@ -78,19 +80,16 @@ export class AnalysisSession {
         `/api/analyze?symbol=${encodeURIComponent(symbol)}${force ? '&refresh=1' : ''}`,
         { signal: controller.signal, cache: force ? 'no-store' : 'default' },
       );
+      if (!response.ok) {
+        const messages: Record<number, string> = {
+          400: '股票代號格式不正確',
+          422: '此股票目前沒有足夠的來源資料',
+          429: '來源查詢次數過多，請稍後再試',
+        };
+        throw Error(messages[response.status] || '來源暫時無法回應');
+      }
       const incoming = await response.json();
-      if (!response.ok) throw Error(incoming.error || '來源暫時無法回應');
-      if (
-        incoming.symbol !== symbol ||
-        !incoming.fundamentals ||
-        !incoming.technical ||
-        !incoming.entry ||
-        !Array.isArray(incoming.reasons) ||
-        !['READY', 'APPROACHING', 'QUALITY', 'WAIT', 'INCOMPLETE'].includes(
-          incoming.status,
-        ) ||
-        !Number.isFinite(Date.parse(incoming.fetchedAt))
-      )
+      if (!validStock(incoming) || incoming.symbol !== symbol || !timestamp(incoming.fetchedAt))
         throw Error('來源回傳格式不完整');
       if (epoch !== this.epoch || controller.signal.aborted) return;
       if (
@@ -103,9 +102,14 @@ export class AnalysisSession {
       if (epoch !== this.epoch) return;
       const message = timedOut
         ? '查詢逾時，請稍後再試'
-        : error instanceof Error
-          ? error.message
-          : '查詢失敗';
+        : error instanceof SyntaxError
+          ? '來源回傳格式錯誤'
+          : error instanceof Error && [
+              '股票代號格式不正確', '此股票目前沒有足夠的來源資料',
+              '來源查詢次數過多，請稍後再試', '來源暫時無法回應',
+              '來源回傳格式不完整', '回傳資料比目前紀錄更舊',
+            ].includes(error.message)
+            ? error.message : '查詢連線失敗';
       this.update({
         error:
           message +

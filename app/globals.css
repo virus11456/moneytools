@@ -2093,3 +2093,24 @@ a:focus-visible {
 .comparison-kind.data, .comparison-kind.rule { background: #fbf1d9; color: #795d18; }
 
 .condition-gap { color: #345842; font-weight: 500; overflow-wrap: anywhere; }
+
+.scan-evidence a {
+  color: #315442;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+.scan-evidence a svg { display: inline; vertical-align: middle; margin-left: 3px; }
+.scan-evidence a:focus-visible { outline: 2px solid #315442; outline-offset: 3px; }
+
+.overview-summary { margin-block: 20px; padding: 20px; }
+.summary-counts { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-block: 16px; }
+.summary-counts a { color: inherit; text-decoration: none; border: 1px solid #d9e2e7; border-radius: 12px; padding: 14px; }
+.summary-counts strong { display: block; font-size: 1.4rem; margin-top: 6px; }
+.overview-summary summary { cursor: pointer; padding-block: 12px; }
+.sector-summary { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 10px; }
+.sector-summary button { background: transparent; color: inherit; border: 1px solid #d9e2e7; border-radius: 10px; padding: 12px; text-align: left; cursor: pointer; min-height: 48px; }
+.sector-summary button[aria-pressed="true"] { border-color: #087f74; background: #e7f5f0; color: #17433b; }
+.sector-summary span,.sector-summary strong,.sector-summary small { display: block; }
+.summary-counts a:focus-visible,.sector-summary button:focus-visible { outline: 3px solid #087f74; outline-offset: 3px; }
+@media(max-width: 600px) { .summary-counts { grid-template-columns: 1fr; } .overview-summary { padding: 14px; } }

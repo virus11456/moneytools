@@ -2,7 +2,7 @@
 import sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-import json,time
+import json,time,os
 from update_universe import refresh
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -12,13 +12,15 @@ from moneytools.engine import RULES
 from moneytools.state import transition, daily_changes
 from moneytools.history import append_history
 from moneytools.recovery import collect_with_retries, reusable, retain_failed
+from moneytools.scan_provenance import scan_provenance
 ROOT=Path(__file__).resolve().parents[1]
 def run():
     target=ROOT/'public/data/daily.json'
     previous=json.loads(target.read_text()) if target.exists() else {}
+    started=datetime.now(ZoneInfo('UTC')).isoformat()
+    provenance=scan_provenance(os.environ,started)
     universe_meta=refresh()
     symbols=json.loads((ROOT/'universe.json').read_text()); results=[]; errors=[]
-    started=datetime.now(ZoneInfo('UTC')).isoformat()
     reused=reusable(previous,symbols,started)
     reused_symbols={s['symbol'] for s in reused}
     pending=[s for s in symbols if s not in reused_symbols]
@@ -38,7 +40,7 @@ def run():
     retained=retain_failed(previous,archive,errors,symbols,generated)
     state=transition(previous,results,errors,generated)
     changes=daily_changes(previous,results,errors,generated)
-    payload=dict(generatedAt=generated,schedule='NYSE 交易日收盤後 75 分鐘啟動；依夏令時間及提早收盤調整，排程及部署可能延遲',market='US',
+    payload=dict(generatedAt=generated,scanProvenance=provenance,schedule='NYSE 交易日收盤後 75 分鐘啟動；依夏令時間及提早收盤調整，排程及部署可能延遲',market='US',
         retainedStocks=retained,recovery=recovery,universe=symbols,universeMeta=universe_meta,coverage=len(results),validCoverage=sum(s['status']!='INCOMPLETE' for s in results),incompleteCoverage=sum(s['status']=='INCOMPLETE' for s in results),errors=errors,rules=RULES,stocks=results,source='Yahoo Finance / yfinance',methodVersion=VERSION,**state,**changes)
     history_path=target.parent/'history.json'
     history=json.loads(history_path.read_text()) if history_path.exists() else {}

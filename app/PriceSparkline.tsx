@@ -1,24 +1,16 @@
-type Bar = { date: string; close: number };
+import { priceSeries, type PriceBar } from './priceSeries';
 export function PriceSparkline({
   symbol,
   bars,
 }: {
   symbol: string;
-  bars?: Bar[];
+  bars?: PriceBar[];
 }) {
-  const recent = (bars || []).slice(-30);
-  if (
-    recent.length < 2 ||
-    recent.some((b) => !Number.isFinite(b.close) || b.close <= 0)
-  ) {
-    return <span className="spark-unavailable">近期走勢資料不足</span>;
-  }
+  const series = priceSeries(Array.isArray(bars) ? bars.slice(-30) : null);
+  if (!series) return <span className="spark-unavailable">近期走勢資料不足</span>;
+  const {bars: recent, change, low, high} = series;
   const first = recent[0];
   const last = recent[recent.length - 1];
-  const change = last.close / first.close - 1;
-  const prices = recent.map((b) => b.close);
-  const low = Math.min(...prices);
-  const high = Math.max(...prices);
   const y = (price: number) =>
     high === low ? 28 : 50 - ((price - low) / (high - low)) * 44;
   const points = recent

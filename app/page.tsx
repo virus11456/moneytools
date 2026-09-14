@@ -1,3 +1,7 @@
+import { OverviewSummary } from './OverviewSummary';
+import { priceSeries, visiblePriceZone } from './priceSeries';
+import { scanDuration } from './scanTiming';
+import { scanProvenanceView } from './scanProvenance';
 import { conditionGap, remainingConditions } from './conditionProgress';
 import { AnalysisSession, emptyAnalysis } from './analysisSession';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -33,6 +37,7 @@ import {
 type Stock = any;
 type Snapshot = {
   generatedAt: string;
+  scanProvenance?: { trigger?: string; startedAt?: string; runId?: string; runAttempt?: string };
   methodVersion: string;
   scanDate: string;
   baseline: boolean;
@@ -188,11 +193,10 @@ function CheckList({ checks, stock }: { checks: any[]; stock: any }) {
   );
 }
 function PriceChart({ s }: { s: Stock }) {
-  const b = s.technical.bars || [];
-  if (!b.length) return <div className="empty">尚無足夠行情繪圖</div>;
-  const values = b.map((x: any) => x.close);
-  const lo = Math.min(...values) * 0.98,
-    hi = Math.max(...values) * 1.02;
+  const series = priceSeries(s.technical.bars);
+  if (!series) return <div className="empty">行情不足或不完整，至少需要兩個有效交易日才能繪圖</div>;
+  const { bars: b, chartLow: lo, chartHigh: hi } = series;
+  const zone = visiblePriceZone(s.entry.zoneLow, s.entry.zoneHigh, lo, hi);
   const y = (v: number) => 220 - ((v - lo) / (hi - lo)) * 190;
   const points = b
     .map((x: any, i: number) => `${(i / (b.length - 1)) * 760},${y(x.close)}`)
@@ -225,12 +229,12 @@ function PriceChart({ s }: { s: Stock }) {
             </text>
           </g>
         ))}
-        {s.entry.zoneLow && (
+        {zone && (
           <rect
             x="0"
             width="760"
-            y={y(s.entry.zoneHigh)}
-            height={Math.max(2, y(s.entry.zoneLow) - y(s.entry.zoneHigh))}
+            y={y(zone.high)}
+            height={Math.max(2, y(zone.low) - y(zone.high))}
             fill="#c9aa50"
             opacity=".24"
           />
@@ -250,7 +254,7 @@ function PriceChart({ s }: { s: Stock }) {
         </text>
       </svg>
       <span className="chart-note">
-        <i /> 收盤價 <b /> 日線近似成交密集區
+        <i /> 收盤價 {zone && <><b /> 日線近似成交密集區（圖內範圍）</>}
       </span>
     </div>
   );
@@ -632,6 +636,8 @@ export default function Home() {
         })
     : [];
   const scheduleInfo = marketClock(calendar, now, snapshot?.generatedAt);
+  const scanSource = scanProvenanceView(snapshot?.scanProvenance);
+  const scanElapsed = scanDuration(snapshot?.scanProvenance?.startedAt, snapshot?.generatedAt);
   const fresh = snapshot?.scanDate === today;
   const changes = fresh ? snapshot?.dailyChanges || [] : [];
   const newToday = changes.filter((e) =>
@@ -650,12 +656,12 @@ export default function Home() {
   const todaySymbols = new Set(newToday.map((event) => event.symbol));
   const todayQualifiedCount = opportunities.filter((s) => todaySymbols.has(s.symbol)).length;
   const sectors = [
-    ...new Set(opportunities.map((s) => s.sector || 'Unknown')),
+    ...new Set((snapshot?.stocks || []).map((s) => s.sector || 'Unknown')),
   ].sort();
   const matching = opportunities
     .filter(
       (s) =>
-        (sector === 'ALL' || s.sector === sector) &&
+        (sector === 'ALL' || (s.sector || 'Unknown') === sector) &&
         (setupFilter === 'ALL' || s.status === setupFilter) &&
         (!savedOnly || saved.includes(s.symbol)) &&
         (!todayOnly || todaySymbols.has(s.symbol)) &&
@@ -1041,6 +1047,19 @@ export default function Home() {
                   </strong>
                   <span>{time(snapshot.generatedAt)} · 台北</span>
                 </div>
+                <p>
+                  本次更新來源：{scanSource.label}
+                  {scanElapsed && <> · 本次掃描耗時 {scanElapsed}（不含部署）</>}
+                  。預計排程時間不代表實際已執行；資料取得時間不等於行情日期。
+                </p>
+                {scanSource.runUrl && (
+                  <p className="scan-evidence">
+                    {scanSource.attemptLabel && <span>{scanSource.attemptLabel} · </span>}
+                    <a href={scanSource.runUrl} target="_blank" rel="noopener noreferrer">
+                      查看掃描紀錄（需 GitHub 權限）<ArrowUpRight size={13} aria-hidden="true" />
+                    </a>
+                  </p>
+                )}
                 <div className="market-clock-grid">
                   <div>
                     <span>下一次預計開始 · 台北</span>
@@ -1090,6 +1109,9 @@ export default function Home() {
                 )}
               </section>
             )}
+            {snapshot && <OverviewSummary stocks={snapshot.stocks} changes={changes} fresh={fresh}
+              baseline={snapshot.baseline} errors={snapshot.errors.length} sector={sector}
+              selectSector={(value) => { setSector(value); document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth' }); }} />}
             <section
               className="saved-section panel"
               id="saved-stocks"

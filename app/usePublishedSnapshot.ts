@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { comparePublication, validateSnapshot } from './publishedSnapshot';
+import { comparePublication, validateSnapshot, publicationError } from './publishedSnapshot';
 export function usePublishedSnapshot<T extends { generatedAt: string }>() {
   const [snapshot, setSnapshot] = useState<T | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -16,9 +16,13 @@ export function usePublishedSnapshot<T extends { generatedAt: string }>() {
     setRefreshing(true);
     const timeout = setTimeout(() => controller.abort(), 20000);
     try {
-      const response = await fetch('/data/daily.json', {
+      let response = await fetch('/data/dashboard.json', {
         cache: 'no-cache',
         signal: controller.signal,
+      });
+      // Development and older deployments may only provide the full snapshot.
+      if (response.status === 404) response = await fetch('/data/daily.json', {
+        cache: 'no-cache', signal: controller.signal,
       });
       if (!response.ok) throw Error('暫時無法檢查更新，保留已載入的資料。');
       const incoming = validateSnapshot(await response.json()) as T;
@@ -41,9 +45,7 @@ export function usePublishedSnapshot<T extends { generatedAt: string }>() {
     } catch (error: any) {
       if (mounted.current && request.current === controller)
         setLoadError(
-          controller.signal.aborted
-            ? '檢查更新逾時，保留已載入資料，稍後會再試。'
-            : error.message || '暫時無法讀取更新。',
+          publicationError(error, controller.signal.aborted),
         );
     } finally {
       clearTimeout(timeout);

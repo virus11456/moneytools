@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { dashboardPayload } from '../scripts/dashboard-payload.mjs';
+import { validateSnapshot } from '../app/publishedSnapshot.ts';
+const full=JSON.parse(await readFile(new URL('../public/data/daily.json',import.meta.url),'utf8'));
+const before=JSON.stringify(full);
+const compact=dashboardPayload(full);
+assert.equal(JSON.stringify(full),before);
+assert.equal(validateSnapshot(compact),compact);
+assert.equal('lastObserved' in compact,false);assert.equal('gateObserved' in compact,false);
+for (const key of Object.keys(full).filter(k=>!['lastObserved','gateObserved'].includes(k))) assert.deepEqual(compact[key],full[key],key);
+assert.ok(JSON.stringify(compact).length < before.length);
+assert.throws(()=>dashboardPayload(null));
+console.log('Dashboard projection preserves all user-facing data and scanner source');
