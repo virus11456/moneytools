@@ -1,0 +1,25 @@
+[Unit]
+Description=Moneytools analysis API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=moneytools
+Group=moneytools
+WorkingDirectory=/opt/moneytools
+Environment=HOME=/var/lib/moneytools
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/moneytools/.venv/bin/gunicorn --bind 127.0.0.1:8788 --workers 2 --threads 2 --timeout 90 --access-logfile - wsgi:application
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/moneytools
+MemoryMax=1G
+TasksMax=64
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

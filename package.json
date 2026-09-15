@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build && node scripts/dashboard-payload.mjs",
+    "build": "tsc --noEmit && vite build && node scripts/frontend-artifact.mjs",
     "start": "vite preview",
     "lint": "oxlint",
     "format": "oxfmt",
