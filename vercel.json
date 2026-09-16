@@ -37,6 +37,46 @@
       "destination": "/index.html"
     },
     {
+      "source": "/tw/us-watchlist",
+      "destination": "/tw/us-watchlist.html"
+    },
+    {
+      "source": "/tw/us-watchlist/",
+      "destination": "/tw/us-watchlist.html"
+    },
+    {
+      "source": "/tw/us-dual-analysis",
+      "destination": "/tw/us-dual-analysis.html"
+    },
+    {
+      "source": "/tw/us-dual-analysis/",
+      "destination": "/tw/us-dual-analysis.html"
+    },
+    {
+      "source": "/tw/us-risk-calculator",
+      "destination": "/tw/us-risk-calculator.html"
+    },
+    {
+      "source": "/tw/us-risk-calculator/",
+      "destination": "/tw/us-risk-calculator.html"
+    },
+    {
+      "source": "/tw/us-ready",
+      "destination": "/tw/us-ready.html"
+    },
+    {
+      "source": "/tw/us-ready/",
+      "destination": "/tw/us-ready.html"
+    },
+    {
+      "source": "/tw/us-faq",
+      "destination": "/tw/us-faq.html"
+    },
+    {
+      "source": "/tw/us-faq/",
+      "destination": "/tw/us-faq.html"
+    },
+    {
       "source": "/tw",
       "destination": "/index.html"
     },

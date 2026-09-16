@@ -45,5 +45,7 @@ for (const guide of SEO_GUIDES) {
   assert.match(html, new RegExp(`content="${guide.description}"`));
   assert.match(html, new RegExp(`<h1>${guide.h1}</h1>`));
   assert.match(html, /券商／開戶導購 placeholder/);
+  const flat = fs.readFileSync(path.join(tmp, `${guide.path.slice(1)}.html`), 'utf8');
+  assert.match(flat, new RegExp(`<title>${guide.title}</title>`));
 }
 console.log('SEO guides: unique metadata, placeholder CTA, position-size math, crawlable HTML.');

@@ -55,6 +55,7 @@ export async function writeSeoHtml(indexHtml, distUrl) {
     const dir = new URL(`.${guide.path}/`, distUrl);
     await mkdir(dir, { recursive: true });
     await writeFile(new URL('index.html', dir), html);
+    await writeFile(new URL(`.${guide.path}.html`, distUrl), html);
   }
 }
 
