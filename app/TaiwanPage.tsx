@@ -1,4 +1,6 @@
 import { MarketStatus } from './MarketStatus';
+import { AffiliateCta } from './AffiliateCta';
+import { GuideHubLinks } from './SeoGuidePage';
 import { SiblingNav, SimplesFingerprint } from './SiblingNav';
 import { useEffect, useState } from 'react';
 import {
@@ -475,6 +477,16 @@ export default function TaiwanPage() {
                 )}
               </div>
             </section>
+            <section className="tw-us-guides" aria-labelledby="tw-us-guides-title">
+              <div className="tw-us-guides-copy">
+                <span className="eyebrow">美股研究說明</span>
+                <h2 id="tw-us-guides-title">台灣搜尋也能對上本站既有畫面</h2>
+                <p>
+                  以下頁面解釋美股觀察池、雙重分析、進場條件與風險欄位，並連回每日掃描。不另做一份名單，也不宣稱績效。
+                </p>
+              </div>
+              <GuideHubLinks className="tw-us-guide-grid" />
+            </section>
             <section className="tw-method" aria-label="台股篩選流程">
               <div className="tw-method-flow">
                 <article className="tw-method-step">
@@ -780,6 +792,7 @@ export default function TaiwanPage() {
                 </details>
               </>
             )}
+            <AffiliateCta />
           </>
         )}
         {loading && (

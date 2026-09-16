@@ -1293,7 +1293,7 @@ export default function Home() {
             <section className="qualification-guide panel" aria-labelledby="qualification-guide-title">
               <div className="guide-heading">
                 <div><span className="eyebrow">篩選邏輯</span><h3 id="qualification-guide-title">先看企業，再看趨勢。</h3></div>
-                <span className="guide-note">兩步檢查 · 兩區分類</span>
+                <a className="guide-note" href="/tw/us-dual-analysis">兩步檢查 · 雙重分析說明</a>
               </div>
               <div className="qualification-guide-grid">
                 <div className="guide-step">
@@ -1345,7 +1345,7 @@ export default function Home() {
               </details>
               <details>
                 <summary>第一區還要符合什麼，才會顯示 READY？</summary>
-                <p>距成交密集區上緣 ≤ 2%、報酬／風險 ≥ 2:1，且最新完整日線收盤高於前日最高價、成交量 ≥ 前 20 日平均量、當日最低價觸及區間上緣且收盤守住下緣，必須全部成立。目標使用前 63 個交易日的最高價；個股頁可查各項數值、失效價位與尚缺條件。READY 代表規則通過，不保證後續報酬。</p>
+                <p>距成交密集區上緣 ≤ 2%、報酬／風險 ≥ 2:1，且最新完整日線收盤高於前日最高價、成交量 ≥ 前 20 日平均量、當日最低價觸及區間上緣且收盤守住下緣，必須全部成立。目標使用前 63 個交易日的最高價；個股頁可查各項數值、失效價位與尚缺條件。READY 代表規則通過，不保證後續報酬。<a href="/tw/us-ready">進場條件說明</a></p>
               </details>
             </section>
             {snapshot && (
@@ -1795,7 +1795,10 @@ export default function Home() {
             <div className="watch-heading" id="watchlist">
               <div>
                 <h2>觀察池全覽</h2>
-                <p>完整掃描結果 · 可查閱每個通過或未通過的條件</p>
+                <p>
+                  完整掃描結果 · 可查閱每個通過或未通過的條件 ·{' '}
+                  <a href="/tw/us-watchlist">觀察名單說明</a>
+                </p>
               </div>
               <label className="filter">
                 <SlidersHorizontal size={15} />

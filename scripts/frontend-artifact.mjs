@@ -1,4 +1,9 @@
-import { access, rm } from 'node:fs/promises';
-await access(new URL('../dist/index.html', import.meta.url));
-await rm(new URL('../dist/data/', import.meta.url), { recursive: true, force: true });
-console.log('Frontend artifact ready; API and daily data are served by the VPS.');
+import { access, readFile, rm } from 'node:fs/promises';
+import { writeSeoHtml } from './seo-html.mjs';
+
+const dist = new URL('../dist/', import.meta.url);
+await access(new URL('index.html', dist));
+await rm(new URL('data/', dist), { recursive: true, force: true });
+const indexHtml = await readFile(new URL('index.html', dist), 'utf8');
+await writeSeoHtml(indexHtml, dist);
+console.log('Frontend artifact ready; unique SEO HTML written. API and daily data are served by the VPS.');
