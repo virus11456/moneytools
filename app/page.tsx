@@ -695,16 +695,16 @@ export default function Home() {
   const groups = [
     {
       key: 'dual',
-      title: '基本面＋技術面皆符合',
+      title: '第一區｜基本面＋技術面皆符合',
       description:
-        '企業品質與上升趨勢都通過，再依進場位置、確認訊號與風險報酬區分狀態。',
+        '納入條件：基本面 5 項與技術面 4 項全部通過，且資料有效。雙重通過不等於可直接進場，仍需檢查位置、量價確認與報酬／風險。',
       total: opportunities.filter((s) => s.dualPass).length,
       stocks: matching.filter((s) => s.dualPass),
     },
     {
       key: 'fundamental',
-      title: '基本面符合、技術面待確認',
-      description: '企業品質已通過，但目前技術趨勢尚未全部符合，持續觀察。',
+      title: '第二區｜基本面符合、技術面待確認',
+      description: '納入條件：基本面 5 項全部通過，但尚未達到雙重通過；可能是技術條件未全數通過，或行情缺漏、過期而無法確認。補齊資料並通過技術條件後，才移到第一區。',
       total: opportunities.filter((s) => !s.dualPass).length,
       stocks: matching.filter((s) => !s.dualPass),
     },
@@ -1286,6 +1286,39 @@ export default function Home() {
                 !fresh &&
                 ' 目前顯示前次掃描結果，請留意下方資料時間。'}
             </p>
+            <section className="qualification-guide panel" aria-labelledby="qualification-guide-title">
+              <h3 id="qualification-guide-title">怎麼篩選？先看基本面，再看技術面</h3>
+              <p>兩區是分類，不是先通過第一區、再通過第二區。每次掃描先找出基本面通過者，再依技術面與資料有效性分流；同一檔只會列在其中一區。</p>
+              <div className="qualification-guide-grid">
+                <div>
+                  <h4>① 基本面：以下 5 項都要符合</h4>
+                  <ul>
+                    <li>最近完整年度營收 ≥ 1 億美元</li>
+                    <li>年度營收年增率 ≥ 15%（超過 20% 仍可通過）</li>
+                    <li>營業利益率 &gt; 0</li>
+                    <li>年度營業現金流 &gt; 0</li>
+                    <li>自由現金流 &gt; 0（營業現金流 − 資本支出絕對值）</li>
+                  </ul>
+                  <p className="footnote">限美元財報，財報期距掃描日不超過 550 天；金融與不動產業暫不適用。缺資料不視為通過，嚴格大於 0 的項目等於 0 也不通過。</p>
+                </div>
+                <div>
+                  <h4>② 技術面：以下 4 項都要符合</h4>
+                  <ul>
+                    <li>收盤價 &gt; 50 日均線 &gt; 200 日均線</li>
+                    <li>50 日均線高於 20 個交易日前</li>
+                    <li>200 日均線高於 20 個交易日前</li>
+                    <li>近 20 日平均成交金額 ≥ 1,000 萬美元</li>
+                  </ul>
+                  <p className="footnote">完整確認需至少 220 個交易日資料，行情日期距掃描日不超過 5 個日曆日。均線相等不算通過。</p>
+                </div>
+              </div>
+              <p><strong>分類結果：</strong>基本面通過 ＋ 技術面通過且資料有效 → 第一區；基本面通過但其餘待確認 → 第二區。基本面未通過者不列入這兩區，可到觀察池查看。</p>
+              <p className="footnote">例如：營收、獲利與現金流皆達標，但均線尚未多頭排列，列第二區；之後技術面全部通過且資料有效，才移到第一區。若技術條件失效，也可能退回第二區。</p>
+              <details>
+                <summary>第一區還要符合什麼，才會顯示 READY？</summary>
+                <p>距成交密集區上緣 ≤ 2%、報酬／風險 ≥ 2:1，且最新完整日線收盤高於前日最高價、成交量 ≥ 前 20 日平均量、當日最低價觸及區間上緣且收盤守住下緣，必須全部成立。目標使用前 63 個交易日的最高價；個股頁可查各項數值、失效價位與尚缺條件。READY 代表規則通過，不保證後續報酬。</p>
+              </details>
+            </section>
             {snapshot && (
               <div className="browse-tools">
                 <nav className="group-nav" aria-label="快速前往">
