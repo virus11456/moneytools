@@ -2115,15 +2115,39 @@ a:focus-visible {
 .summary-counts a:focus-visible,.sector-summary button:focus-visible { outline: 3px solid #087f74; outline-offset: 3px; }
 @media(max-width: 600px) { .summary-counts { grid-template-columns: 1fr; } .overview-summary { padding: 14px; } }
 
-.qualification-guide { margin: 18px 0; padding: 20px; }
-.qualification-guide h3 { margin: 0 0 12px; font-size: 18px; }
+.qualification-guide { margin: 18px 0; padding: 24px; }
+.guide-heading { display:flex; justify-content:space-between; align-items:center; gap:16px; }
+.qualification-guide h3 { margin: 6px 0 0; font-size: 22px; letter-spacing:-.04em; }
+.guide-note { font-size:12px; color:#637464; }
 .qualification-guide p { line-height: 1.75; }
-.qualification-guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin: 16px 0; }
-.qualification-guide h4 { margin: 0 0 10px; font-size: 15px; }
-.qualification-guide ul { padding-left: 20px; margin: 0; line-height: 1.9; }
-.qualification-guide summary { cursor: pointer; line-height: 1.7; font-weight: 600; }
-.qualification-guide details p { font-size: 14px; }
-@media (max-width: 640px) {
-  .qualification-guide { padding: 16px; }
-  .qualification-guide-grid { grid-template-columns: 1fr; gap: 18px; }
+.qualification-guide-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; margin:20px 0; }
+.guide-step { padding:18px; border-radius:12px; background:#f1f5ed; }
+.guide-step-title { display:flex; gap:9px; align-items:center; color:#55715b; font-size:12px; font-weight:600; }
+.qualification-guide h4 { margin:12px 0 8px; font-size:17px; }
+.guide-step p { margin:0; font-size:14px; color:#516052; }
+.guide-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+.guide-chips span { border:1px solid #d4dfce; border-radius:6px; padding:3px 8px; font-size:11px; color:#526b57; }
+.guide-outcomes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.guide-outcomes a { display:flex; gap:12px; align-items:center; padding:14px; border:1px solid #cdddc7; border-radius:10px; color:#2d5140; text-decoration:none; }
+.guide-outcomes a:first-child { background:#e8f0e2; }
+.guide-outcomes a:hover { border-color:#698a64; }
+.guide-outcomes a:focus-visible,.qualification-guide summary:focus-visible { outline:2px solid #356448; outline-offset:4px; }
+.guide-outcomes svg { flex-shrink:0; }
+.guide-outcomes a>svg:last-child { margin-left:auto; }
+.guide-outcomes strong,.guide-outcomes span { display:block; }
+.guide-outcomes strong { font-size:14px; }
+.guide-outcomes span { margin-top:4px; font-size:12px; color:#58685b; }
+.qualification-guide .guide-transition { font-size:12px; color:#637464; margin:14px 0 18px; }
+.qualification-guide details { border-top:1px solid #e0e7db; }
+.qualification-guide summary { cursor:pointer; padding:12px 0; line-height:1.7; font-size:13px; font-weight:600; }
+.qualification-guide ul { padding-left:20px; margin:0; line-height:1.9; font-size:14px; }
+.qualification-guide details p { font-size:13px; }
+@media(max-width:640px) {
+ .qualification-guide { padding:16px; }
+ .qualification-guide h3 { font-size:20px; }
+ .guide-heading { align-items:flex-start; }
+ .guide-note { display:none; }
+ .qualification-guide-grid { grid-template-columns:1fr; gap:10px; margin:16px 0; }
+ .guide-outcomes { grid-template-columns:1fr; gap:8px; }
+ .guide-step { padding:14px; }
 }
