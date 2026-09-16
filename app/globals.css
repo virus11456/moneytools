@@ -921,6 +921,10 @@ footer a {
   .sibling-nav small {
     display: none;
   }
+  .sibling-nav {
+    padding-left: 0;
+    border-left: 0;
+  }
   .header-right {
     font-size: 0;
   }
