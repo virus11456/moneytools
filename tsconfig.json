@@ -29,6 +29,7 @@
   "include": [
     "app/page.tsx",
     "main.tsx",
+    "vite-env.d.ts",
     "lib/**/*.ts",
     "components/ui/{tabs,button,input,checkbox,table}.tsx",
     "vite.config.ts"

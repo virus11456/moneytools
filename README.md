@@ -43,7 +43,7 @@ pnpm build
 
 ## Vercel
 
-Import `virus11456/moneytools`, keep root directory `./`, framework Vite, `pnpm build`, and output `dist`. Python handlers under `api/` deploy beside the static frontend. No API key is required. The repository stays private; the deployed dashboard contains public market research data and no account or trading data.
+Import `virus11456/moneytools`, keep root directory `./`, framework Vite, `pnpm build`, and output `dist`. Python handlers under `api/` deploy beside the static frontend. No API key is required. The repository stays private; the deployed dashboard contains public market research data and no account or trading data. Set `NEXT_PUBLIC_AFFILIATE_URL` in the Vercel project environment to show the Taiwan-page broker CTA; leave it unset to hide the button.
 
 ## Recovery and historical records
 

@@ -1,5 +1,7 @@
 import { MarketStatus } from './MarketStatus';
 import { SiblingNav, SimplesFingerprint } from './SiblingNav';
+import { AffiliateCta } from './AffiliateCta';
+import { TwGuideNav } from './TwGuideNav';
 import { useEffect, useState } from 'react';
 import {
   Activity,
@@ -463,6 +465,7 @@ export default function TaiwanPage() {
                 <span className="eyebrow">台股・獨立篩選</span>
                 <h1>看懂企業，等趨勢到位。</h1>
                 <p>先確認成長、獲利與現金流，再用均線與流動性分流。</p>
+                <TwGuideNav current="/tw" />
               </div>
               <div className="tw-date">
                 {snapshot ? (
@@ -793,6 +796,7 @@ export default function TaiwanPage() {
           </p>
         )}
         {saveError && <p role="alert">{saveError}</p>}
+        <AffiliateCta />
         <div className="tw-footer">
           <div>
             <p>台股獨立研究規則 · 公開資料可查核 · 無推薦分數</p>
