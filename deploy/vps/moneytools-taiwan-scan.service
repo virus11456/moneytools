@@ -1,0 +1,22 @@
+[Unit]
+Description=Moneytools Taiwan independent daily data scan
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=oneshot
+User=moneytools
+Group=moneytools
+WorkingDirectory=/opt/moneytools
+Environment=HOME=/var/lib/moneytools/taiwan
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/moneytools/.venv/bin/python /opt/moneytools/deploy/vps/taiwan_scan.py
+TimeoutStartSec=5h
+Nice=10
+MemoryMax=2G
+UMask=0027
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/moneytools/taiwan /var/www/moneytools-tw

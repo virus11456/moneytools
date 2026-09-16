@@ -35,6 +35,14 @@
     {
       "source": "/stock/:symbol",
       "destination": "/index.html"
+    },
+    {
+      "source": "/tw",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/tw/:path*",
+      "destination": "/index.html"
     }
   ],
   "git": {

@@ -721,11 +721,13 @@ export default function Home() {
           </span>
           moneytools<span className="beta">US EQUITIES</span>
         </button>
+        <nav className="market-switch" aria-label="股票市場"><a href="/" aria-current="page">美股</a><a href="/tw">台股</a></nav>
         <div className="header-right">
           <span className="status-dot" />
           公開資料 · 每日更新{' '}
           <button
             className="rule-button"
+            aria-label="篩選規則"
             onClick={() => setShowRules(!showRules)}
             aria-expanded={showRules}
           >

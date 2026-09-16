@@ -1,0 +1,8 @@
+[Unit]
+Description=Check Taiwan official closing data after 16:30 Taipei
+[Timer]
+OnCalendar=Mon..Fri *-*-* 08..14:30:00 UTC
+Persistent=true
+RandomizedDelaySec=60
+[Install]
+WantedBy=timers.target
