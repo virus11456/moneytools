@@ -470,51 +470,128 @@ export default function TaiwanPage() {
                 )}
               </div>
             </section>
-            <section className="tw-method">
-              <div>
-                <span className="tw-step">01</span>
-                <h2>企業有成長，也有現金</h2>
-                <p>近四季營收、獲利、現金流都達標，才進入首頁兩區。</p>
+            <section className="tw-method" aria-label="台股篩選流程">
+              <div className="tw-method-flow">
+                <article className="tw-method-step">
+                  <div className="tw-method-kicker">
+                    <span>01</span> 先選企業
+                  </div>
+                  <h2>成長，也要有現金。</h2>
+                  <p>用營收、獲利與現金流，確認企業營運品質。</p>
+                  <div className="tw-method-outcome">
+                    <Check size={15} /> 基本面 5 項全過，才進入兩區
+                  </div>
+                </article>
+                <article className="tw-method-step">
+                  <div className="tw-method-kicker">
+                    <span>02</span> 再看趨勢
+                  </div>
+                  <h2>企業達標，市場跟上了嗎？</h2>
+                  <p>用均線與流動性，區分趨勢已確認或仍需等待。</p>
+                  <div className="tw-method-routing">
+                    <span>
+                      <i /> 技術面通過 <b>第一區</b>
+                    </span>
+                    <span>
+                      <i /> 技術面待確認 <b>第二區</b>
+                    </span>
+                  </div>
+                </article>
               </div>
-              <div>
-                <span className="tw-step">02</span>
-                <h2>再看市場是否跟上</h2>
-                <p>趨勢與流動性通過進第一區；尚待確認留第二區。</p>
-              </div>
-              <details>
+              <details className="tw-method-details">
                 <summary>
-                  為什麼這樣篩選？查看門檻 <ChevronDown size={16} />
+                  <span>查看篩選門檻</span>
+                  <small>5 項基本面 · 4 項技術面</small>
+                  <ChevronDown size={16} />
                 </summary>
                 <div className="tw-rule-columns">
-                  <div>
-                    <h3>基本面 · 5 項都要符合</h3>
-                    <p>近四季營收 ≥ 10 億元：排除營運規模極小者。</p>
-                    <p>近四季營收同比 ≥ 15%：確認跨季成長。</p>
-                    <p>
-                      營業利益率、營業現金流、自由現金流皆 &gt;
-                      0：檢查本業獲利與現金品質。
+                  <section className="tw-rule-sheet">
+                    <h3>
+                      基本面 <span>5 項全數符合</span>
+                    </h3>
+                    <dl className="tw-rule-list">
+                      <div>
+                        <dt>
+                          近四季營收<small>營運規模下限</small>
+                        </dt>
+                        <dd>≥ 10 億元</dd>
+                      </div>
+                      <div>
+                        <dt>
+                          近四季營收年增<small>確認跨季成長</small>
+                        </dt>
+                        <dd>≥ 15%</dd>
+                      </div>
+                      <div>
+                        <dt>
+                          營業利益率<small>本業有獲利</small>
+                        </dt>
+                        <dd>&gt; 0</dd>
+                      </div>
+                      <div>
+                        <dt>
+                          營業現金流<small>營運產生現金</small>
+                        </dt>
+                        <dd>&gt; 0</dd>
+                      </div>
+                      <div>
+                        <dt>
+                          自由現金流<small>扣除設備等資本支出後仍有現金</small>
+                        </dt>
+                        <dd>&gt; 0</dd>
+                      </div>
+                    </dl>
+                  </section>
+                  <section className="tw-rule-sheet">
+                    <h3>
+                      技術面 <span>4 項全數符合</span>
+                    </h3>
+                    <dl className="tw-rule-list">
+                      <div>
+                        <dt>
+                          均線多頭排列<small>確認價格趨勢</small>
+                        </dt>
+                        <dd className="tw-rule-order">
+                          收盤 &gt; MA50 &gt; MA200
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>
+                          50 日均線<small>高於 20 個交易日前</small>
+                        </dt>
+                        <dd>上升</dd>
+                      </div>
+                      <div>
+                        <dt>
+                          200 日均線<small>高於 20 個交易日前</small>
+                        </dt>
+                        <dd>上升</dd>
+                      </div>
+                      <div>
+                        <dt>
+                          近 20 日平均成交額
+                          <small>收盤價 × 成交股數近似值</small>
+                        </dt>
+                        <dd>≥ 2,000 萬元</dd>
+                      </div>
+                    </dl>
+                    <p className="tw-rule-data">
+                      <CircleHelp size={14} /> 至少 220
+                      日行情，最新收盤須與官方核對。
                     </p>
-                  </div>
-                  <div>
-                    <h3>技術面 · 4 項都要符合</h3>
-                    <p>
-                      收盤 &gt; MA50 &gt; MA200；兩條均線皆高於 20
-                      個交易日前：確認中長期趨勢。
-                    </p>
-                    <p>
-                      近 20 日平均成交金額近似值 ≥ 2,000
-                      萬元：排除流動性過低者。
-                    </p>
-                    <p>至少 220 日行情，且最新收盤須與官方核對。</p>
-                  </div>
+                  </section>
                 </div>
-                <p>
-                  兩區互斥：基本面通過後才依技術面分流，不是先通過第一區再進第二區。金融保險、建材營造另有財報特性，暫不納入一般企業條件。
-                </p>
-                <p>
-                  台股 v1 研究門檻，未經回測；缺漏不補零，嚴格大於 0 的條件等於
-                  0 不通過。通過篩選不代表可立即進場。
-                </p>
+                <div className="tw-method-notes">
+                  <p>
+                    <strong>兩區是分類，不是關卡。</strong>
+                    基本面通過後，依技術面分流；同一檔只會出現在一區。
+                  </p>
+                  <p>
+                    財報採近四季、新台幣；金融保險與建材營造暫不適用。缺值不補零，等於
+                    0 不通過嚴格大於 0 的條件。
+                  </p>
+                  <p>v1 研究門檻尚未回測；通過篩選不代表可立即進場。</p>
+                </div>
               </details>
             </section>
             {snapshot && (
