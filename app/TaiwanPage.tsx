@@ -1,4 +1,5 @@
 import { MarketStatus } from './MarketStatus';
+import { SiblingNav, SimplesFingerprint } from './SiblingNav';
 import { useEffect, useState } from 'react';
 import {
   Activity,
@@ -312,18 +313,21 @@ export default function TaiwanPage() {
   return (
     <div className="app tw-app">
       <header className="header">
-        <a className="brand" href="/tw">
-          <span className="brand-icon">
-            <Activity size={21} />
-          </span>
-          moneytools<span className="beta">TW EQUITIES</span>
-        </a>
-        <nav className="market-switch" aria-label="股票市場">
-          <a href="/">美股</a>
-          <a href="/tw" aria-current="page">
-            台股
+        <div className="header-lead">
+          <a className="brand" href="/tw">
+            <span className="brand-icon">
+              <Activity size={21} />
+            </span>
+            moneytools<span className="beta">TW EQUITIES</span>
           </a>
-        </nav>
+          <nav className="market-switch" aria-label="股票市場">
+            <a href="/">美股</a>
+            <a href="/tw" aria-current="page">
+              台股
+            </a>
+          </nav>
+          <SiblingNav />
+        </div>
       </header>
       <main>
         <div className="topline">
@@ -790,7 +794,10 @@ export default function TaiwanPage() {
         )}
         {saveError && <p role="alert">{saveError}</p>}
         <div className="tw-footer">
-          <p>台股獨立研究規則 · 公開資料可查核 · 無推薦分數</p>
+          <div>
+            <p>台股獨立研究規則 · 公開資料可查核 · 無推薦分數</p>
+            <SimplesFingerprint />
+          </div>
           <button
             className="tw-action"
             disabled={loading}

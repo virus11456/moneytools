@@ -1,4 +1,5 @@
 import { MarketStatus } from './MarketStatus';
+import { SiblingNav, SimplesFingerprint } from './SiblingNav';
 import { OverviewSummary } from './OverviewSummary';
 import { priceSeries, visiblePriceZone } from './priceSeries';
 import { scanDuration } from './scanTiming';
@@ -716,13 +717,16 @@ export default function Home() {
   return (
     <div className="app">
       <header className="header">
-        <button className="brand" onClick={() => go()}>
-          <span className="brand-icon">
-            <Activity size={21} />
-          </span>
-          moneytools<span className="beta">US EQUITIES</span>
-        </button>
-        <nav className="market-switch" aria-label="股票市場"><a href="/" aria-current="page">美股</a><a href="/tw">台股</a></nav>
+        <div className="header-lead">
+          <button className="brand" onClick={() => go()}>
+            <span className="brand-icon">
+              <Activity size={21} />
+            </span>
+            moneytools<span className="beta">US EQUITIES</span>
+          </button>
+          <nav className="market-switch" aria-label="股票市場"><a href="/" aria-current="page">美股</a><a href="/tw">台股</a></nav>
+          <SiblingNav />
+        </div>
         <div className="header-right">
           公開資料 · 每日更新{' '}
           <button
@@ -1915,6 +1919,7 @@ export default function Home() {
           <div>
             <strong>moneytools</strong>
             <p>規則透明，判斷留給你。</p>
+            <SimplesFingerprint />
           </div>
           <p>
             來源：Yahoo Finance /
