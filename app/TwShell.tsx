@@ -55,6 +55,7 @@ export function TwShell({
           </nav>
           <SiblingNav />
         </div>
+        <AffiliateCta variant="header" locale="zh-Hant" />
       </header>
       <main className="tw-seo">
         <section className="tw-intro">
@@ -65,11 +66,11 @@ export function TwShell({
             <TwGuideNav current={current} />
           </div>
         </section>
+        <AffiliateCta variant="block" locale="zh-Hant" />
         {children}
         <p className="tw-seo-home">
           回到<a href="/tw">台股篩選首頁</a>，對照每日基本面與趨勢條件。
         </p>
-        <AffiliateCta />
         <div className="tw-footer">
           <div>
             <p>說明頁不改篩選規則 · 費用請以券商官網為準</p>

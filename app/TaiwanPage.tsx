@@ -330,6 +330,7 @@ export default function TaiwanPage() {
           </nav>
           <SiblingNav />
         </div>
+        <AffiliateCta variant="header" locale="zh-Hant" />
       </header>
       <main>
         <div className="topline">
@@ -478,6 +479,7 @@ export default function TaiwanPage() {
                 )}
               </div>
             </section>
+            <AffiliateCta variant="block" locale="zh-Hant" />
             <section className="tw-method" aria-label="台股篩選流程">
               <div className="tw-method-flow">
                 <article className="tw-method-step">
@@ -796,7 +798,6 @@ export default function TaiwanPage() {
           </p>
         )}
         {saveError && <p role="alert">{saveError}</p>}
-        <AffiliateCta />
         <div className="tw-footer">
           <div>
             <p>台股獨立研究規則 · 公開資料可查核 · 無推薦分數</p>

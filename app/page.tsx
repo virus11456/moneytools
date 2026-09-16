@@ -1,5 +1,6 @@
 import { MarketStatus } from './MarketStatus';
 import { SiblingNav, SimplesFingerprint } from './SiblingNav';
+import { AffiliateCta } from './AffiliateCta';
 import { OverviewSummary } from './OverviewSummary';
 import { priceSeries, visiblePriceZone } from './priceSeries';
 import { scanDuration } from './scanTiming';
@@ -727,6 +728,7 @@ export default function Home() {
           <nav className="market-switch" aria-label="股票市場"><a href="/" aria-current="page">美股</a><a href="/tw">台股</a></nav>
           <SiblingNav />
         </div>
+        <AffiliateCta variant="header" locale="en" />
         <div className="header-right">
           公開資料 · 每日更新{' '}
           <button
@@ -786,6 +788,7 @@ export default function Home() {
         <p className="footnote" id="stock-search-help">
           輸入即查已掃描股票；按搜尋可查其他美股。可用 Tab 選擇結果，Esc 收起。
         </p>
+        {!symbol && <AffiliateCta variant="block" locale="en" />}
         <div className="publication-controls">
           <button type="button" onClick={() => refresh()} disabled={refreshing}>
             <RefreshCw size={15} className={refreshing ? 'spin' : ''} />

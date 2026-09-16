@@ -1,3 +1,6 @@
+export const FIRSTRADE_OPEN_URL =
+  'https://www.firstrade.com/zh-TW/accounts/international';
+
 export function resolveAffiliateUrl(raw: unknown): string {
   if (typeof raw !== 'string') return '';
   const value = raw.trim();
@@ -12,5 +15,8 @@ export function resolveAffiliateUrl(raw: unknown): string {
 }
 
 export function affiliateUrl(): string {
-  return resolveAffiliateUrl(import.meta.env.NEXT_PUBLIC_AFFILIATE_URL);
+  return (
+    resolveAffiliateUrl(import.meta.env.NEXT_PUBLIC_AFFILIATE_URL) ||
+    FIRSTRADE_OPEN_URL
+  );
 }

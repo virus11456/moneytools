@@ -1,17 +1,40 @@
 import { ArrowUpRight } from 'lucide-react';
 import { affiliateUrl } from './affiliate';
 
-export function AffiliateCta() {
+const DISCLOSURE = '可能為聯盟連結，我們可能因此獲得報酬。此連結不改變分析結果。';
+
+export function AffiliateCta({
+  variant = 'block',
+  locale = 'zh-Hant',
+}: {
+  variant?: 'header' | 'block';
+  locale?: 'zh-Hant' | 'en';
+}) {
   const href = affiliateUrl();
-  if (!href) return null;
+  const label =
+    locale === 'en' ? 'Open a US brokerage account' : '開美股帳戶';
+  if (variant === 'header') {
+    return (
+      <a
+        className="affiliate-header"
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        title={DISCLOSURE}
+      >
+        {label}
+        <ArrowUpRight size={14} />
+      </a>
+    );
+  }
   return (
-    <aside className="affiliate-cta" aria-label="合作券商">
+    <aside className="affiliate-cta" aria-label={label}>
       <div>
-        <p>研究完規則與費用後，若要實單，請到券商官網核對費率再開戶。</p>
-        <small>用這份分析開戶不代表獲利，也不構成投資建議。</small>
+        <p>Firstrade · 中文介面 · 0 手續費美股</p>
+        <small>{DISCLOSURE}</small>
       </div>
       <a href={href} target="_blank" rel="noreferrer">
-        前往合作券商 <ArrowUpRight size={15} />
+        {label} <ArrowUpRight size={15} />
       </a>
     </aside>
   );
