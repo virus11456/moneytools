@@ -6,18 +6,27 @@ import TwBrokerCompare from './app/TwBrokerCompare';
 import TwFeeCalculator from './app/TwFeeCalculator';
 import TwWatchlistGuide from './app/TwWatchlistGuide';
 import TwRiskGuide from './app/TwRiskGuide';
+import GuidePage from './app/guides/GuidePage';
+import { isGuidePath } from './app/guides/pages.ts';
 import './app/globals.css';
 const path = window.location.pathname.replace(/\/+$/, '') || '/';
-const Page =
+const ExtraGuide =
   {
     '/tw/broker-compare': TwBrokerCompare,
     '/tw/fee-calculator': TwFeeCalculator,
     '/tw/watchlist': TwWatchlistGuide,
     '/tw/risk': TwRiskGuide,
-  }[path] ||
-  (path === '/tw' || path.startsWith('/tw/') ? TaiwanPage : Home);
+  }[path];
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Page />
+    {ExtraGuide ? (
+      <ExtraGuide />
+    ) : isGuidePath(path) ? (
+      <GuidePage />
+    ) : path === '/tw' || path.startsWith('/tw/') ? (
+      <TaiwanPage />
+    ) : (
+      <Home />
+    )}
   </React.StrictMode>,
 );

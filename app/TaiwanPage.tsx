@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import './taiwan.css';
 import { TaiwanHistory } from './TaiwanHistory';
+import { GuideLinks } from './guides/GuideLinks';
+import { isGuidePath } from './guides/pages.ts';
 type Gate = {
   key: string;
   label: string;
@@ -174,7 +176,8 @@ export default function TaiwanPage() {
   const invalidRoute =
     window.location.pathname != '/tw' &&
     window.location.pathname != '/tw/' &&
-    !match;
+    !match &&
+    !isGuidePath(window.location.pathname);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null),
     [stock, setStock] = useState<Stock | null>(null),
     [error, setError] = useState(''),
@@ -604,6 +607,10 @@ export default function TaiwanPage() {
                 </div>
               </details>
             </section>
+            <p className="footnote">
+              美股開戶、觀察名單與風險說明：
+              <GuideLinks />
+            </p>
             {snapshot && (
               <>
                 {snapshot.collectionComplete === false && (
@@ -801,6 +808,7 @@ export default function TaiwanPage() {
         <div className="tw-footer">
           <div>
             <p>台股獨立研究規則 · 公開資料可查核 · 無推薦分數</p>
+            <GuideLinks />
             <SimplesFingerprint />
           </div>
           <button

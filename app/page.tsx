@@ -1,6 +1,7 @@
 import { MarketStatus } from './MarketStatus';
 import { SiblingNav, SimplesFingerprint } from './SiblingNav';
 import { AffiliateCta } from './AffiliateCta';
+import { GuideLinks } from './guides/GuideLinks';
 import { OverviewSummary } from './OverviewSummary';
 import { priceSeries, visiblePriceZone } from './priceSeries';
 import { scanDuration } from './scanTiming';
@@ -1351,6 +1352,10 @@ export default function Home() {
                 <p>距成交密集區上緣 ≤ 2%、報酬／風險 ≥ 2:1，且最新完整日線收盤高於前日最高價、成交量 ≥ 前 20 日平均量、當日最低價觸及區間上緣且收盤守住下緣，必須全部成立。目標使用前 63 個交易日的最高價；個股頁可查各項數值、失效價位與尚缺條件。READY 代表規則通過，不保證後續報酬。</p>
               </details>
             </section>
+            <p className="footnote">
+              開戶、觀察名單與風險規則的說明頁：
+              <GuideLinks />
+            </p>
             {snapshot && (
               <div className="browse-tools">
                 <nav className="group-nav" aria-label="快速前往">
@@ -1922,6 +1927,7 @@ export default function Home() {
           <div>
             <strong>moneytools</strong>
             <p>規則透明，判斷留給你。</p>
+            <GuideLinks />
             <SimplesFingerprint />
           </div>
           <p>

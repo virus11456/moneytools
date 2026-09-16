@@ -41,6 +41,46 @@
       "destination": "/index.html"
     },
     {
+      "source": "/tw/us-account",
+      "destination": "/tw/us-account/index.html"
+    },
+    {
+      "source": "/tw/us-account/",
+      "destination": "/tw/us-account/index.html"
+    },
+    {
+      "source": "/tw/watchlist-guide",
+      "destination": "/tw/watchlist-guide/index.html"
+    },
+    {
+      "source": "/tw/watchlist-guide/",
+      "destination": "/tw/watchlist-guide/index.html"
+    },
+    {
+      "source": "/tw/risk-plan",
+      "destination": "/tw/risk-plan/index.html"
+    },
+    {
+      "source": "/tw/risk-plan/",
+      "destination": "/tw/risk-plan/index.html"
+    },
+    {
+      "source": "/tw/us-vs-tw",
+      "destination": "/tw/us-vs-tw/index.html"
+    },
+    {
+      "source": "/tw/us-vs-tw/",
+      "destination": "/tw/us-vs-tw/index.html"
+    },
+    {
+      "source": "/tw/faq",
+      "destination": "/tw/faq/index.html"
+    },
+    {
+      "source": "/tw/faq/",
+      "destination": "/tw/faq/index.html"
+    },
+    {
       "source": "/tw/:path*",
       "destination": "/index.html"
     }
