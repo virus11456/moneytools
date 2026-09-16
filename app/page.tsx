@@ -1,3 +1,4 @@
+import { MarketStatus } from './MarketStatus';
 import { OverviewSummary } from './OverviewSummary';
 import { priceSeries, visiblePriceZone } from './priceSeries';
 import { scanDuration } from './scanTiming';
@@ -723,7 +724,6 @@ export default function Home() {
         </button>
         <nav className="market-switch" aria-label="股票市場"><a href="/" aria-current="page">美股</a><a href="/tw">台股</a></nav>
         <div className="header-right">
-          <span className="status-dot" />
           公開資料 · 每日更新{' '}
           <button
             className="rule-button"
@@ -741,9 +741,7 @@ export default function Home() {
             <span className="eyebrow">RESEARCH WORKSPACE</span>{' '}
             <span className="divider">/</span> 美股雙重分析
           </span>
-          <span>
-            <Clock3 size={14} /> 美股收盤後 75 分鐘
-          </span>
+          <MarketStatus market="US" />
         </div>
         <section className="search-area">
           <div>

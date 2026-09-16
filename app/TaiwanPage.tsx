@@ -1,3 +1,4 @@
+import { MarketStatus } from './MarketStatus';
 import { useEffect, useState } from 'react';
 import {
   Activity,
@@ -327,7 +328,7 @@ export default function TaiwanPage() {
       <main>
         <div className="topline">
           <span className="eyebrow">TAIWAN RESEARCH</span>
-          <span>上市・上櫃 / 新台幣</span>
+          <MarketStatus market="TW" />
         </div>
         {invalidRoute ? (
           <section className="tw-panel">
