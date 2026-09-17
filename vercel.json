@@ -23,6 +23,38 @@
       ]
     }
   ],
+  "redirects": [
+    {
+      "source": "/tw/broker-compare",
+      "destination": "/tw/us-broker",
+      "permanent": true
+    },
+    {
+      "source": "/tw/broker-compare/",
+      "destination": "/tw/us-broker",
+      "permanent": true
+    },
+    {
+      "source": "/tw/watchlist",
+      "destination": "/tw/us-watchlist",
+      "permanent": true
+    },
+    {
+      "source": "/tw/watchlist/",
+      "destination": "/tw/us-watchlist",
+      "permanent": true
+    },
+    {
+      "source": "/tw/risk",
+      "destination": "/tw/risk-plan",
+      "permanent": true
+    },
+    {
+      "source": "/tw/risk/",
+      "destination": "/tw/risk-plan",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -79,6 +111,30 @@
     {
       "source": "/tw/faq/",
       "destination": "/tw/faq/index.html"
+    },
+    {
+      "source": "/tw/us-broker",
+      "destination": "/tw/us-broker/index.html"
+    },
+    {
+      "source": "/tw/us-broker/",
+      "destination": "/tw/us-broker/index.html"
+    },
+    {
+      "source": "/tw/us-watchlist",
+      "destination": "/tw/us-watchlist/index.html"
+    },
+    {
+      "source": "/tw/us-watchlist/",
+      "destination": "/tw/us-watchlist/index.html"
+    },
+    {
+      "source": "/tw/us-fees",
+      "destination": "/tw/us-fees/index.html"
+    },
+    {
+      "source": "/tw/us-fees/",
+      "destination": "/tw/us-fees/index.html"
     },
     {
       "source": "/tw/:path*",

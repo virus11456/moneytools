@@ -48,7 +48,7 @@ export default function TwWatchlistGuide() {
         <h2>建議怎麼用</h2>
         <p>
           先讓規則幫你分流，再把「還想追蹤」的股票收進名單，而不是把觀察名單當成推薦清單。進場前仍要看失效價位與費用，見
-          <a href="/tw/risk">交易風險規劃</a>。
+          <a href="/tw/risk-plan">交易風險規劃</a>。
         </p>
       </section>
     </TwShell>
