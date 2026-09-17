@@ -32,7 +32,8 @@ export default function TwBrokerCompare() {
             <h3>海外券商直開</h3>
             <p>
               以個人名義開立海外證券帳戶，自行完成
-              W-8BEN、匯入美元、報稅與對帳單保存。優點是費率與商品通常較完整；成本是文件、時差與你要自己核對官方費率。
+              <a href="/tw/us-tax">W-8BEN</a>
+              、匯入美元、報稅與對帳單保存。優點是費率與商品通常較完整；成本是文件、時差與你要自己核對官方費率。
             </p>
             <ul>
               <li>
@@ -40,7 +41,11 @@ export default function TwBrokerCompare() {
                 <a href="/tw/us-deposit">美股入金與匯款</a>。
               </li>
               <li>下單：多為 24 小時網頁／App，美股盤中即時性較高。</li>
-              <li>稅務：美股預扣與台灣申報仍要自己處理。</li>
+              <li>
+                稅務：美股預扣與台灣申報仍要自己處理。概覽見
+                <a href="/tw/us-tax">W-8BEN 與美股預扣稅</a>
+                ，不是報稅步驟。
+              </li>
             </ul>
           </article>
           <article>

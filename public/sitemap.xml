@@ -17,6 +17,10 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
+    <loc>https://stocktools.cc/tw/us-tax</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://stocktools.cc/tw/us-market-hours</loc>
     <changefreq>weekly</changefreq>
   </url>
