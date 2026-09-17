@@ -1,0 +1,85 @@
+/* Reading hierarchy shared by the US and Taiwan screens. */
+.screening-guide { margin: 20px 0 24px; border: 1px solid #d7dfd2; border-radius: 16px; background: #f2f5ed; overflow: hidden; color: #263e34; }
+.screening-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; padding: 24px; }
+.screening-steps > div { display: flex; gap: 12px; align-items: flex-start; min-width: 0; }
+.screening-steps svg { margin-top: 3px; flex-shrink: 0; color: #58794c; }
+.screening-steps h3 { margin: 0 0 6px; font-size: 17px; line-height: 1.5; }
+.screening-steps h3 span { color: #75816c; font-size: 12px; margin-right: 8px; font-variant-numeric: tabular-nums; }
+.screening-steps p { margin: 0 0 6px; font-size: 14px; line-height: 1.6; }
+.screening-steps small { display: block; color: #56634f; line-height: 1.6; font-size: 12px; }
+.screening-routing { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 12px 24px; border-top: 1px solid #dce3d7; font-size: 12px; line-height: 1.7; }
+.screening-routing span { color: #56634f; }
+.screening-details { border-top: 1px solid #dce3d7; }
+.screening-details > summary { cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 14px 24px; font-size: 13px; font-weight: 600; list-style: none; min-height: 48px; }
+.screening-details > summary::-webkit-details-marker { display: none; }
+.screening-details > summary > span { color: #68745f; font-weight: 400; font-size: 12px; }
+.screening-details > summary > svg { margin-left: auto; flex-shrink: 0; transition: transform .15s; }
+.screening-details[open] > summary > svg { transform: rotate(180deg); }
+.screening-details > summary:hover { background: #e9efdf; }
+.screening-sheets { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 8px 24px 16px; }
+.screening-sheets section { min-width: 0; }
+.screening-sheets h4 { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; margin: 0; }
+.screening-sheets h4 small { font-weight: 400; font-size: 12px; color: #58694e; }
+.screening-sheets dl { margin: 10px 0 0; }
+.screening-sheets dl > div { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid #dce3d7; }
+.screening-sheets dt { font-size: 13px; line-height: 1.6; }
+.screening-sheets dt small { display: block; font-size: 12px; color: #63705a; }
+.screening-sheets dd { margin: 0; text-align: right; font-size: 13px; line-height: 1.6; font-weight: 600; max-width: 200px; }
+.screening-notes { padding: 0 24px 16px; font-size: 12px; line-height: 1.85; color: #54624c; }
+.screening-notes p { margin: 8px 0; }
+.screening-notes ul { padding-left: 20px; }
+.scan-disclosure { margin-top: 8px; }
+.scan-disclosure > summary { cursor: pointer; font-size: 12px; padding: 8px 0; }
+.scan-disclosure .market-clock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.scan-disclosure .market-clock-grid strong, .scan-disclosure .market-clock-grid span { display: block; }
+.saved-section > summary { cursor: pointer; margin: 0; min-height: 44px; }
+.saved-section:not([open]) { padding-block: 8px; }
+.saved-section > summary h2 { font-size: 15px; margin: 0; }
+.reading-pool { margin-top: 24px; border-top: 1px solid #d7dfd2; }
+.reading-pool > summary { padding: 20px 0; cursor: pointer; font-weight: 600; }
+.reading-pool > summary span { margin-left: 8px; font-size: 12px; font-weight: 400; color: #65735b; }
+.app summary:focus-visible, .app a:focus-visible, .app button:focus-visible { outline: 2px solid #477745; outline-offset: 4px; }
+.app .overview-summary { padding: 16px 20px; }
+.app .overview-summary h2 { font-size: 16px; }
+.app .overview-summary .summary-counts a { font-size: 12px; }
+.app .section-heading { scroll-margin-top: 24px; }
+.app .qualification-section { scroll-margin-top: 24px; }
+@media (max-width: 700px) {
+  .screening-steps { grid-template-columns: 1fr; padding: 18px; gap: 18px; }
+  .screening-steps > div + div { border-top: 1px solid #dce3d7; padding-top: 16px; }
+  .screening-steps h3 { font-size: 16px; }
+  .screening-routing { padding: 12px 18px; }
+  .screening-details > summary { padding: 14px 18px; flex-wrap: wrap; gap: 4px 8px; }
+  .screening-details > summary > span { display: none; }
+  .screening-sheets { grid-template-columns: 1fr; padding: 8px 18px 16px; gap: 24px; }
+  .screening-sheets dd { max-width: 150px; }
+  .screening-notes { padding: 0 18px 16px; }
+  .app .section-heading h2, .app .group-heading h3, .tw-app .tw-group-heading h2 { font-size: 19px; line-height: 1.6; }
+  .app .summary-counts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .app .summary-counts a { padding: 10px 8px; }
+  .app .summary-counts strong { font-size: 20px; }
+  .app .overview-summary { padding: 14px; }
+  .app .group-nav { gap: 8px; }
+  .app .group-nav a { min-height: 44px; }
+  .publication-controls { gap: 8px; }
+  .publication-controls > span { font-size: 11px; }
+  .scan-disclosure .market-clock-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .screening-details > summary > svg { transition: none; } }
+.reading-filter-options { border: 1px solid #d7dfd2; border-radius: 10px; padding: 0 16px; background: #fbfcf8; }
+.reading-filter-options > summary { cursor: pointer; padding: 14px 0; min-height: 48px; font-weight: 600; font-size: 13px; }
+.reading-filter-options > summary span { margin-left: 12px; font-size: 12px; font-weight: 400; color: #63705a; }
+.reading-filter-options[open] { padding-bottom: 14px; }
+.list-count .text-button { margin-left: 10px; }
+.app .search-area { padding: 20px 0 16px; }
+.app #stock-search-help { margin: 4px 0 14px; }
+@media (max-width: 700px) {
+  .app .search-area { gap: 18px; padding: 18px 0 12px; }
+  .app .search-area h1 { font-size: 26px; }
+  .app .group-nav { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+  .app .group-nav a { flex: 0 0 auto; white-space: nowrap; font-size: 12px; padding: 10px 12px; }
+  .app .publication-controls small { font-size: 11px; }
+  .app .freshness-strip { padding: 12px 14px; }
+}
+.opportunity.is-compact .stage-icons { display: none; }
+.opportunity.is-compact { padding-bottom: 16px; }

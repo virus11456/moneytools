@@ -7,11 +7,11 @@ export function OverviewSummary({ stocks, changes, fresh, baseline, errors, sect
   const confirmed = fresh && !baseline;
   return <section className="panel overview-summary" aria-label="每日重點與產業概覽">
     <h2>每日重點</h2>
-    <p className="footnote">{!fresh ? '今天的變化尚未確認，以下產業分布沿用最近一次掃描。' : baseline ? '本次為初始基準，尚無前次紀錄可比較。' : '依今日已保存的條件變化統計；同一股票可能出現在不同項目。'}</p>
+    <p className="footnote">{!fresh ? '今天的變化尚未確認，以下產業分布沿用最近一次掃描。' : baseline ? '本次為初始基準，尚無前次紀錄可比較。' : '基本面或技術面篩選的變化；同一股票可能重複計入。'}</p>
     <div className="summary-counts">
-      <a href="#daily-changes">新通過基本面或雙重條件<strong>{confirmed ? `${summary.added} 檔` : '待確認'}</strong></a>
-      <a href="#daily-changes">失去基本面或雙重條件<strong>{confirmed ? `${summary.lost} 檔` : '待確認'}</strong></a>
-      <a href="#daily-changes">進場狀態或條件明細改變<strong>{confirmed ? `${summary.changed} 檔` : '待確認'}</strong></a>
+      <a href="#daily-changes">新增符合<strong>{confirmed ? `${summary.added} 檔` : '待確認'}</strong></a>
+      <a href="#daily-changes">失去符合<strong>{confirmed ? `${summary.lost} 檔` : '待確認'}</strong></a>
+      <a href="#daily-changes">條件變化<strong>{confirmed ? `${summary.changed} 檔` : '待確認'}</strong></a>
     </div>
     <details>
       <summary>產業概覽 · 點選產業篩選完整清單</summary>
@@ -21,7 +21,7 @@ export function OverviewSummary({ stocks, changes, fresh, baseline, errors, sect
         {summary.sectors.map(s => <button type="button" key={s.name} aria-pressed={sector === s.name} onClick={() => selectSector(s.name)}>
           <span>{s.name === 'Unknown' ? '產業未提供' : s.name}</span>
           <strong>{s.qualified}／{s.total} 檔</strong>
-          <small>雙重符合 {s.dual} · 資料不足 {s.incomplete}</small>
+          <small>第一區 {s.dual} · 資料不足 {s.incomplete}</small>
         </button>)}
       </div>
     </details>

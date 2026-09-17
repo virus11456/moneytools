@@ -3,9 +3,9 @@ const KEY = 'moneytools.card-view.v1';
 type CardView = 'compact' | 'expanded';
 function read(): CardView {
   try {
-    return localStorage.getItem(KEY) === 'compact' ? 'compact' : 'expanded';
+    return localStorage.getItem(KEY) === 'expanded' ? 'expanded' : 'compact';
   } catch {
-    return 'expanded';
+    return 'compact';
   }
 }
 export function useCardView() {

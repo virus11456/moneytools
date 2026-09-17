@@ -1,3 +1,4 @@
+import { ScreeningGuide } from './ScreeningGuide';
 import { MarketStatus } from './MarketStatus';
 import { SiblingNav, SimplesFingerprint } from './SiblingNav';
 import { AffiliateCta } from './AffiliateCta';
@@ -73,8 +74,8 @@ type Snapshot = {
   dailyChanges: { id: string; name: string; from: string; to: string }[];
 };
 const labels: Record<string, string> = {
-  DUAL: '基本面＋技術面符合',
-  FUNDAMENTAL: '基本面符合・等待趨勢',
+  DUAL: '基本面＋技術面皆符合',
+  FUNDAMENTAL: '基本面符合、技術面待確認',
   WAIT: '尚未符合基本面',
   INCOMPLETE: '資料待補齊',
 };
@@ -292,18 +293,18 @@ export default function TaiwanPage() {
         <p className="tw-card-state">
           {s.dualPass ? (
             <>
-              <Check size={15} /> 企業與趨勢皆達標
+              <Check size={15} /> 基本面＋技術面皆符合
             </>
           ) : (
             <>
               <CircleHelp size={15} /> {pending.length} 項
-              {s.fundamentals.passed ? '技術' : '基本面'}條件待確認
+              {s.fundamentals.passed ? '技術面' : '基本面'}條件待確認
             </>
           )}
         </p>
         <p className="tw-card-summary">
           {s.dualPass
-            ? '查看條件與資料來源，再評估個別風險。'
+            ? '進場條件另行檢查。'
             : pending
                 .slice(0, 2)
                 .map((c) => c.label)
@@ -377,9 +378,9 @@ export default function TaiwanPage() {
                     。技術條件採還原行情，末日收盤另與官方報價核對。
                   </p>
                 </section>
-                <Gates title="01 企業品質" checks={stock.fundamentals.checks} />
+                <Gates title="01 基本面篩選" checks={stock.fundamentals.checks} />
                 <Gates
-                  title="02 趨勢與流動性"
+                  title="02 技術面篩選"
                   checks={stock.technical.checks}
                 />
                 {stock.entry?.available && (
@@ -399,7 +400,7 @@ export default function TaiwanPage() {
                     <Gates
                       title={
                         stock.dualPass && stock.entry.passed
-                          ? 'READY'
+                          ? '進場條件符合（READY）'
                           : '進場條件待確認'
                       }
                       checks={stock.entry.checks}
@@ -468,7 +469,7 @@ export default function TaiwanPage() {
               <div>
                 <span className="eyebrow">台股・獨立篩選</span>
                 <h1>看懂企業，等趨勢到位。</h1>
-                <p>先確認成長、獲利與現金流，再用均線與流動性分流。</p>
+                <p>基本面先篩選，技術面再分類。</p>
                 <TwGuideNav current="/tw" />
               </div>
               <div className="tw-date">
@@ -482,135 +483,7 @@ export default function TaiwanPage() {
                 )}
               </div>
             </section>
-            <AffiliateCta variant="block" locale="zh-Hant" />
-            <section className="tw-method" aria-label="台股篩選流程">
-              <div className="tw-method-flow">
-                <article className="tw-method-step">
-                  <div className="tw-method-kicker">
-                    <span>01</span> 先選企業
-                  </div>
-                  <h2>成長，也要有現金。</h2>
-                  <p>用營收、獲利與現金流，確認企業營運品質。</p>
-                  <div className="tw-method-outcome">
-                    <Check size={15} /> 基本面 5 項全過，才進入兩區
-                  </div>
-                </article>
-                <article className="tw-method-step">
-                  <div className="tw-method-kicker">
-                    <span>02</span> 再看趨勢
-                  </div>
-                  <h2>企業達標，市場跟上了嗎？</h2>
-                  <p>用均線與流動性，區分趨勢已確認或仍需等待。</p>
-                  <div className="tw-method-routing">
-                    <span>
-                      <i /> 技術面通過 <b>第一區</b>
-                    </span>
-                    <span>
-                      <i /> 技術面待確認 <b>第二區</b>
-                    </span>
-                  </div>
-                </article>
-              </div>
-              <details className="tw-method-details">
-                <summary>
-                  <span>查看篩選門檻</span>
-                  <small>5 項基本面 · 4 項技術面</small>
-                  <ChevronDown size={16} />
-                </summary>
-                <div className="tw-rule-columns">
-                  <section className="tw-rule-sheet">
-                    <h3>
-                      基本面 <span>5 項全數符合</span>
-                    </h3>
-                    <dl className="tw-rule-list">
-                      <div>
-                        <dt>
-                          近四季營收<small>營運規模下限</small>
-                        </dt>
-                        <dd>≥ 10 億元</dd>
-                      </div>
-                      <div>
-                        <dt>
-                          近四季營收年增<small>確認跨季成長</small>
-                        </dt>
-                        <dd>≥ 15%</dd>
-                      </div>
-                      <div>
-                        <dt>
-                          營業利益率<small>本業有獲利</small>
-                        </dt>
-                        <dd>&gt; 0</dd>
-                      </div>
-                      <div>
-                        <dt>
-                          營業現金流<small>營運產生現金</small>
-                        </dt>
-                        <dd>&gt; 0</dd>
-                      </div>
-                      <div>
-                        <dt>
-                          自由現金流<small>扣除設備等資本支出後仍有現金</small>
-                        </dt>
-                        <dd>&gt; 0</dd>
-                      </div>
-                    </dl>
-                  </section>
-                  <section className="tw-rule-sheet">
-                    <h3>
-                      技術面 <span>4 項全數符合</span>
-                    </h3>
-                    <dl className="tw-rule-list">
-                      <div>
-                        <dt>
-                          均線多頭排列<small>確認價格趨勢</small>
-                        </dt>
-                        <dd className="tw-rule-order">
-                          收盤 &gt; MA50 &gt; MA200
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>
-                          50 日均線<small>高於 20 個交易日前</small>
-                        </dt>
-                        <dd>上升</dd>
-                      </div>
-                      <div>
-                        <dt>
-                          200 日均線<small>高於 20 個交易日前</small>
-                        </dt>
-                        <dd>上升</dd>
-                      </div>
-                      <div>
-                        <dt>
-                          近 20 日平均成交額
-                          <small>收盤價 × 成交股數近似值</small>
-                        </dt>
-                        <dd>≥ 2,000 萬元</dd>
-                      </div>
-                    </dl>
-                    <p className="tw-rule-data">
-                      <CircleHelp size={14} /> 至少 220
-                      日行情，最新收盤須與官方核對。
-                    </p>
-                  </section>
-                </div>
-                <div className="tw-method-notes">
-                  <p>
-                    <strong>兩區是分類，不是關卡。</strong>
-                    基本面通過後，依技術面分流；同一檔只會出現在一區。
-                  </p>
-                  <p>
-                    財報採近四季、新台幣；金融保險與建材營造暫不適用。缺值不補零，等於
-                    0 不通過嚴格大於 0 的條件。
-                  </p>
-                  <p>v1 研究門檻尚未回測；通過篩選不代表可立即進場。</p>
-                </div>
-              </details>
-            </section>
-            <p className="footnote">
-              美股開戶、觀察名單與風險說明：
-              <GuideLinks />
-            </p>
+            <ScreeningGuide market="TW" />
             {snapshot && (
               <>
                 {snapshot.collectionComplete === false && (
@@ -690,8 +563,8 @@ export default function TaiwanPage() {
                           <span className="eyebrow">SECTION 0{i + 1}</span>
                           <h2>
                             {i === 0
-                              ? '基本面＋技術面皆符合'
-                              : '基本面符合，技術面待確認'}{' '}
+                              ? '第一區｜基本面＋技術面皆符合'
+                              : '第二區｜基本面符合、技術面待確認'}{' '}
                             <span>{all.length}</span>
                             {visible.length !== all.length && (
                               <small className="tw-muted">
@@ -702,8 +575,8 @@ export default function TaiwanPage() {
                           </h2>
                           <p>
                             {i === 0
-                              ? '企業品質與趨勢同時達標，仍需評估進場與個別風險。'
-                              : '企業已達標；等待趨勢確認或行情補齊，可隨條件變化移入第一區。'}
+                              ? '基本面與技術面皆符合；進場條件另行檢查。'
+                              : '基本面符合；技術面尚未符合或資料待確認。'}
                           </p>
                         </div>
                       </div>
@@ -805,6 +678,7 @@ export default function TaiwanPage() {
           </p>
         )}
         {saveError && <p role="alert">{saveError}</p>}
+        {!symbol && <AffiliateCta variant="block" locale="zh-Hant" />}
         <div className="tw-footer">
           <div>
             <p>台股獨立研究規則 · 公開資料可查核 · 無推薦分數</p>

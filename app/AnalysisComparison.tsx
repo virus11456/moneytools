@@ -1,4 +1,4 @@
-const statusNames: Record<string, string> = { READY: '進場條件符合', APPROACHING: '接近觀察區', QUALITY: '第一階段符合', WAIT: '等待條件', INCOMPLETE: '資料不足', pass: '符合', fail: '未符合', missing: '資料不足' };
+const statusNames: Record<string, string> = { READY: '進場條件符合', APPROACHING: '接近觀察區', QUALITY: '基本面符合', WAIT: '等待條件', INCOMPLETE: '資料不足', pass: '符合', fail: '未符合', missing: '資料不足' };
 const value = (v: unknown) => typeof v === 'number' ? new Intl.NumberFormat('zh-TW', { maximumSignificantDigits: 6 }).format(v) : v == null ? '—' : String(v);
 const stamp = (v: string) => v && Number.isFinite(Date.parse(v)) ? new Date(v).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }) : '—';
 function checks(stock: any) {
@@ -42,7 +42,7 @@ export function entryComparison(before: any, after: any) {
       change: !changed ? '未變' : !availableAfter ? '暫無數值' : !availableBefore ? '新增數值' : b > a ? '上調' : '下調'};
   });
 }
-const analysisStatus = (stock: any) => stock.status === 'QUALITY' ? (stock.dualPass ? '兩階段符合 · 等待回撤' : '第一階段符合 · 等待趨勢') : statusNames[stock.status] || stock.status;
+const analysisStatus = (stock: any) => stock.status === 'QUALITY' ? (stock.dualPass ? '基本面＋技術面皆符合 · 等待回撤' : '基本面符合 · 技術面待確認') : statusNames[stock.status] || stock.status;
 export function compareAnalysis(before: any, after: any) {
   if (!before || !after || before.symbol !== after.symbol || before.methodVersion !== after.methodVersion) return null;
   const left = checks(before), right = checks(after);

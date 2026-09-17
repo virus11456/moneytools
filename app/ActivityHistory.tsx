@@ -175,7 +175,7 @@ export function SavedActivity({
           </strong>
         </span>
         <span>
-          進場條件就緒
+          進場條件符合
           <strong>{items.filter((s) => s.status === 'READY').length}</strong>
         </span>
         <span>

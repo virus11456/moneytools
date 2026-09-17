@@ -249,7 +249,7 @@ ${marketHoursNowHtml()}
         id: 'today',
         title: 'today、收藏、搜尋各做什麼',
         html: `<ul>
-  <li><strong>today</strong> 只標記當下台北日新通過基本面或雙重條件的變動，不是進場指令。</li>
+  <li><strong>today</strong> 只標記當下台北日新通過基本面或技術面篩選的變動，不是進場指令。</li>
   <li><strong>收藏</strong>存在你的瀏覽器，不會上傳帳號；換裝置或清資料就會消失，也不會因此變成 READY。</li>
   <li><strong>搜尋</strong>可查已掃描代號，或向資料源查其他美股。查詢本身不會把股票加入每日宇宙。</li>
 </ul>
@@ -318,7 +318,7 @@ ${marketHoursNowHtml()}
         title: '開戶之後：用本站做研究，而不是追當沖訊號',
         html: `<p>帳戶只解決「能不能下單」。Stocktools 解決的是「這家公司目前有沒有通過本站公開規則」：</p>
 <ul>
-  <li><a href="/">美股首頁</a>：每日掃描後，基本面通過者分成第一區（基本面＋技術面）與第二區（等待趨勢）。</li>
+  <li><a href="/">美股首頁</a>：每日掃描後，基本面通過者分成第一區（基本面＋技術面）與第二區（基本面符合、技術面待確認）。</li>
   <li><a href="/#watchlist">觀察池</a>：尚未通過基本面的名單，避免只看到「已合格」而忽略大多數標的。</li>
   <li><a href="/stock/AAPL">個股頁範例（AAPL）</a>：查看各項門檻、失效價位與資料日期。</li>
 </ul>
@@ -355,7 +355,7 @@ ${marketHoursNowHtml()}
         title: '觀察池、today 標記與收藏',
         html: `<ul>
   <li><strong>觀察池</strong>（<a href="/#watchlist">#watchlist</a>）列出掃描宇宙中的狀態，可用篩選查看尚未通過基本面的名字。</li>
-  <li><strong>today</strong> 只標記「當下台北日」新通過基本面或雙重條件的變動，不是當沖訊號。</li>
+  <li><strong>today</strong> 只標記「當下台北日」新通過基本面或技術面篩選的變動，不是當沖訊號。</li>
   <li><strong>收藏</strong>存在你的瀏覽器，不會上傳帳號；換裝置或清資料就會消失。</li>
 </ul>
 <p>搜尋框可查已掃描代號；按搜尋可向資料源查其他美股。查詢本身不會把股票加入每日宇宙。直接網址例如 <a href="/stock/NVDA">/stock/NVDA</a>。</p>`,

@@ -1,3 +1,4 @@
+import { ScreeningGuide } from './ScreeningGuide';
 import { MarketStatus } from './MarketStatus';
 import { SiblingNav, SimplesFingerprint } from './SiblingNav';
 import { AffiliateCta } from './AffiliateCta';
@@ -67,16 +68,16 @@ type Snapshot = {
 };
 const changeLabels: Record<string, string> = {
   FUNDAMENTAL_ADDED: '新通過基本面',
-  DUAL_ADDED: '新通過雙重條件',
+  DUAL_ADDED: '基本面＋技術面新符合',
   FUNDAMENTAL_LOST: '基本面不再符合',
   DUAL_LOST: '技術面不再符合',
   ENTRY_CHANGED: '進場狀態改變',
   CONDITIONS_CHANGED: '條件明細改變',
 };
 const labels: Record<string, string> = {
-  READY: '條件就緒',
+  READY: '進場條件符合',
   APPROACHING: '接近觀察區',
-  QUALITY: '品質通過',
+  QUALITY: '基本面符合',
   WAIT: '繼續等待',
   INCOMPLETE: '資料不足',
 };
@@ -388,9 +389,9 @@ function Detail({
         <section className="panel">
           <div className="panel-title">
             <h2>
-              <span className="step">01</span> Fundamental
+              <span className="step">01</span> 基本面篩選
             </h2>
-            <span>{s.fundamentals.passed ? '通過' : '尚未通過'}</span>
+            <span>{s.fundamentals.passed ? '符合' : '待確認'}</span>
           </div>
           <p className="subtitle">用同一財年的數據驗證企業品質</p>
           <CheckList stock={s} checks={s.fundamentals.checks} />
@@ -403,9 +404,9 @@ function Detail({
         <section className="panel">
           <div className="panel-title">
             <h2>
-              <span className="step">02</span> Trend
+              <span className="step">02</span> 技術面篩選
             </h2>
-            <span>{t.passed ? '上升趨勢確認' : '等待確認'}</span>
+            <span>{t.passed ? '符合' : '待確認'}</span>
           </div>
           <p className="subtitle">價格、均線方向與流動性共同確認</p>
           <CheckList stock={s} checks={t.checks} />
@@ -419,7 +420,7 @@ function Detail({
         <section className="panel">
           <div className="panel-title">
             <h2>
-              <span className="step">03</span> Entry & confirmation
+              <span className="step">03</span> 進場條件
             </h2>
           </div>
           <p className="subtitle">READY 還需距離區間 ≤ 2%、報酬 / 風險 ≥ 2</p>
@@ -701,14 +702,14 @@ export default function Home() {
       key: 'dual',
       title: '第一區｜基本面＋技術面皆符合',
       description:
-        '企業與趨勢皆達標；再看進場位置、量價與報酬／風險。',
+        '基本面與技術面皆符合；進場條件另行檢查。',
       total: opportunities.filter((s) => s.dualPass).length,
       stocks: matching.filter((s) => s.dualPass),
     },
     {
       key: 'fundamental',
       title: '第二區｜基本面符合、技術面待確認',
-      description: '企業達標；等待技術條件通過或資料補齊，再移入第一區。',
+      description: '基本面符合；技術面尚未符合或資料待確認。',
       total: opportunities.filter((s) => !s.dualPass).length,
       stocks: matching.filter((s) => !s.dualPass),
     },
@@ -729,14 +730,14 @@ export default function Home() {
           <nav className="market-switch" aria-label="股票市場"><a href="/" aria-current="page">美股</a><a href="/tw">台股</a></nav>
           <SiblingNav />
         </div>
-        <AffiliateCta variant="header" locale="en" />
+        <AffiliateCta variant="header" locale="zh-Hant" />
         <div className="header-right">
           公開資料 · 每日更新{' '}
           <button
             className="rule-button"
             aria-label="篩選規則"
-            onClick={() => setShowRules(!showRules)}
-            aria-expanded={showRules}
+            onClick={() => { if (symbol) { setShowRules(!showRules); return; } const guide = document.querySelector<HTMLDetailsElement>(".screening-details"); if (guide) { guide.open = true; guide.scrollIntoView({ behavior: "smooth", block: "start" }); } }}
+            aria-expanded={symbol ? showRules : undefined}
           >
             <SlidersHorizontal size={16} /> 篩選規則
           </button>
@@ -746,14 +747,14 @@ export default function Home() {
         <div className="topline">
           <span>
             <span className="eyebrow">RESEARCH WORKSPACE</span>{' '}
-            <span className="divider">/</span> 美股雙重分析
+            <span className="divider">/</span> 美股篩選
           </span>
           <MarketStatus market="US" />
         </div>
         <section className="search-area">
           <div>
             <h1>好公司，等好位置。</h1>
-            <p>先確認企業品質，再等待趨勢與進場條件。</p>
+            <p>基本面先篩選，技術面再分類。</p>
           </div>
           <form onSubmit={search} className="search-form">
             <Search size={21} />
@@ -787,9 +788,8 @@ export default function Home() {
           </form>
         </section>
         <p className="footnote" id="stock-search-help">
-          輸入即查已掃描股票；按搜尋可查其他美股。可用 Tab 選擇結果，Esc 收起。
+          輸入代號或公司名稱；按搜尋可查其他美股。
         </p>
-        {!symbol && <AffiliateCta variant="block" locale="en" />}
         <div className="publication-controls">
           <button type="button" onClick={() => refresh()} disabled={refreshing}>
             <RefreshCw size={15} className={refreshing ? 'spin' : ''} />
@@ -802,7 +802,7 @@ export default function Home() {
                 ? `${updateMessage} · ${time(checkedAt)}`
                 : '尚未成功檢查'}
             <small>
-              開啟時每 5 分鐘檢查；只讀取已完成的結果，不會另外啟動掃描。
+              每 5 分鐘檢查已發布資料，非即時行情。
             </small>
           </span>
         </div>
@@ -871,34 +871,7 @@ export default function Home() {
             )}
           </section>
         )}
-        {showRules && (
-          <section className="rules panel">
-            <h2>每個狀態，都有可檢查的條件</h2>
-            <div className="rule-grid">
-              <p>
-                <Badge status="QUALITY" />
-                年度營收 ≥ $100M、年增 ≥
-                15%、營業利益率及營業／自由現金流為正。等待趨勢或回撤。
-              </p>
-              <p>
-                <Badge status="APPROACHING" />
-                品質及趨勢通過，距離成交密集區上緣 ≤
-                5%。確認或報酬風險仍未全部通過。
-              </p>
-              <p>
-                <Badge status="READY" />
-                品質及趨勢通過，距離 ≤ 2%，回測與量價確認、報酬 / 風險 ≥ 2。
-              </p>
-            </div>
-            <p>
-              趨勢：收盤 &gt; MA50 &gt; MA200，兩條均線高於 20 日前，20
-              日平均成交金額 ≥ $10M。財報限 550 日內、行情限 5
-              個日曆日內；金融、不動產及非美元財報不適用。沒有總分，也沒有價格預測。
-              <br />
-              所有基本面符合標的都會列出。today：今日新通過基本面或雙重條件，且行情日或財報期已更新。進場狀態切換與失去條件另列於每日變化；首筆觀察僅建立基準，資料失敗不重置狀態。
-            </p>
-          </section>
-        )}
+        {showRules && symbol && <ScreeningGuide market="US" />}
         {error && (
           <div className="notice" role="alert">
             {error}
@@ -1055,6 +1028,8 @@ export default function Home() {
                   </strong>
                   <span>{time(snapshot.generatedAt)} · 台北</span>
                 </div>
+                {scheduleInfo?.overdue && <p role="status">本次排程尚未確認完成，目前顯示上次資料。</p>}
+                <details className="scan-disclosure"><summary>資料時間、來源與更新排程</summary>
                 <p>
                   本次更新來源：{scanSource.label}
                   {scanElapsed && <> · 本次掃描耗時 {scanElapsed}（不含部署）</>}
@@ -1115,31 +1090,29 @@ export default function Home() {
                 {!fresh && !scheduleInfo && (
                   <p>符合清單保留最近一次結果；今天的新變化尚未確認。</p>
                 )}
+                </details>
               </section>
             )}
-            {snapshot && <OverviewSummary stocks={snapshot.stocks} changes={changes} fresh={fresh}
-              baseline={snapshot.baseline} errors={snapshot.errors.length} sector={sector}
-              selectSector={(value) => { setSector(value); document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth' }); }} />}
-            <section
+            <details
               className="saved-section panel"
               id="saved-stocks"
               aria-label="我的自選清單"
             >
-              <div className="panel-title">
+              <summary className="panel-title">
                 <h2>
                   我的自選清單 <span className="count">{saved.length}</span>
                 </h2>
                 <Star size={18} />
-              </div>
+              </summary>
               <p className="subtitle">
-                點股票旁的星號收藏，重開此瀏覽器仍會保留。收藏不會改變篩選規則，也不會自動加入每日掃描。
+                點星號收藏，只儲存在此瀏覽器。
               </p>
               {storageError && (
                 <p role="alert" className="notice">
                   {storageError}
                 </p>
               )}
-              {!!saved.length && (
+            {!!saved.length && (
                 <SavedActivity
                   saved={saved}
                   changes={changes}
@@ -1212,7 +1185,7 @@ export default function Home() {
               <p className="footnote">
                 收藏只儲存在此裝置的瀏覽器，不會跨裝置同步；清除網站資料會移除收藏。
               </p>
-            </section>
+            </details>
             {!!saved.length && (
               <details className="saved-history">
                 <summary>自選近 30 天紀錄</summary>
@@ -1279,7 +1252,7 @@ export default function Home() {
               <div>
                 <div className="eyebrow">QUALIFYING OPPORTUNITIES</div>
                 <h2>
-                  基本面通過總覽{' '}
+                  基本面符合清單{' '}
                   <span className="count">{opportunities.length}</span>
                 </h2>
               </div>
@@ -1288,89 +1261,28 @@ export default function Home() {
               </span>
             </div>
             <p className="footnote">
-              列出最近一次掃描中所有基本面符合的標的，分為雙重條件通過與技術面待確認兩區。
-              符合者全部列出；今日新符合 {newToday.length} 檔，以 today 標記。
+              保留所有符合者 · 今日新符合 {newToday.length} 檔，以 today 標記。
               {snapshot &&
                 !fresh &&
                 ' 目前顯示前次掃描結果，請留意下方資料時間。'}
             </p>
-            <section className="qualification-guide panel" aria-labelledby="qualification-guide-title">
-              <div className="guide-heading">
-                <div><span className="eyebrow">篩選邏輯</span><h3 id="qualification-guide-title">先看企業，再看趨勢。</h3></div>
-                <span className="guide-note">兩步檢查 · 兩區分類</span>
-              </div>
-              <div className="qualification-guide-grid">
-                <div className="guide-step">
-                  <div className="guide-step-title"><ShieldCheck size={20} aria-hidden="true" /><span>01 / 基本面</span></div>
-                  <h4>成長，也要賺得到現金</h4>
-                  <p>用營收確認規模與成長，再用獲利、現金流檢查營運，避免只看營收增加就入選。</p>
-                  <div className="guide-chips"><span>規模</span><span>成長</span><span>獲利</span><span>現金流</span></div>
-                </div>
-                <div className="guide-step">
-                  <div className="guide-step-title"><Activity size={20} aria-hidden="true" /><span>02 / 技術面</span></div>
-                  <h4>企業達標，再等趨勢配合</h4>
-                  <p>用均線確認價格方向，用成交金額檢查交易活躍度，避免把基本面通過直接當成進場訊號。</p>
-                  <div className="guide-chips"><span>多頭排列</span><span>均線上升</span><span>流動性</span></div>
-                </div>
-              </div>
-              <div className="guide-outcomes" aria-label="兩區分類結果">
-                <a href="#group-dual"><Check size={18} aria-hidden="true" /><div><strong>第一區 · 雙重通過</strong><span>基本面＋技術面通過，且資料有效</span></div><ArrowRight size={16} aria-hidden="true" /></a>
-                <a href="#group-fundamental"><Clock3 size={18} aria-hidden="true" /><div><strong>第二區 · 等待確認</strong><span>基本面通過，技術面或資料仍待確認</span></div><ArrowRight size={16} aria-hidden="true" /></a>
-              </div>
-              <p className="guide-transition">第二區 → 技術面確認 → 第一區；條件失效也可能退回。同一檔只列一區，雙重通過後仍要檢查進場條件。</p>
-              <details className="guide-thresholds">
-                <summary>查看 9 項門檻與設定理由</summary>
-                <div className="qualification-guide-grid">
-                  <div><h4>基本面 · 5 項全部通過</h4>
-                  <ul>
-                    <li>最近完整年度營收 ≥ 1 億美元</li>
-                    <li>年度營收年增率 ≥ 15%（超過 20% 仍可通過）</li>
-                    <li>營業利益率 &gt; 0</li>
-                    <li>年度營業現金流 &gt; 0</li>
-                    <li>自由現金流 &gt; 0（營業現金流 − 資本支出絕對值）</li>
-                  </ul>
-                  <p className="footnote">限美元財報，財報期距掃描日不超過 550 天；金融與不動產業暫不適用。缺資料不視為通過，嚴格大於 0 的項目等於 0 也不通過。</p>
-
-                    <p className="footnote">營收門檻用來聚焦已有一定營運規模、仍在成長的企業；正營業利益排除本業虧損，正現金流檢查營運與資本支出後是否仍有現金。</p>
-                  </div>
-                  <div><h4>技術面 · 4 項全部通過</h4>
-                  <ul>
-                    <li>收盤價 &gt; 50 日均線 &gt; 200 日均線</li>
-                    <li>50 日均線高於 20 個交易日前</li>
-                    <li>200 日均線高於 20 個交易日前</li>
-                    <li>近 20 日平均成交金額 ≥ 1,000 萬美元</li>
-                  </ul>
-                  <p className="footnote">完整確認需至少 220 個交易日資料，行情日期距掃描日不超過 5 個日曆日。均線相等不算通過。</p>
-
-                    <p className="footnote">多頭排列搭配兩條均線上升，用來確認中長期方向；成交金額門檻用來避開交易較不活躍的標的，仍不保證成交品質。</p>
-                  </div>
-                </div>
-                <p className="footnote">這些數字是本站一致套用的研究門檻，並非經回測證明的最佳參數。基本面未通過者不列入兩區，可至觀察池查閱；資料缺漏不當作通過。</p>
-              </details>
-              <details>
-                <summary>第一區還要符合什麼，才會顯示 READY？</summary>
-                <p>距成交密集區上緣 ≤ 2%、報酬／風險 ≥ 2:1，且最新完整日線收盤高於前日最高價、成交量 ≥ 前 20 日平均量、當日最低價觸及區間上緣且收盤守住下緣，必須全部成立。目標使用前 63 個交易日的最高價；個股頁可查各項數值、失效價位與尚缺條件。READY 代表規則通過，不保證後續報酬。</p>
-              </details>
-            </section>
-            <p className="footnote">
-              開戶、觀察名單與風險規則的說明頁：
-              <GuideLinks />
-            </p>
+            <ScreeningGuide market="US" />
             {snapshot && (
               <div className="browse-tools">
                 <nav className="group-nav" aria-label="快速前往">
                   <a href="#group-dual">
-                    雙重符合 <b>{groups[0].total}</b>
+                    第一區 <b>{groups[0].total}</b>
                   </a>
                   <a href="#group-fundamental">
-                    僅基本面符合 <b>{groups[1].total}</b>
+                    第二區 <b>{groups[1].total}</b>
                   </a>
                   <a href="#daily-changes">
                     每日變化 <b>{changes.length}</b>
                   </a>
-                  <a href="#watchlist">觀察池</a>
+                  <a href="#watchlist" onClick={() => { const pool = document.getElementById("watchlist") as HTMLDetailsElement | null; if (pool) pool.open = true; }}>觀察池</a>
                   <a href="#data-issues">資料問題明細</a>
                 </nav>
+                <details className="reading-filter-options"><summary>篩選與顯示設定 <span>{narrowed ? "已套用篩選" : "目前顯示全部"}</span></summary>
                 <div className="list-controls">
                   <label>
                     <span>篩選符合清單</span>
@@ -1442,9 +1354,9 @@ export default function Home() {
                   </label>
                   {[
                     ['ALL', '全部狀態'],
-                    ['READY', 'READY · 條件就緒'],
-                    ['APPROACHING', 'APPROACHING · 接近觀察區'],
-                    ['QUALITY', 'QUALITY · 品質通過'],
+                    ['READY', '進場條件符合'],
+                    ['APPROACHING', '接近觀察區'],
+                    ['QUALITY', '基本面符合，等待進場'],
                     ['INCOMPLETE', '資料不足'],
                   ]
                     .filter(
@@ -1469,7 +1381,7 @@ export default function Home() {
                     ))}
                 </div>
                 <p className="footnote">
-                  狀態旁數字為全部基本面通過標的的數量；可與搜尋、產業及自選交叉篩選。QUALITY
+                  狀態旁數字為全部基本面符合標的的數量；可與搜尋、產業及自選交叉篩選。QUALITY
                   可能仍在等趨勢或回撤，請查看所屬分區及條件明細。
                 </p>
                 {todayOnly && (
@@ -1477,12 +1389,12 @@ export default function Home() {
                     {!fresh ? '尚無今天的掃描紀錄，today 清單暫時為空；可取消篩選查看最近符合者。'
                       : snapshot?.baseline ? '首筆掃描建立比較基準，不標記 today；可取消篩選查看全部符合者。'
                       : todayQualifiedCount === 0 ? '今天尚無新符合標的；原本符合者仍保留，取消 today 篩選即可查看。'
-                      : '只顯示今日新通過基本面或雙重條件、且目前仍符合基本面的標的；可搭配其他篩選。'}
+                      : '只顯示今日新通過基本面或技術面篩選、且目前仍符合基本面的標的；可搭配其他篩選。'}
                   </p>
                 )}
                 {savedOnly && (
                   <p className="footnote">
-                    只顯示本次基本面通過的自選股票；其餘收藏仍保留在上方「我的自選清單」。
+                    只顯示本次基本面符合的自選股票；其餘收藏仍保留在「我的自選清單」。
                   </p>
                 )}
                 <div
@@ -1504,7 +1416,7 @@ export default function Home() {
                     資訊卡片
                   </button>
                   <small>
-                    只改變顯示方式，符合標的全數保留；偏好記在此瀏覽器。
+                    全部符合者皆保留；排序不代表推薦，迷你圖價格軸各自縮放。
                   </small>
                 </div>
                 {viewError && (
@@ -1512,10 +1424,11 @@ export default function Home() {
                     {viewError}
                   </p>
                 )}
+                </details>
                 <p className="list-count" role="status">
                   顯示 {matching.length} / {opportunities.length}{' '}
-                  檔基本面通過標的{narrowed ? ' · 已套用篩選' : ' · 全部列出'}
-                  。排序僅方便比較，不代表推薦順序。迷你圖價格軸各自縮放，漲跌幅請看期間百分比。
+                  檔基本面符合標的{narrowed ? ' · 已套用篩選' : ' · 全部列出'}
+                  {narrowed && <button className="text-button" onClick={() => { setListQuery(''); setSector('ALL'); setSetupFilter('ALL'); setSavedOnly(false); setTodayOnly(false); }}>清除篩選</button>}
                 </p>
               </div>
             )}
@@ -1552,7 +1465,7 @@ export default function Home() {
                             event.status === s.status,
                         );
                         return (
-                          <article key={s.symbol} className="opportunity">
+                          <article key={s.symbol} className={`opportunity ${cardView === "compact" ? "is-compact" : ""}`}>
                             <button
                               className="card-open"
                               onClick={() =>
@@ -1569,7 +1482,7 @@ export default function Home() {
                                 <span
                                   className={`stage-badge ${s.dualPass ? 'dual' : ''}`}
                                 >
-                                  {s.dualPass ? '兩階段都符合' : '第一階段符合'}
+                                  {s.dualPass ? '基本面＋技術面皆符合' : '基本面符合'}
                                 </span>
                                 {added && (
                                   <span className="today-tag">today</span>
@@ -1613,9 +1526,9 @@ export default function Home() {
                                   {s.status === 'INCOMPLETE'
                                     ? '資料待補'
                                     : !s.dualPass
-                                      ? '等待趨勢'
+                                      ? '技術面待確認'
                                       : s.status === 'READY'
-                                        ? '進場條件就緒'
+                                        ? '進場條件符合'
                                         : s.status === 'APPROACHING'
                                           ? '接近觀察區'
                                           : '等待回撤'}
@@ -1655,17 +1568,17 @@ export default function Home() {
                             <div className="stage-icons" aria-label="條件摘要">
                               <span
                                 className="stage-icon passed"
-                                title="第一階段：基本面通過"
+                                title="基本面篩選：5 項皆符合"
                               >
                                 <ShieldCheck size={17} aria-hidden="true" />
-                                基本面通過
+                                基本面符合
                               </span>
                               <span
                                 className={`stage-icon ${s.dualPass ? 'passed' : 'pending'}`}
                                 title={
                                   s.dualPass
-                                    ? '第二階段：技術趨勢通過；進場條件仍需另行確認'
-                                    : '第二階段：技術趨勢尚未全部通過'
+                                    ? '技術面篩選：4 項皆符合；進場條件另行檢查'
+                                    : '技術面篩選：尚未全部符合'
                                 }
                               >
                                 {s.dualPass ? (
@@ -1673,7 +1586,7 @@ export default function Home() {
                                 ) : (
                                   <Clock3 size={17} aria-hidden="true" />
                                 )}
-                                {s.dualPass ? '技術面通過' : '技術面待確認'}
+                                {s.dualPass ? '技術面符合' : '技術面待確認'}
                               </span>
                             </div>
                           </article>
@@ -1692,6 +1605,9 @@ export default function Home() {
                 </section>
               ))
             ) : null}
+            {snapshot && <OverviewSummary stocks={snapshot.stocks} changes={changes} fresh={fresh}
+              baseline={snapshot.baseline} errors={snapshot.errors.length} sector={sector}
+              selectSector={(value) => { setSector(value); document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth' }); }} />}
             {snapshot && (
               <section
                 id="daily-changes"
@@ -1705,7 +1621,7 @@ export default function Home() {
                   <span>{today} · 台北</span>
                 </div>
                 <p className="subtitle">
-                  同一天以首次變化前的有效紀錄比較，列出目前仍成立的變化。資料失敗或不足不當作條件失效；只有新通過基本面或雙重條件才標記
+                  同一天以首次變化前的有效紀錄比較，列出目前仍成立的變化。資料失敗或不足不當作條件失效；只有新通過基本面或技術面篩選才標記
                   today。
                 </p>
                 {changes.length ? (
@@ -1800,7 +1716,8 @@ export default function Home() {
               </span>
             </div>
             {snapshot && <DataIssues snapshot={snapshot} go={go} />}
-            <div className="watch-heading" id="watchlist">
+            <details className="reading-pool" id="watchlist"><summary>觀察池全覽 <span>{snapshot?.stocks.length || 0} 檔 · 含未符合者</span></summary>
+            <div className="watch-heading">
               <div>
                 <h2>觀察池全覽</h2>
                 <p>完整掃描結果 · 可查閱每個通過或未通過的條件</p>
@@ -1912,6 +1829,7 @@ export default function Home() {
                 <div className="empty">目前沒有符合此狀態的股票</div>
               )}
             </div>
+            </details>
             {!!snapshot?.errors.length && (
               <details className="notice">
                 <summary>{snapshot.errors.length} 檔本次取得失敗</summary>
@@ -1923,6 +1841,7 @@ export default function Home() {
             )}
           </>
         )}
+        {!symbol && <AffiliateCta variant="block" locale="zh-Hant" />}
         <footer>
           <div>
             <strong>stocktools</strong>

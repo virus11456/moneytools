@@ -49,6 +49,6 @@ assert.equal(entryComparison({zoneLow:100},{zoneLow:100+1e-10})[0].changed,false
 assert.equal(entryComparison({zoneLow:NaN},{zoneLow:null})[0].changed,false);
 const entryHtml=renderToStaticMarkup(React.createElement(AnalysisComparison,{scan:base,current:{...base,entry:{zoneLow:100},status:'QUALITY',dualPass:true}}));
 assert.match(entryHtml,/1 項觀察數值變動/);
-assert.match(entryHtml,/兩階段符合 · 等待回撤/);
+assert.match(entryHtml,/基本面＋技術面皆符合 · 等待回撤/);
 assert.match(entryHtml,/無法估算/);
 console.log('Entry comparison: missing data, zero, precision and status labels passed');

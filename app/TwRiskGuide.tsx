@@ -11,15 +11,15 @@ export default function TwRiskGuide() {
       description={PAGE.description}
       eyebrow="風險規劃"
       heading="風險先寫下來，再決定要不要靠近。"
-      lede="stocktools 的雙重分析先看企業品質，再看趨勢與位置。通過條件不是下單指令，也還沒扣手續費。"
+      lede="stocktools 先做基本面篩選，再做技術面篩選與進場條件檢查。通過條件不是下單指令，也還沒扣手續費。"
     >
       <section className="tw-panel">
-        <h2>雙重分析在防什麼</h2>
+        <h2>為什麼分開檢查</h2>
         <p>
           美股頁把基本面通過、趨勢到位、靠近成交密集區、量價確認與報酬／風險拆開。台股頁同樣先確認成長與現金流，再用均線與流動性分流。兩區分類是「現在看到什麼」，不是評分排名。回到
           <a href="/tw">台股篩選</a>
           可對照每日名單；美股規則在
-          <a href="/">美股雙重分析</a>。
+          <a href="/">美股篩選</a>。
         </p>
       </section>
       <section className="tw-panel">
