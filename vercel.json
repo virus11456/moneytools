@@ -63,6 +63,16 @@
       "source": "/tw/fee-calculator/",
       "destination": "/tw/us-fee-calculator",
       "permanent": true
+    },
+    {
+      "source": "/tw/w-8ben",
+      "destination": "/tw/us-tax",
+      "permanent": true
+    },
+    {
+      "source": "/tw/w-8ben/",
+      "destination": "/tw/us-tax",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -137,6 +147,14 @@
     {
       "source": "/tw/us-deposit/",
       "destination": "/tw/us-deposit/index.html"
+    },
+    {
+      "source": "/tw/us-tax",
+      "destination": "/tw/us-tax/index.html"
+    },
+    {
+      "source": "/tw/us-tax/",
+      "destination": "/tw/us-tax/index.html"
     },
     {
       "source": "/tw/us-watchlist",

@@ -1,7 +1,7 @@
 import { TwShell } from './TwShell';
 import { TW_GUIDES } from './twGuides';
 
-const PAGE = TW_GUIDES[4];
+const PAGE = TW_GUIDES[5];
 
 export default function TwRiskGuide() {
   return (
@@ -50,6 +50,8 @@ export default function TwRiskGuide() {
           <a href="/tw/us-broker">美股券商比較</a>
           ，入金步驟見
           <a href="/tw/us-deposit">美股入金與匯款</a>
+          ，稅務表格見
+          <a href="/tw/us-tax">W-8BEN 與美股預扣稅</a>
           。READY、APPROACHING 只說明規則有沒有通過。
         </p>
       </section>
@@ -57,7 +59,8 @@ export default function TwRiskGuide() {
         <h2>這份工具不會幫你做的事</h2>
         <ul className="tw-seo-list">
           <li>不保證後續報酬，也沒有回測績效承諾。</li>
-          <li>不代替券商風險揭露、投資適合度或稅務建議。</li>
+          <li>不代替券商風險揭露、投資適合度或稅務建議。W-8BEN 概覽見
+            <a href="/tw/us-tax">美股預扣稅說明</a>。</li>
           <li>資料可能延遲、缺漏或被上游限流；缺值不當成通過。</li>
         </ul>
       </section>

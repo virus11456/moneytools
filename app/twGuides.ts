@@ -14,6 +14,13 @@ export const TW_GUIDES = [
       '開好海外美股帳戶後，如何用銀行電匯入金：SWIFT／ABA、換匯、到帳天數與中間行扣款。示意非報價。',
   },
   {
+    href: '/tw/us-tax',
+    label: 'W-8BEN',
+    title: 'W-8BEN 與美股預扣稅：台灣投資人概覽｜Stocktools',
+    description:
+      '海外券商核准後為什麼要填 W-8BEN：股息預扣與資本利得的常見結構。教育概覽，不是稅務建議。',
+  },
+  {
     href: '/tw/us-fee-calculator',
     label: '手續費試算',
     title: '美股複委託 vs 海外券商費用試算｜Stocktools',
