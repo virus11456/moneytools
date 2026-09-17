@@ -31,7 +31,8 @@ function paint(root: HTMLElement, now: number) {
 
 export function mountUsMarketHours(doc: Document = document) {
   const root = doc.getElementById('us-market-now');
-  if (!root) return () => {};
+  if (!root || root.dataset.mounted === '1') return () => {};
+  root.dataset.mounted = '1';
   const tick = () => paint(root, Date.now());
   tick();
   const timer = doc.defaultView?.setInterval(tick, 1000);
@@ -39,6 +40,7 @@ export function mountUsMarketHours(doc: Document = document) {
   doc.defaultView?.addEventListener('focus', onFocus);
   doc.addEventListener('visibilitychange', onFocus);
   return () => {
+    delete root.dataset.mounted;
     if (timer) doc.defaultView?.clearInterval(timer);
     doc.defaultView?.removeEventListener('focus', onFocus);
     doc.removeEventListener('visibilitychange', onFocus);

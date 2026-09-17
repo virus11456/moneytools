@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { findGuide } from './pages.ts';
 import { renderGuideBody } from './document.ts';
+import { mountUsMarketHours } from './marketHoursWidget.ts';
 
 export default function GuidePage() {
   const page = findGuide(window.location.pathname);
@@ -15,6 +16,10 @@ export default function GuidePage() {
       document.head.appendChild(meta);
     }
     meta.setAttribute('content', page.description);
+  }, [page]);
+  useEffect(() => {
+    if (page?.slug !== 'us-market-hours') return;
+    return mountUsMarketHours();
   }, [page]);
   if (!page) {
     return (
