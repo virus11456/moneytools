@@ -137,6 +137,14 @@
       "destination": "/tw/us-fees/index.html"
     },
     {
+      "source": "/tw/us-market-hours",
+      "destination": "/tw/us-market-hours/index.html"
+    },
+    {
+      "source": "/tw/us-market-hours/",
+      "destination": "/tw/us-market-hours/index.html"
+    },
+    {
       "source": "/tw/:path*",
       "destination": "/index.html"
     }

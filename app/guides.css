@@ -193,6 +193,74 @@
 .guide-app footer p {
   max-width: 42em;
 }
+.market-now {
+  margin: 12px 0 8px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: #f4f7f0;
+  border: 1px solid #dbe2d2;
+}
+.market-now-main {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.market-now-light {
+  flex: 0 0 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: #91988d;
+}
+.market-now--open .market-now-light {
+  background: #19874d;
+  box-shadow: 0 0 0 4px #19874d12;
+}
+.market-now--closed .market-now-light,
+.market-now--unknown .market-now-light {
+  background: #91988d;
+}
+.market-now-headline,
+.market-now-next,
+.market-now-note {
+  margin: 0;
+}
+.market-now-headline {
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+.market-now--open .market-now-headline {
+  color: #187244;
+}
+.market-now-next {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #516052;
+}
+.market-now-clocks {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+}
+.market-now-clocks div {
+  display: grid;
+  gap: 2px;
+}
+.market-now-clocks dt {
+  font-size: 11px;
+  color: #6b7665;
+}
+.market-now-clocks dd {
+  margin: 0;
+  font-size: 13px;
+  color: #31463c;
+}
+.market-now-note {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #6b7665;
+}
 @media (max-width: 900px) {
   .guide-layout,
   .guide-cards {

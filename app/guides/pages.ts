@@ -1,4 +1,9 @@
 import { FIRSTRADE_OPEN_URL, resolveAffiliateUrl } from '../affiliate.ts';
+import {
+  marketHoursExplainerHtml,
+  marketHoursHolidayHtml,
+  marketHoursNowHtml,
+} from '../usMarketHours.ts';
 
 export type GuideFaq = { q: string; a: string };
 
@@ -46,6 +51,63 @@ export const RISK_DISCLAIMER =
 
 export const GUIDE_PAGES: GuidePageDef[] = [
   {
+    slug: 'us-market-hours',
+    path: '/tw/us-market-hours',
+    navLabel: '美股開盤',
+    title: '美股開盤時間與休市日曆｜Stocktools',
+    description:
+      '台灣投資人看美股現在開不開盤、下次開盤／收盤的台北時間與紐約時間，以及今年與明年 NYSE 全日休市日。只計算現金股票一般交易時段 09:30–16:00 ET。',
+    eyebrow: '美股交易時段',
+    h1: '美股現在開盤嗎？開盤時間與休市日曆',
+    lead: '用紐約時間判斷現金股票一般交易時段，並同時標台北時間。休市表來自 NYSE 已公布日曆，不含盤前盤後，也不是下單通道。',
+    toolHref: '/',
+    toolLabel: '開啟美股雙重分析',
+    sections: [
+      {
+        id: 'now',
+        title: '現在美股開盤了嗎？',
+        html: `<p>下面依 <code>America/New_York</code> 計算 NYSE／Nasdaq <strong>現金股票核心時段</strong>。週末、NYSE 全日休市、以及收盤後都顯示未開盤；下次開盤與收盤會同時寫台北與美東時間。</p>
+${marketHoursNowHtml()}
+<p>若你要的是研究名單而不是時鐘，請到 <a href="/">美股雙重分析</a>。開戶路徑見 <a href="/tw/us-broker">美股券商開戶</a>。</p>`,
+      },
+      {
+        id: 'hours',
+        title: '一般交易時段（給台灣看盤用）',
+        html: marketHoursExplainerHtml(),
+      },
+      {
+        id: 'holidays',
+        title: '今年與明年 NYSE 休市日',
+        html: marketHoursHolidayHtml(),
+      },
+      {
+        id: 'limits',
+        title: '這頁沒有算進去的事',
+        html: `<ul>
+  <li>盤前、盤後與延長交易不視為「開盤」。</li>
+  <li>天氣、技術或突發全面暫停，以交易所當日公告為準，本表不會自動插入。</li>
+  <li>複委託下單窗口常綁台灣營業時間，可能比 09:30–16:00 ET 更短。</li>
+  <li>本站篩選用已完成日線，不是盤中報價；時鐘與掃描排程是分開的。</li>
+</ul>
+<p>接著可以看 <a href="/tw/us-fees">手續費與匯費</a>、<a href="/tw/us-watchlist">美股觀察名單</a>，或 <a href="/tw/faq">常見問題</a>。側欄的 Firstrade 按鈕是全站同一個聯盟出口，不是對時鐘結果的推薦。</p>`,
+      },
+    ],
+    faqs: [
+      {
+        q: '美股現在開盤嗎？',
+        a: '以紐約時間的現金股票一般交易時段 09:30–16:00 為準。週末、NYSE 全日休市，或還不到開盤／已經收盤，都算未開盤。盤前盤後不算。',
+      },
+      {
+        q: '台北時間幾點開盤、幾點收盤？',
+        a: '夏令期間（約 3 月中到 11 月初）是台北 21:30 開盤、翌日 04:00 收盤。冬令期間是台北 22:30 開盤、翌日 05:00 收盤。提早收盤日通常是 13:00 ET。',
+      },
+      {
+        q: '休市日從哪裡來？會不會漏？',
+        a: '全日休市與常見提早收盤抄自 NYSE Holidays & Trading Hours（2026–2028 年已核對）。週末不另列。臨時停市請看交易所公告。',
+      },
+    ],
+  },
+  {
     slug: 'us-broker',
     path: '/tw/us-broker',
     navLabel: '美股券商',
@@ -85,7 +147,7 @@ export const GUIDE_PAGES: GuidePageDef[] = [
   <tbody>
     <tr><th>開戶與身份</th><td>另做身份驗證，常見要護照、地址與稅務身份文件</td><td>多半沿用既有台股帳戶</td></tr>
     <tr><th>資金路徑</th><td>台幣先換成美元再匯出，留意匯費、中轉行與到帳時間</td><td>台幣出入，由券商處理換匯與交割</td></tr>
-    <tr><th>交易時間</th><td>較接近美股盤中；盤前盤後仍看券商</td><td>常綁本地營業時間與轉單時段</td></tr>
+    <tr><th>交易時間</th><td>較接近美股盤中；盤前盤後仍看券商。現金股票一般時段見 <a href="/tw/us-market-hours">美股開盤時間</a></td><td>常綁本地營業時間與轉單時段</td></tr>
     <tr><th>費用</th><td>佣金、匯費、不活躍費、交割或提領費須逐項核對</td><td>常見每股或每筆手續費＋匯費；請索取完整費率表</td></tr>
     <tr><th>對帳單</th><td>多為英文，需自行保存</td><td>中文較完整，仍須確認申報義務</td></tr>
   </tbody>
@@ -448,12 +510,17 @@ export const GUIDE_PAGES: GuidePageDef[] = [
         q: '資料從哪裡來？會不會錯？',
         a: '美股主要透過非官方 Yahoo Finance 介面；台股使用可核對的公開來源。免費來源可能延遲、缺漏、修訂或限流。請對照原始財報與交易所公告。',
       },
+      {
+        q: '美股現在開盤嗎？休市日在哪裡看？',
+        a: '見本站「美股開盤」說明頁（/tw/us-market-hours）。以紐約時間 09:30–16:00 的現金股票一般時段計算，並標台北時間；全日休市抄自 NYSE 已公布日曆。',
+      },
     ],
     sections: [
       {
         id: 'more',
         title: '還想往下看',
         html: `<ul>
+  <li><a href="/tw/us-market-hours">美股開盤時間與休市日曆</a></li>
   <li><a href="/tw/us-broker">美股券商開戶</a></li>
   <li><a href="/tw/us-fees">美股手續費與匯費</a></li>
   <li><a href="/tw/us-watchlist">美股觀察名單</a></li>

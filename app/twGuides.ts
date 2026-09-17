@@ -25,7 +25,14 @@ export const TW_GUIDES = [
     label: '風險規劃',
     title: '交易風險規劃｜Stocktools',
     description:
-      '雙重分析如何看失效價位、報酬風險與尚未計入的費用。READY 是條件通過，不是下單指令。',
+      '說明 Stocktools 如何計算成交密集觀察區、失效價位、參考目標與報酬風險比，並提醒缺口、費用與滑價未納入。不是獲利保證。',
+  },
+  {
+    href: '/tw/us-market-hours',
+    label: '美股開盤',
+    title: '美股開盤時間與休市日曆｜Stocktools',
+    description:
+      '看美股現在開不開盤、下次開盤／收盤的台北與紐約時間，以及今年與明年 NYSE 休市日。',
   },
 ] as const;
 

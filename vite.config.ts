@@ -8,6 +8,16 @@ export default defineConfig({
   plugins: [react(), moneytoolsSeoPlugin()],
   css: { postcss: { plugins: [tailwindcss()] } },
   resolve: { alias: { '@': fileURLToPath(new URL('.', import.meta.url)) } },
+  build: {
+    rolldownOptions: {
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        'us-market-hours': fileURLToPath(
+          new URL('./app/guides/marketHours-entry.ts', import.meta.url),
+        ),
+      },
+    },
+  },
   preview: {
     proxy: {
       '/api': { target: 'https://srv1527356.hstgr.cloud', changeOrigin: true },

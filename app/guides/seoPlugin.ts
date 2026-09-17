@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { Plugin, ViteDevServer } from 'vite';
 import { loadEnv } from 'vite';
@@ -17,6 +17,23 @@ function stylesheetHrefs(html: string) {
       return href || '';
     })
     .filter(Boolean);
+}
+
+function widgetScripts(pageSlug: string) {
+  if (pageSlug !== 'us-market-hours') return [];
+  return ['/app/guides/marketHours-entry.ts'];
+}
+
+async function builtWidgetHref(distDir: string) {
+  try {
+    const assets = await readdir(join(distDir, 'assets'));
+    const file = assets.find(
+      (name) => name.startsWith('us-market-hours') && name.endsWith('.js'),
+    );
+    return file ? `/assets/${file}` : '';
+  } catch {
+    return '';
+  }
 }
 
 export function moneytoolsSeoPlugin(): Plugin {
@@ -51,7 +68,9 @@ export function moneytoolsSeoPlugin(): Plugin {
         try {
           const html = await server.transformIndexHtml(
             page.path,
-            renderGuideDocument(page, { scripts: ['/app/guides-entry.ts'] }),
+            renderGuideDocument(page, {
+              scripts: ['/app/guides-entry.ts', ...widgetScripts(page.slug)],
+            }),
           );
           res.setHeader('Content-Type', 'text/html; charset=utf-8');
           res.end(html);
@@ -63,12 +82,15 @@ export function moneytoolsSeoPlugin(): Plugin {
     async closeBundle() {
       const indexHtml = await readFile(join(distDir, 'index.html'), 'utf8');
       const stylesheets = stylesheetHrefs(indexHtml);
+      const widget = await builtWidgetHref(distDir);
       for (const page of GUIDE_PAGES) {
         const file = join(distDir, page.path.slice(1), 'index.html');
         await mkdir(dirname(file), { recursive: true });
+        const scripts =
+          page.slug === 'us-market-hours' && widget ? [widget] : [];
         await writeFile(
           file,
-          renderGuideDocument(page, { stylesheets }),
+          renderGuideDocument(page, { stylesheets, scripts }),
           'utf8',
         );
       }
