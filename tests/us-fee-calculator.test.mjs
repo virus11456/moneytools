@@ -68,6 +68,7 @@ assert.match(html, /id="us-fee-calc"/);
 assert.match(html, /示意／非報價/);
 assert.match(html, /href="\/tw\/us-fees"/);
 assert.match(html, /href="\/tw\/us-broker"/);
+assert.match(html, /href="\/tw\/us-deposit"/);
 assert.match(html, /href="\/tw\/us-market-hours"/);
 assert.match(html, /firstrade\.com\/accounts\/referral\?im_ref=bIQJ59ginr1r/);
 assert.match(html, /開美股帳戶/);

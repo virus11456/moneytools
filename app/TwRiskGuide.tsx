@@ -1,7 +1,7 @@
 import { TwShell } from './TwShell';
 import { TW_GUIDES } from './twGuides';
 
-const PAGE = TW_GUIDES[3];
+const PAGE = TW_GUIDES[4];
 
 export default function TwRiskGuide() {
   return (
@@ -48,6 +48,8 @@ export default function TwRiskGuide() {
           <a href="/tw/us-fee-calculator">手續費／匯費試算</a>
           代入實際費率，再開戶路徑見
           <a href="/tw/us-broker">美股券商比較</a>
+          ，入金步驟見
+          <a href="/tw/us-deposit">美股入金與匯款</a>
           。READY、APPROACHING 只說明規則有沒有通過。
         </p>
       </section>

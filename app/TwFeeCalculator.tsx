@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { TwShell } from './TwShell';
 import { TW_GUIDES } from './twGuides';
 
-const PAGE = TW_GUIDES[1];
+const PAGE = TW_GUIDES[2];
 const UPDATED = '2026-09-16';
 
 function money(value: number, currency: 'TWD' | 'USD') {
@@ -43,7 +43,9 @@ export default function TwFeeCalculator() {
         美元，都是示意，不是牌告。完整路徑說明見
         <a href="/tw/us-broker">美股券商／開戶比較</a>
         ；比較複委託與海外直開請用
-        <a href="/tw/us-fee-calculator">費用試算</a>。
+        <a href="/tw/us-fee-calculator">費用試算</a>
+        ；電匯步驟見
+        <a href="/tw/us-deposit">美股入金與匯款</a>。
       </p>
       <section className="tw-panel">
         <h2>代入你的數字</h2>
