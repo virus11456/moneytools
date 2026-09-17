@@ -1,6 +1,6 @@
 export const TW_GUIDES = [
   {
-    href: '/tw/broker-compare',
+    href: '/tw/us-broker',
     label: '券商比較',
     title: '美股券商／開戶比較｜Stocktools',
     description:
@@ -14,14 +14,14 @@ export const TW_GUIDES = [
       '用本機試算器估算佣金、匯費與匯率對一次進出的摩擦成本。預設為示意區間，可改成你的券商費率。',
   },
   {
-    href: '/tw/watchlist',
+    href: '/tw/us-watchlist',
     label: '觀察名單',
     title: '觀察名單怎麼用｜Stocktools',
     description:
       '說明 stocktools 自選清單只存在瀏覽器、不改變篩選規則，並連回美股與台股研究頁。',
   },
   {
-    href: '/tw/risk',
+    href: '/tw/risk-plan',
     label: '風險規劃',
     title: '交易風險規劃｜Stocktools',
     description:

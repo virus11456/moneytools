@@ -40,9 +40,18 @@ function affiliateCta() {
   const url = affiliateUrl();
   if (!url) return '';
   const safe = esc(url);
-  return `<aside class="guide-cta" aria-label="外部開戶連結">
-    <p>以下為網站設定的外部開戶連結，不是 Stocktools 對特定券商的推薦，也不保證開戶條件或後續報酬。</p>
-    <a class="guide-cta-button" href="${safe}" target="_blank" rel="nofollow sponsored noopener noreferrer">開立券商／複委託帳戶</a>
+  let headline = '外部開戶連結';
+  try {
+    if (new URL(url).hostname.toLowerCase().includes('firstrade')) {
+      headline = 'Firstrade · 中文介面 · 0 手續費美股';
+    }
+  } catch {
+    /* keep generic headline if the URL cannot be parsed */
+  }
+  return `<aside class="guide-cta" id="open-account" aria-label="開美股帳戶">
+    <p>${esc(headline)}</p>
+    <p>可能為聯盟連結，我們可能因此獲得報酬。此連結不改變分析結果，也不是對特定券商的評分或獲利保證。</p>
+    <a class="guide-cta-button" href="${safe}" target="_blank" rel="nofollow sponsored noopener noreferrer">開美股帳戶</a>
   </aside>`;
 }
 

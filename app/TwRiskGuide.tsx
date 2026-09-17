@@ -27,7 +27,8 @@ export default function TwRiskGuide() {
         <ol className="tw-seo-list">
           <li>
             <strong>失效價位。</strong>
-            美股規則用觀察區下緣減 0.5 倍 ATR14。價格跌破代表這次假設不成立，不是再等反彈的理由。
+            美股規則用觀察區下緣減 0.5 倍
+            ATR14。價格跌破代表這次假設不成立，不是再等反彈的理由。
           </li>
           <li>
             <strong>參考目標。</strong>
@@ -42,11 +43,11 @@ export default function TwRiskGuide() {
       <section className="tw-panel">
         <h2>費用會吃掉帳面的報酬／風險</h2>
         <p>
-          同樣的 2:1，在複委託或電匯成本高時可能只剩不到
-          1.5:1。請用
+          同樣的 2:1，在複委託或電匯成本高時可能只剩不到 1.5:1。請用
+          <a href="/tw/us-fees">手續費／匯費說明</a>或
           <a href="/tw/fee-calculator">手續費／匯費試算</a>
           代入實際費率，再開戶路徑見
-          <a href="/tw/broker-compare">美股券商比較</a>
+          <a href="/tw/us-broker">美股券商比較</a>
           。READY、APPROACHING 只說明規則有沒有通過。
         </p>
       </section>

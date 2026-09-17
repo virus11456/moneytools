@@ -39,10 +39,9 @@ export default function TwFeeCalculator() {
       lede="這是瀏覽器內的示意試算，沒有連到任何券商。預設數字是標示過的區間中點，請改成你帳戶實際費率。"
     >
       <p className="tw-seo-updated">
-        預設值更新日期：{UPDATED}。匯率預設 32
-        TWD／USD、電匯 300 元、單邊佣金 1
+        預設值更新日期：{UPDATED}。匯率預設 32 TWD／USD、電匯 300 元、單邊佣金 1
         美元，都是示意，不是牌告。完整路徑說明見
-        <a href="/tw/broker-compare">美股券商／開戶比較</a>。
+        <a href="/tw/us-broker">美股券商／開戶比較</a>。
       </p>
       <section className="tw-panel">
         <h2>代入你的數字</h2>
@@ -119,7 +118,7 @@ export default function TwFeeCalculator() {
         <p className="tw-muted">
           未計入價差滑價、SEC
           等監管費、平台月費與台美稅務。雙重分析的報酬／風險也尚未扣這些成本，見
-          <a href="/tw/risk">交易風險規劃</a>。
+          <a href="/tw/risk-plan">交易風險規劃</a>。
         </p>
       </section>
     </TwShell>

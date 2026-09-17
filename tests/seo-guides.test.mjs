@@ -11,11 +11,18 @@ import {
   sitemapXml,
   robotsTxt,
 } from '../app/guides/document.ts';
+import { FIRSTRADE_OPEN_URL } from '../app/affiliate.ts';
 
-assert.equal(GUIDE_PAGES.length, 5);
+const REFERRAL =
+  'https://www.firstrade.com/accounts/referral?im_ref=bIQJ59ginr1r';
+
+assert.equal(GUIDE_PAGES.length, 8);
 assert.deepEqual(
   GUIDE_PAGES.map((page) => page.path),
   [
+    '/tw/us-broker',
+    '/tw/us-fees',
+    '/tw/us-watchlist',
     '/tw/us-account',
     '/tw/watchlist-guide',
     '/tw/risk-plan',
@@ -26,29 +33,51 @@ assert.deepEqual(
 
 assert.equal(isGuidePath('/tw/faq'), true);
 assert.equal(isGuidePath('/tw/faq/'), true);
+assert.equal(isGuidePath('/tw/us-broker'), true);
+assert.equal(isGuidePath('/tw/us-watchlist/'), true);
+assert.equal(isGuidePath('/tw/us-fees'), true);
 assert.equal(isGuidePath('/tw/stock/2330'), false);
 assert.equal(isGuidePath('/tw'), false);
 
 const titles = new Set(GUIDE_PAGES.map((page) => page.title));
 const descriptions = new Set(GUIDE_PAGES.map((page) => page.description));
+const headings = new Set(GUIDE_PAGES.map((page) => page.h1));
 assert.equal(titles.size, GUIDE_PAGES.length);
 assert.equal(descriptions.size, GUIDE_PAGES.length);
+assert.equal(headings.size, GUIDE_PAGES.length);
+for (const page of GUIDE_PAGES) {
+  assert.notEqual(page.title, 'Stocktools｜美股雙重分析');
+}
 
 delete process.env.NEXT_PUBLIC_AFFILIATE_URL;
 delete process.env.VITE_AFFILIATE_URL;
-assert.equal(affiliateUrl(), '');
+assert.equal(FIRSTRADE_OPEN_URL, REFERRAL);
+assert.equal(affiliateUrl(), REFERRAL);
 
 const forbidden = [
   '穩賺',
   '必賺',
   '保證報酬',
-  'firstrade',
   'interactivebrokers',
   'ibkr.com',
   'tastytrade',
+  'binance',
+  'coinbase',
   'partnerId=',
   'aff_id=',
 ];
+
+const vercel = JSON.parse(
+  readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'),
+);
+for (const page of GUIDE_PAGES) {
+  const rewrite = vercel.rewrites.find(
+    (entry) =>
+      entry.source === page.path &&
+      entry.destination === `${page.path}/index.html`,
+  );
+  assert.ok(rewrite, `vercel.json missing rewrite for ${page.path}`);
+}
 
 for (const page of GUIDE_PAGES) {
   const html = renderGuideDocument(page, { stylesheets: ['/assets/app.css'] });
@@ -59,7 +88,12 @@ for (const page of GUIDE_PAGES) {
       `<title>${page.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</title>`,
     ),
   );
-  assert.match(html, /<meta name="description"/);
+  assert.match(
+    html,
+    new RegExp(
+      `<meta name="description" content="${page.description.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`,
+    ),
+  );
   assert.match(
     html,
     new RegExp(`<h1>${page.h1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</h1>`),
@@ -75,11 +109,19 @@ for (const page of GUIDE_PAGES) {
   assert.match(html, /simples\.com\.tw/);
   assert.match(html, /href="\/"/);
   assert.match(html, /href="\/tw"/);
+  assert.match(html, /href="\/tw\/us-broker"/);
+  assert.match(html, /href="\/tw\/us-fees"/);
+  assert.match(html, /href="\/tw\/us-watchlist"/);
   assert.match(html, /href="\/tw\/us-account"/);
   assert.match(html, /href="\/tw\/watchlist-guide"/);
   assert.match(html, /href="\/tw\/risk-plan"/);
   assert.ok(html.includes(RISK_DISCLAIMER));
-  assert.doesNotMatch(html, /開立券商／複委託帳戶/);
+  assert.match(html, /開美股帳戶/);
+  assert.match(
+    html,
+    /href="https:\/\/www\.firstrade\.com\/accounts\/referral\?im_ref=bIQJ59ginr1r"/,
+  );
+  assert.match(html, /rel="nofollow sponsored noopener noreferrer"/);
   assert.doesNotMatch(html, /id="root"/);
   for (const phrase of forbidden) {
     assert.equal(
@@ -92,8 +134,11 @@ for (const page of GUIDE_PAGES) {
 
 process.env.NEXT_PUBLIC_AFFILIATE_URL = 'https://example.com/open-account';
 const withCta = renderGuideDocument(GUIDE_PAGES[0]);
-assert.match(withCta, /開立券商／複委託帳戶/);
-assert.match(withCta, /href="https:\/\/example.com\/open-account"/);
+assert.match(withCta, /開美股帳戶/);
+assert.match(
+  withCta,
+  /class="guide-cta-button" href="https:\/\/example.com\/open-account"/,
+);
 assert.match(withCta, /rel="nofollow sponsored noopener noreferrer"/);
 assert.doesNotMatch(withCta, /example.com\/open-account\?/);
 delete process.env.NEXT_PUBLIC_AFFILIATE_URL;
@@ -105,14 +150,22 @@ assert.match(faq, /application\/ld\+json/);
 assert.match(faq, /FAQPage/);
 
 const sitemap = sitemapXml();
-for (const page of GUIDE_PAGES) assert.match(sitemap, new RegExp(page.path));
+for (const page of GUIDE_PAGES) {
+  assert.match(sitemap, new RegExp(`https://stocktools\\.cc${page.path}`));
+}
 assert.match(sitemap, /stocktools\.cc\/tw</);
-assert.match(
-  robotsTxt(),
-  /Sitemap: https:\/\/stocktools\.cc\/sitemap\.xml/,
-);
+assert.doesNotMatch(sitemap, /vercel\.app/);
+assert.match(robotsTxt(), /Sitemap: https:\/\/stocktools\.cc\/sitemap\.xml/);
 
-const distPage = new URL('../dist/tw/us-account/index.html', import.meta.url);
+const publicSitemap = readFileSync(
+  new URL('../public/sitemap.xml', import.meta.url),
+  'utf8',
+);
+assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-broker/);
+assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-fees/);
+assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-watchlist/);
+
+const distPage = new URL('../dist/tw/us-broker/index.html', import.meta.url);
 if (existsSync(distPage)) {
   for (const page of GUIDE_PAGES) {
     const file = new URL(`../dist${page.path}/index.html`, import.meta.url);
@@ -121,21 +174,29 @@ if (existsSync(distPage)) {
     assert.match(html, /<title>/);
     assert.match(html, /<meta name="description"/);
     assert.match(html, /<link rel="stylesheet"/);
-    assert.doesNotMatch(html, /開立券商／複委託帳戶/);
+    assert.match(html, /開美股帳戶/);
+    assert.match(
+      html,
+      /firstrade\.com\/accounts\/referral\?im_ref=bIQJ59ginr1r/,
+    );
     assert.ok(html.includes(page.h1));
+    assert.ok(html.includes(page.title));
   }
   const builtSitemap = readFileSync(
     new URL('../dist/sitemap.xml', import.meta.url),
     'utf8',
   );
-  assert.match(builtSitemap, /\/tw\/faq/);
+  assert.match(builtSitemap, /\/tw\/us-broker/);
+  assert.match(builtSitemap, /\/tw\/us-fees/);
+  assert.match(builtSitemap, /\/tw\/us-watchlist/);
+  assert.match(builtSitemap, /stocktools\.cc/);
   const builtRobots = readFileSync(
     new URL('../dist/robots.txt', import.meta.url),
     'utf8',
   );
-  assert.match(builtRobots, /sitemap\.xml/);
+  assert.match(builtRobots, /Sitemap: https:\/\/stocktools\.cc\/sitemap\.xml/);
 }
 
 console.log(
-  'SEO guide pages: Traditional Chinese HTML, disclaimers, sibling nav, hidden CTA, sitemap.',
+  'SEO guide pages: unique TW titles, crawlable HTML, Firstrade CTA, sitemap.',
 );

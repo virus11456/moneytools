@@ -1,3 +1,5 @@
+import { FIRSTRADE_OPEN_URL, resolveAffiliateUrl } from '../affiliate.ts';
+
 export type GuideFaq = { q: string; a: string };
 
 export type GuidePageDef = {
@@ -30,19 +32,175 @@ export function affiliateUrl() {
   const fromVite = (
     import.meta as ImportMeta & { env?: Record<string, string | undefined> }
   ).env;
-  return String(
+  const raw =
     process.env.NEXT_PUBLIC_AFFILIATE_URL ||
-      process.env.VITE_AFFILIATE_URL ||
-      fromVite?.NEXT_PUBLIC_AFFILIATE_URL ||
-      fromVite?.VITE_AFFILIATE_URL ||
-      '',
-  ).trim();
+    process.env.VITE_AFFILIATE_URL ||
+    fromVite?.NEXT_PUBLIC_AFFILIATE_URL ||
+    fromVite?.VITE_AFFILIATE_URL ||
+    '';
+  return resolveAffiliateUrl(raw) || FIRSTRADE_OPEN_URL;
 }
 
 export const RISK_DISCLAIMER =
   '本頁與 Stocktools 僅提供公開資料的研究整理，不是投資建議、買賣委託或獲利保證。股票可能下跌、停牌或損失本金；缺口、匯率、稅務與交易成本未完整納入模型。請以你自己的風險承受度做判斷。';
 
 export const GUIDE_PAGES: GuidePageDef[] = [
+  {
+    slug: 'us-broker',
+    path: '/tw/us-broker',
+    navLabel: '美股券商',
+    title: '美股券商開戶：海外直開與複委託比較｜Stocktools',
+    description:
+      '台灣投資人比較美股券商開戶路徑：海外直開與複委託的資金、費用、交易時間與文件。頁面含揭露過的 Firstrade 開戶連結，不是券商評分。',
+    eyebrow: '開戶前先選路徑',
+    h1: '美股券商怎麼開：先選路徑，再比費用',
+    lead: '常見只有兩條路：自己開海外帳戶，或走台灣複委託。Stocktools 不是券商；下方開戶按鈕是揭露過的聯盟連結，不改變任何篩選結果。',
+    toolHref: '/',
+    toolLabel: '開啟美股雙重分析',
+    sections: [
+      {
+        id: 'why',
+        title: '這頁在比什麼',
+        html: `<p>「哪一家美股券商最好」常被簡化成費率表。實際差異多半出在：資金怎麼換成美元、你能不能處理英文對帳單，以及下單時間是否卡在台灣營業時間。</p>
+<p>本頁整理可自行核對的路徑與檢查項，<strong>不替券商排名</strong>。若你仍要開海外帳戶，頁面側欄有一個揭露過的 <a href="#open-account">Firstrade 開戶連結</a>；這是本站唯一的金融聯盟出口，不是評測冠軍，也不保證 0 成本或後續報酬。</p>
+<p>開戶只解決「能不能下單」。標的研究請回到 <a href="/">美股雙重分析</a> 與 <a href="/tw/us-watchlist">美股觀察名單</a>。</p>`,
+      },
+      {
+        id: 'paths',
+        title: '兩條開戶路徑',
+        html: `<div class="guide-cards">
+  <article><h3>海外券商直開</h3><p>以個人名義開立海外證券帳戶，自行完成身份驗證、W-8BEN、匯入美元與對帳單保存。費率與商品通常較完整；成本是文件、時差，以及你要自己核對官方費率。</p></article>
+  <article><h3>台灣複委託</h3><p>透過國內券商或銀行代下美股。台幣出入、中文客服較接近台股習慣；費率結構往往較多層，下單窗口也可能較短。</p></article>
+</div>
+<p>兩條路都能買美股上市股票與 ETF，但匯費、報價、公司行動與報稅流程不同。完整檢查清單也可對照 <a href="/tw/us-account">美股開戶與複委託比較</a>。</p>`,
+      },
+      {
+        id: 'compare',
+        title: '要比對的面向（不是評分）',
+        html: `<p>下表是結構差異。實際佣金、是否支援盤前盤後、最低開戶門檻，都以你正在申請的券商最新公告為準。</p>
+<table class="guide-table">
+  <thead>
+    <tr><th>檢查項</th><th>海外直開</th><th>台灣複委託</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>開戶與身份</th><td>另做身份驗證，常見要護照、地址與稅務身份文件</td><td>多半沿用既有台股帳戶</td></tr>
+    <tr><th>資金路徑</th><td>台幣先換成美元再匯出，留意匯費、中轉行與到帳時間</td><td>台幣出入，由券商處理換匯與交割</td></tr>
+    <tr><th>交易時間</th><td>較接近美股盤中；盤前盤後仍看券商</td><td>常綁本地營業時間與轉單時段</td></tr>
+    <tr><th>費用</th><td>佣金、匯費、不活躍費、交割或提領費須逐項核對</td><td>常見每股或每筆手續費＋匯費；請索取完整費率表</td></tr>
+    <tr><th>對帳單</th><td>多為英文，需自行保存</td><td>中文較完整，仍須確認申報義務</td></tr>
+  </tbody>
+</table>
+<p>佣金只是摩擦的一部分。匯費與匯率價差怎麼估算，見 <a href="/tw/us-fees">美股手續費與匯費</a>。</p>`,
+      },
+      {
+        id: 'checklist',
+        title: '開戶前檢查清單',
+        html: `<ol class="guide-steps">
+  <li>確認你要的是長期持有通道，還是需要盤中改單、盤前盤後或選擇權。</li>
+  <li>向券商索取完整費率：交易佣金、匯費、最低收費、不活躍費、美國交易所相關費用。</li>
+  <li>問清楚美股報價是即時還是延遲、是否另收行情費。</li>
+  <li>第一次匯美元的銀行費率，會不會比佣金還高？</li>
+  <li>寫下你能接受的最大單筆損失，再開戶；本站不會替你下單或控管部位。</li>
+</ol>
+<p>檢查完若仍要開海外帳戶，可使用側欄的 Firstrade 按鈕（聯盟揭露）。連結代碼與生產環境儀表板相同，本站沒有另造追蹤參數。開戶之後請用 <a href="/">每日雙重分析</a> 做研究，而不是把開戶當成獲利保證。</p>`,
+      },
+    ],
+  },
+  {
+    slug: 'us-fees',
+    path: '/tw/us-fees',
+    navLabel: '美股手續費',
+    title: '美股手續費與匯費：佣金不是全部成本｜Stocktools',
+    description:
+      '說明台灣投資人買美股時，佣金、匯費與匯率價差如何影響一次進出的摩擦成本。提供示意試算，並連結揭露過的 Firstrade 開戶按鈕。',
+    eyebrow: '先算摩擦再談進出',
+    h1: '美股手續費：佣金之外，還有匯費與價差',
+    lead: '帳面上的 0 佣金，不代表摩擦是 0。把匯出、兌換與買賣兩邊一起算，再決定部位要不要靠近觀察區。',
+    toolHref: '/tw/fee-calculator',
+    toolLabel: '打開手續費／匯費試算',
+    sections: [
+      {
+        id: 'layers',
+        title: '費用通常疊在三層',
+        html: `<p>美股交易成本很少只有「每股多少錢」。台灣資金進出常見三層：</p>
+<ul>
+  <li><strong>交易佣金與市場費</strong>：每股或每筆；有的券商美股股票與 ETF 標示 0 佣金，仍可能有監管費或平台條件。</li>
+  <li><strong>匯出／兌換手續費</strong>：銀行電匯或第三方換匯，常以新台幣計。</li>
+  <li><strong>匯率價差</strong>：牌告或議價匯率與你心中的中間價不同，有時比匯費還大。</li>
+</ul>
+<p>複委託則可能把兌換藏在「國外交易手續費」裡。請以券商與銀行官網為準，不要把本頁示意區間當成報價。</p>`,
+      },
+      {
+        id: 'example',
+        title: '示意試算（可改成你的費率）',
+        html: `<p>以下用瀏覽器試算器的預設中點當例子，<strong>不是牌告</strong>。假設準備投入 300,000 元新台幣、匯率 32 TWD／USD、電匯 300 元、單邊佣金 1 美元、買入＋賣出兩邊：</p>
+<table class="guide-table">
+  <thead>
+    <tr><th>項目</th><th>示意結果</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>扣除匯費後約可買入</th><td>(300,000 − 300) ÷ 32 ≒ 9,365.63 USD</td></tr>
+    <tr><th>佣金合計</th><td>1 × 2 = 2.00 USD</td></tr>
+    <tr><th>匯費＋佣金摩擦</th><td>300 + 2 × 32 = 364 TWD</td></tr>
+    <tr><th>約佔本金</th><td>約 0.12%</td></tr>
+  </tbody>
+</table>
+<p>未計入價差滑價、SEC 等監管費、平台月費與稅務。數字會隨本金變小而佔比變高：同樣 300 元匯費，在 30,000 元本金就是 1% 以上。</p>
+<p>要代入自己的費率，用 <a href="/tw/fee-calculator">手續費／匯費試算</a>（純前端、不連券商）。</p>`,
+      },
+      {
+        id: 'ready',
+        title: '摩擦會吃掉帳面的報酬／風險',
+        html: `<p>Stocktools 個股頁的報酬／風險用最新收盤估算，<strong>還沒扣</strong>手續費、匯費與滑價。同樣顯示 2:1，在複委託或電匯成本高時，實際可能低很多。</p>
+<p>進場前請同時看 <a href="/tw/risk-plan">風險與停損規劃</a>。READY 只代表規則通過，不是「扣完費用仍划算」。</p>
+<p>若你比較的是海外直開路徑，側欄的 Firstrade 開戶按鈕與全站相同（聯盟揭露）。0 佣金美股仍要自己核對官方費率、匯款成本與帳戶條件，見 <a href="/tw/us-broker">美股券商開戶</a>。</p>`,
+      },
+    ],
+  },
+  {
+    slug: 'us-watchlist',
+    path: '/tw/us-watchlist',
+    navLabel: '美股觀察名單',
+    title: '美股觀察名單怎麼看：觀察池、today 與兩區｜Stocktools',
+    description:
+      '說明 Stocktools 美股觀察池、每日變化與 today 標記。觀察名單不是推薦榜；通過條件後仍要核對失效價、費用與開戶路徑。',
+    eyebrow: '對應首頁｜觀察池',
+    h1: '美股觀察名單：看規則結果，不是看預測榜',
+    lead: '觀察池列出最近一次掃描裡每檔的條件狀態。today 只標記當日新通過的變化，不是當沖訊號，也不保證後續上漲。',
+    toolHref: '/#watchlist',
+    toolLabel: '前往美股觀察池',
+    sections: [
+      {
+        id: 'blocks',
+        title: '首頁上實際有哪些區塊',
+        html: `<p>美股首頁把掃描結果分成可核對的區塊，而不是單一推薦分數：</p>
+<ul>
+  <li><a href="/#overview">基本面通過總覽</a>：最近一次掃描中，基本面五項都通過的標的。</li>
+  <li><a href="/#group-dual">第一區</a>：基本面＋技術面皆符合。</li>
+  <li><a href="/#group-fundamental">第二區</a>：基本面符合、技術面待確認。</li>
+  <li><a href="/#daily-changes">每日變化</a>：與前一次有效紀錄比較後，目前仍成立的條件變化。</li>
+  <li><a href="/#watchlist">觀察池全覽</a>：完整掃描結果，包含尚未通過基本面或資料不足者。</li>
+</ul>
+<p>宇宙是公開 S&amp;P 500 成分加上可編輯的 <code>watchlist.json</code>，並非全美股。規則逐步說明見 <a href="/tw/watchlist-guide">觀察名單與雙重分析</a>。</p>`,
+      },
+      {
+        id: 'today',
+        title: 'today、收藏、搜尋各做什麼',
+        html: `<ul>
+  <li><strong>today</strong> 只標記當下台北日新通過基本面或雙重條件的變動，不是進場指令。</li>
+  <li><strong>收藏</strong>存在你的瀏覽器，不會上傳帳號；換裝置或清資料就會消失，也不會因此變成 READY。</li>
+  <li><strong>搜尋</strong>可查已掃描代號，或向資料源查其他美股。查詢本身不會把股票加入每日宇宙。</li>
+</ul>
+<p>資料用已完成交易日的日線，不是盤中報價。請先看掃描完成時間與行情日期，再點進個股（例如 <a href="/stock/AAPL">AAPL</a>）。</p>`,
+      },
+      {
+        id: 'next',
+        title: '名單看完之後',
+        html: `<p>通過觀察池不代表應該開戶或下單。若你還在比較帳戶路徑，讀 <a href="/tw/us-broker">美股券商開戶</a> 與 <a href="/tw/us-fees">手續費與匯費</a>；失效價與報酬／風險見 <a href="/tw/risk-plan">風險規劃</a>。</p>
+<p>側欄的 Firstrade 開戶按鈕是揭露過的聯盟連結，與分析規則分開。開戶不會讓觀察名單變準，也不會改變 today 或 READY。</p>`,
+      },
+    ],
+  },
   {
     slug: 'us-account',
     path: '/tw/us-account',
@@ -60,7 +218,7 @@ export const GUIDE_PAGES: GuidePageDef[] = [
         id: 'why',
         title: '這頁能幫你做什麼',
         html: `<p>台灣投資人買美股，常見兩條路：透過本地券商<strong>複委託</strong>，或自行<strong>開立海外券商帳戶</strong>。兩者都能下單美股，但開戶文件、交易時間、費用結構、公司行動處理與報稅方式不同。</p>
-<p>本頁提供可自行核對的檢查清單，不推薦特定券商、不提供追蹤連結，也不暗示「開戶就能獲利」。開戶只是取得下單通道；標的研究請回到 <a href="/">美股雙重分析</a> 與 <a href="/#watchlist">觀察池</a>。</p>`,
+<p>本頁提供可自行核對的檢查清單，不替券商排名，也不暗示「開戶就能獲利」。開戶只是取得下單通道；標的研究請回到 <a href="/">美股雙重分析</a> 與 <a href="/tw/us-watchlist">美股觀察名單</a>。路徑對照也可讀 <a href="/tw/us-broker">美股券商開戶</a>。</p>`,
       },
       {
         id: 'compare',
@@ -91,7 +249,7 @@ export const GUIDE_PAGES: GuidePageDef[] = [
   <li>確認公司行動、股利入帳幣別，以及萬一要終止帳戶時如何把資金轉回台灣。</li>
   <li>寫下你能接受的最大單筆損失，再開戶；工具不會替你下單或控管部位。</li>
 </ol>
-<p>檢查完若仍要開戶，可使用頁面下方的外部連結（僅在網站設定了網址時顯示）。連結由設定檔提供，Stocktools 不預設任何券商或追蹤代碼。</p>`,
+<p>檢查完若仍要開戶，側欄有揭露過的 Firstrade 開戶按鈕（可能為聯盟連結）。這是本站唯一的金融聯盟出口，連結與全站儀表板相同，沒有另造追蹤代碼。費用細節見 <a href="/tw/us-fees">美股手續費與匯費</a>。</p>`,
       },
       {
         id: 'after',
@@ -276,7 +434,7 @@ export const GUIDE_PAGES: GuidePageDef[] = [
       },
       {
         q: '你們推薦哪一家複委託或海外券商？',
-        a: '不推薦。開戶說明只列檢查項。若網站管理員設定了 NEXT_PUBLIC_AFFILIATE_URL，頁面會顯示標示清楚的外部開戶按鈕；未設定則完全隱藏，不會出現預設券商或追蹤代碼。',
+        a: '不做券商評分或排名。開戶說明只列檢查項。頁面上的 Firstrade 按鈕是揭露過的聯盟連結（可能帶來報酬），不改變分析結果，也不保證開戶條件或後續報酬。本站沒有加密貨幣券商連結。',
       },
       {
         q: '失效價可以當成停損單價格嗎？',
@@ -296,6 +454,9 @@ export const GUIDE_PAGES: GuidePageDef[] = [
         id: 'more',
         title: '還想往下看',
         html: `<ul>
+  <li><a href="/tw/us-broker">美股券商開戶</a></li>
+  <li><a href="/tw/us-fees">美股手續費與匯費</a></li>
+  <li><a href="/tw/us-watchlist">美股觀察名單</a></li>
   <li><a href="/tw/us-account">美股開戶與複委託比較</a></li>
   <li><a href="/tw/watchlist-guide">觀察名單與雙重分析</a></li>
   <li><a href="/tw/risk-plan">風險與停損規劃</a></li>
