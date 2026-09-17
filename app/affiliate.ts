@@ -1,5 +1,5 @@
 export const FIRSTRADE_OPEN_URL =
-  'https://www.firstrade.com/zh-TW/accounts/international';
+  'https://www.firstrade.com/accounts/referral?im_ref=bIQJ59ginr1r';
 
 export function resolveAffiliateUrl(raw: unknown): string {
   if (typeof raw !== 'string') return '';
@@ -16,7 +16,7 @@ export function resolveAffiliateUrl(raw: unknown): string {
 
 export function affiliateUrl(): string {
   return (
-    resolveAffiliateUrl(import.meta.env.NEXT_PUBLIC_AFFILIATE_URL) ||
+    resolveAffiliateUrl(import.meta.env?.NEXT_PUBLIC_AFFILIATE_URL) ||
     FIRSTRADE_OPEN_URL
   );
 }
