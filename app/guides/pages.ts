@@ -1,4 +1,5 @@
 import { FIRSTRADE_OPEN_URL, resolveAffiliateUrl } from '../affiliate.ts';
+import { feeCalculatorHtml } from '../usFeeCalculator.ts';
 import {
   marketHoursExplainerHtml,
   marketHoursHolidayHtml,
@@ -89,7 +90,7 @@ ${marketHoursNowHtml()}
   <li>複委託下單窗口常綁台灣營業時間，可能比 09:30–16:00 ET 更短。</li>
   <li>本站篩選用已完成日線，不是盤中報價；時鐘與掃描排程是分開的。</li>
 </ul>
-<p>接著可以看 <a href="/tw/us-fees">手續費與匯費</a>、<a href="/tw/us-watchlist">美股觀察名單</a>，或 <a href="/tw/faq">常見問題</a>。側欄的 Firstrade 按鈕是全站同一個聯盟出口，不是對時鐘結果的推薦。</p>`,
+<p>接著可以看 <a href="/tw/us-fees">手續費與匯費</a>、<a href="/tw/us-fee-calculator">複委託 vs 海外券商費用試算</a>、<a href="/tw/us-watchlist">美股觀察名單</a>，或 <a href="/tw/faq">常見問題</a>。側欄的 Firstrade 按鈕是全站同一個聯盟出口，不是對時鐘結果的推薦。</p>`,
       },
     ],
     faqs: [
@@ -152,7 +153,7 @@ ${marketHoursNowHtml()}
     <tr><th>對帳單</th><td>多為英文，需自行保存</td><td>中文較完整，仍須確認申報義務</td></tr>
   </tbody>
 </table>
-<p>佣金只是摩擦的一部分。匯費與匯率價差怎麼估算，見 <a href="/tw/us-fees">美股手續費與匯費</a>。</p>`,
+<p>佣金只是摩擦的一部分。匯費與匯率價差怎麼估算，見 <a href="/tw/us-fees">美股手續費與匯費</a>；要代入自己的數字比較複委託與海外直開，用 <a href="/tw/us-fee-calculator">費用試算</a>。</p>`,
       },
       {
         id: 'checklist',
@@ -178,8 +179,8 @@ ${marketHoursNowHtml()}
     eyebrow: '先算摩擦再談進出',
     h1: '美股手續費：佣金之外，還有匯費與價差',
     lead: '帳面上的 0 佣金，不代表摩擦是 0。把匯出、兌換與買賣兩邊一起算，再決定部位要不要靠近觀察區。',
-    toolHref: '/tw/fee-calculator',
-    toolLabel: '打開手續費／匯費試算',
+    toolHref: '/tw/us-fee-calculator',
+    toolLabel: '打開複委託 vs 海外券商試算',
     sections: [
       {
         id: 'layers',
@@ -208,7 +209,7 @@ ${marketHoursNowHtml()}
   </tbody>
 </table>
 <p>未計入價差滑價、SEC 等監管費、平台月費與稅務。數字會隨本金變小而佔比變高：同樣 300 元匯費，在 30,000 元本金就是 1% 以上。</p>
-<p>要代入自己的費率，用 <a href="/tw/fee-calculator">手續費／匯費試算</a>（純前端、不連券商）。</p>`,
+<p>要代入自己的費率、比較複委託與海外直開來回成本，用 <a href="/tw/us-fee-calculator">美股費用試算</a>（純前端、不連券商，示意非報價）。</p>`,
       },
       {
         id: 'ready',
@@ -216,6 +217,70 @@ ${marketHoursNowHtml()}
         html: `<p>Stocktools 個股頁的報酬／風險用最新收盤估算，<strong>還沒扣</strong>手續費、匯費與滑價。同樣顯示 2:1，在複委託或電匯成本高時，實際可能低很多。</p>
 <p>進場前請同時看 <a href="/tw/risk-plan">風險與停損規劃</a>。READY 只代表規則通過，不是「扣完費用仍划算」。</p>
 <p>若你比較的是海外直開路徑，側欄的 Firstrade 開戶按鈕與全站相同（聯盟揭露）。0 佣金美股仍要自己核對官方費率、匯款成本與帳戶條件，見 <a href="/tw/us-broker">美股券商開戶</a>。</p>`,
+      },
+    ],
+  },
+  {
+    slug: 'us-fee-calculator',
+    path: '/tw/us-fee-calculator',
+    navLabel: '費用試算',
+    title: '美股複委託 vs 海外券商費用試算｜Stocktools',
+    description:
+      '台灣投資人用示意數字比較複委託與 Firstrade 風格海外直開的佣金、最低費用、匯費與來回成本。可改參數，不是券商報價或投資建議。',
+    eyebrow: '示意試算，非報價',
+    h1: '複委託跟海外券商，來回成本差多少？',
+    lead: '先代入成交金額與費率，再看摩擦佔本金多少。預設是標示過的示意區間，不是牌告；改成你帳戶實際數字才有參考價值。',
+    toolHref: '/tw/us-broker',
+    toolLabel: '看美股券商開戶路徑',
+    sections: [
+      {
+        id: 'calc',
+        title: '代入數字：複委託 vs 海外直開',
+        html: `<p>預設假設成交 <strong>10,000 USD</strong>、股價 100 USD（約 100 股）、匯率 32、來回兩邊。複委託用每股 0.02 USD、單邊最低 20 USD、兌換價差 0.5%；海外直開用 0 佣金、電匯 300 TWD、銀行匯差 0.3%、賣出監管費每百萬成交 27.8 USD。這些都是<strong>示意／非報價</strong>。</p>
+${feeCalculatorHtml()}
+<p>路徑說明見 <a href="/tw/us-broker">美股券商開戶</a>；費用層次見 <a href="/tw/us-fees">手續費與匯費</a>。下單窗口還可能短於美股核心時段，見 <a href="/tw/us-market-hours">美股開盤時間</a>。</p>`,
+      },
+      {
+        id: 'costs',
+        title: '真正拉開差距的通常不是「有沒有 0 佣金」',
+        html: `<p>台灣資金買美股，來回摩擦常疊在這幾層。哪一層最大，取決於金額大小與你怎麼換匯，而不是品牌口號。</p>
+<ul>
+  <li><strong>佣金與最低收費。</strong>複委託常見每股計費，小金額很容易碰到單邊最低消費；海外直開美股股票／ETF 常標 0 佣金，仍可能有賣出監管費或帳戶條件。</li>
+  <li><strong>匯費。</strong>自己匯美元時，銀行電匯常以新台幣計，有時比佣金還高。複委託則可能把兌換藏在「國外交易手續費」裡。</li>
+  <li><strong>匯率價差。</strong>牌告或議價匯率與中間價的差距，金額一大就很明顯；來回若台幣進出兩次，價差會算兩邊。</li>
+  <li><strong>交易時間與改單。</strong>複委託窗口常綁台灣營業時間，錯過美股盤中可能變成隔日單，間接增加滑價。這頁沒有把滑價算進去。</li>
+</ul>
+<p>側欄的 Firstrade 開戶按鈕是全站同一個、已揭露的聯盟出口，不是因為試算結果比較便宜才出現，也不保證 0 成本或後續報酬。</p>`,
+      },
+      {
+        id: 'read',
+        title: '怎麼讀這組數字（限制）',
+        html: `<ul>
+  <li>同一個 300 元匯費，在 10,000 USD 本金裡很輕，在 1,000 USD 裡就很痛。先看<strong>佔比</strong>，不要只看絕對金額。</li>
+  <li>複委託最低佣金讓小額來回特別貴：100 股 × 0.02 只有 2 USD，但最低 20 USD 仍收 20。</li>
+  <li>若你把美元留在海外帳戶、不立刻換回台幣，海外直開的來回匯差應調低或改成只算買入。</li>
+  <li>未計入滑價、盤前盤後加價、平台月費、不活躍費、中轉行扣款、報價費與台美稅務。</li>
+  <li>費率會改。下單前請核對你正在用的券商與銀行公告，不要把本頁當報價單。</li>
+</ul>
+<p>Stocktools 個股頁的報酬／風險還沒扣這些成本，見 <a href="/tw/risk-plan">風險規劃</a>。本頁不是投資建議、也不是對特定券商的評分。</p>`,
+      },
+    ],
+    faqs: [
+      {
+        q: '複委託一定比較貴嗎？',
+        a: '不一定。大額、低每股費率、或你本來就要付很高的電匯時，差距會縮小甚至反向。請把你的費率表填進試算，不要用預設值下結論。',
+      },
+      {
+        q: 'Firstrade 或海外券商寫 0 手續費，是不是 0 成本？',
+        a: '不是。0 佣金通常只指美股股票／ETF 交易佣金。台灣資金仍可能要付匯款、匯率價差、賣出監管費與帳戶條件。本頁海外直開欄是示意模型，不是官方費率表。',
+      },
+      {
+        q: '為什麼小金額來回特別痛？',
+        a: '匯費與最低佣金接近固定成本。成交金額愈小，摩擦佔比愈高。試算預設 10,000 USD 只是中間例子，請改成你真實要下的金額。',
+      },
+      {
+        q: '這是報價或投資建議嗎？',
+        a: '都不是。數字是瀏覽器內的示意試算，沒有連到任何券商。費用會變；本站也不保證開戶條件或後續報酬。',
       },
     ],
   },
@@ -258,7 +323,7 @@ ${marketHoursNowHtml()}
       {
         id: 'next',
         title: '名單看完之後',
-        html: `<p>通過觀察池不代表應該開戶或下單。若你還在比較帳戶路徑，讀 <a href="/tw/us-broker">美股券商開戶</a> 與 <a href="/tw/us-fees">手續費與匯費</a>；失效價與報酬／風險見 <a href="/tw/risk-plan">風險規劃</a>。</p>
+        html: `<p>通過觀察池不代表應該開戶或下單。若你還在比較帳戶路徑，讀 <a href="/tw/us-broker">美股券商開戶</a>、<a href="/tw/us-fees">手續費與匯費</a> 與 <a href="/tw/us-fee-calculator">費用試算</a>；失效價與報酬／風險見 <a href="/tw/risk-plan">風險規劃</a>。</p>
 <p>側欄的 Firstrade 開戶按鈕是揭露過的聯盟連結，與分析規則分開。開戶不會讓觀察名單變準，也不會改變 today 或 READY。</p>`,
       },
     ],
@@ -514,6 +579,10 @@ ${marketHoursNowHtml()}
         q: '美股現在開盤嗎？休市日在哪裡看？',
         a: '見本站「美股開盤」說明頁（/tw/us-market-hours）。以紐約時間 09:30–16:00 的現金股票一般時段計算，並標台北時間；全日休市抄自 NYSE 已公布日曆。',
       },
+      {
+        q: '複委託跟海外券商費用差多少？',
+        a: '沒有單一答案。見費用試算頁（/tw/us-fee-calculator）：預設是示意區間，可改佣金、最低費用、匯費與匯率價差。0 佣金仍可能有匯款與監管費。數字不是報價。',
+      },
     ],
     sections: [
       {
@@ -523,6 +592,7 @@ ${marketHoursNowHtml()}
   <li><a href="/tw/us-market-hours">美股開盤時間與休市日曆</a></li>
   <li><a href="/tw/us-broker">美股券商開戶</a></li>
   <li><a href="/tw/us-fees">美股手續費與匯費</a></li>
+  <li><a href="/tw/us-fee-calculator">複委託 vs 海外券商費用試算</a></li>
   <li><a href="/tw/us-watchlist">美股觀察名單</a></li>
   <li><a href="/tw/us-account">美股開戶與複委託比較</a></li>
   <li><a href="/tw/watchlist-guide">觀察名單與雙重分析</a></li>

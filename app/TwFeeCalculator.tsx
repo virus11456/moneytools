@@ -41,7 +41,9 @@ export default function TwFeeCalculator() {
       <p className="tw-seo-updated">
         預設值更新日期：{UPDATED}。匯率預設 32 TWD／USD、電匯 300 元、單邊佣金 1
         美元，都是示意，不是牌告。完整路徑說明見
-        <a href="/tw/us-broker">美股券商／開戶比較</a>。
+        <a href="/tw/us-broker">美股券商／開戶比較</a>
+        ；比較複委託與海外直開請用
+        <a href="/tw/us-fee-calculator">費用試算</a>。
       </p>
       <section className="tw-panel">
         <h2>代入你的數字</h2>

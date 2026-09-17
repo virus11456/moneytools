@@ -5,6 +5,17 @@ import { loadEnv } from 'vite';
 import { GUIDE_PAGES, findGuide, normalizePath } from './pages.ts';
 import { renderGuideDocument, robotsTxt, sitemapXml } from './document.ts';
 
+const GUIDE_WIDGETS: Record<string, { entry: string; assetPrefix: string }> = {
+  'us-market-hours': {
+    entry: '/app/guides/marketHours-entry.ts',
+    assetPrefix: 'us-market-hours',
+  },
+  'us-fee-calculator': {
+    entry: '/app/guides/feeCalculator-entry.ts',
+    assetPrefix: 'us-fee-calculator',
+  },
+};
+
 function requestPath(url?: string) {
   if (!url) return '';
   return normalizePath(url.split('?')[0] || '');
@@ -20,20 +31,24 @@ function stylesheetHrefs(html: string) {
 }
 
 function widgetScripts(pageSlug: string) {
-  if (pageSlug !== 'us-market-hours') return [];
-  return ['/app/guides/marketHours-entry.ts'];
+  const widget = GUIDE_WIDGETS[pageSlug];
+  return widget ? [widget.entry] : [];
 }
 
-async function builtWidgetHref(distDir: string) {
+async function builtWidgetHrefs(distDir: string) {
+  const hrefs: Record<string, string> = {};
   try {
     const assets = await readdir(join(distDir, 'assets'));
-    const file = assets.find(
-      (name) => name.startsWith('us-market-hours') && name.endsWith('.js'),
-    );
-    return file ? `/assets/${file}` : '';
+    for (const [slug, spec] of Object.entries(GUIDE_WIDGETS)) {
+      const file = assets.find(
+        (name) => name.startsWith(spec.assetPrefix) && name.endsWith('.js'),
+      );
+      if (file) hrefs[slug] = `/assets/${file}`;
+    }
   } catch {
-    return '';
+    /* dist/assets may be missing when the plugin runs in isolation */
   }
+  return hrefs;
 }
 
 export function moneytoolsSeoPlugin(): Plugin {
@@ -82,15 +97,17 @@ export function moneytoolsSeoPlugin(): Plugin {
     async closeBundle() {
       const indexHtml = await readFile(join(distDir, 'index.html'), 'utf8');
       const stylesheets = stylesheetHrefs(indexHtml);
-      const widget = await builtWidgetHref(distDir);
+      const widgets = await builtWidgetHrefs(distDir);
       for (const page of GUIDE_PAGES) {
         const file = join(distDir, page.path.slice(1), 'index.html');
         await mkdir(dirname(file), { recursive: true });
-        const scripts =
-          page.slug === 'us-market-hours' && widget ? [widget] : [];
+        const widget = widgets[page.slug];
         await writeFile(
           file,
-          renderGuideDocument(page, { stylesheets, scripts }),
+          renderGuideDocument(page, {
+            stylesheets,
+            scripts: widget ? [widget] : [],
+          }),
           'utf8',
         );
       }

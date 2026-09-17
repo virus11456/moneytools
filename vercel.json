@@ -53,6 +53,16 @@
       "source": "/tw/risk/",
       "destination": "/tw/risk-plan",
       "permanent": true
+    },
+    {
+      "source": "/tw/fee-calculator",
+      "destination": "/tw/us-fee-calculator",
+      "permanent": true
+    },
+    {
+      "source": "/tw/fee-calculator/",
+      "destination": "/tw/us-fee-calculator",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -143,6 +153,14 @@
     {
       "source": "/tw/us-market-hours/",
       "destination": "/tw/us-market-hours/index.html"
+    },
+    {
+      "source": "/tw/us-fee-calculator",
+      "destination": "/tw/us-fee-calculator/index.html"
+    },
+    {
+      "source": "/tw/us-fee-calculator/",
+      "destination": "/tw/us-fee-calculator/index.html"
     },
     {
       "source": "/tw/:path*",

@@ -15,6 +15,9 @@ export default defineConfig({
         'us-market-hours': fileURLToPath(
           new URL('./app/guides/marketHours-entry.ts', import.meta.url),
         ),
+        'us-fee-calculator': fileURLToPath(
+          new URL('./app/guides/feeCalculator-entry.ts', import.meta.url),
+        ),
       },
     },
   },
