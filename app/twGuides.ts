@@ -7,6 +7,13 @@ export const TW_GUIDES = [
       '台灣投資人比較海外直開與複委託的開戶路徑、資金與費用結構。示意區間非即時報價，請核對券商官網。',
   },
   {
+    href: '/tw/us-deposit',
+    label: '入金匯款',
+    title: '美股入金與匯款：台灣電匯到海外券商｜Stocktools',
+    description:
+      '開好海外美股帳戶後，如何用銀行電匯入金：SWIFT／ABA、換匯、到帳天數與中間行扣款。示意非報價。',
+  },
+  {
     href: '/tw/us-fee-calculator',
     label: '手續費試算',
     title: '美股複委託 vs 海外券商費用試算｜Stocktools',

@@ -1,7 +1,7 @@
 import { TwShell } from './TwShell';
 import { TW_GUIDES } from './twGuides';
 
-const PAGE = TW_GUIDES[2];
+const PAGE = TW_GUIDES[3];
 
 export default function TwWatchlistGuide() {
   return (

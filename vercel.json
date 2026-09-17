@@ -131,6 +131,14 @@
       "destination": "/tw/us-broker/index.html"
     },
     {
+      "source": "/tw/us-deposit",
+      "destination": "/tw/us-deposit/index.html"
+    },
+    {
+      "source": "/tw/us-deposit/",
+      "destination": "/tw/us-deposit/index.html"
+    },
+    {
       "source": "/tw/us-watchlist",
       "destination": "/tw/us-watchlist/index.html"
     },
