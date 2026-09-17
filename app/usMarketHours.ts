@@ -344,7 +344,7 @@ export function marketHoursExplainerHtml(): string {
     <tr><th>提早收盤</th><td>13:00</td><td>01:00 翌日</td><td>02:00 翌日</td></tr>
   </tbody>
 </table>
-<p>美國夏令時間從 3 月第二個星期日開始、11 月第一個星期日結束。本頁用 <code>America/New_York</code> 換算，不把盤前盤後算成「開盤」。台灣複委託的下單窗口可能更短，見 <a href="/tw/us-broker">美股券商開戶</a>。</p>`;
+<p>美國夏令時間從 3 月第二個星期日開始、11 月第一個星期日結束。本頁用 <code>America/New_York</code> 換算，不把盤前盤後算成「開盤」。台灣複委託的下單窗口可能更短，見 <a href="/tw/us-broker">美股券商開戶</a>。買上市 ETF 的路徑見 <a href="/tw/us-etf">台灣怎麼買美股 ETF</a>。</p>`;
 }
 
 export function marketHoursHolidayHtml(now = Date.now()): string {

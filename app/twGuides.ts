@@ -21,6 +21,13 @@ export const TW_GUIDES = [
       '海外券商核准後為什麼要填 W-8BEN：股息預扣與資本利得的常見結構。教育概覽，不是稅務建議。',
   },
   {
+    href: '/tw/us-etf',
+    label: '美股 ETF',
+    title: '台灣怎麼買美股 ETF：複委託與海外券商｜Stocktools',
+    description:
+      '台灣投資人買美股 ETF 的兩條路：複委託與海外券商。教育整理，不是投資建議。',
+  },
+  {
     href: '/tw/us-fee-calculator',
     label: '手續費試算',
     title: '美股複委託 vs 海外券商費用試算｜Stocktools',

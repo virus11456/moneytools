@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { TwShell } from './TwShell';
 import { TW_GUIDES } from './twGuides';
 
-const PAGE = TW_GUIDES[3];
+const PAGE = TW_GUIDES[4];
 const UPDATED = '2026-09-16';
 
 function money(value: number, currency: 'TWD' | 'USD') {
@@ -123,6 +123,8 @@ export default function TwFeeCalculator() {
           未計入價差滑價、SEC
           等監管費、平台月費與台美稅務。股息預扣概覽見
           <a href="/tw/us-tax">W-8BEN 與美股預扣稅</a>
+          。ETF 費用率與折溢價未計入，見
+          <a href="/tw/us-etf">台灣怎麼買美股 ETF</a>
           。雙重分析的報酬／風險也尚未扣這些成本，見
           <a href="/tw/risk-plan">交易風險規劃</a>。
         </p>

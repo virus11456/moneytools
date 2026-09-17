@@ -1,7 +1,7 @@
 import { TwShell } from './TwShell';
 import { TW_GUIDES } from './twGuides';
 
-const PAGE = TW_GUIDES[5];
+const PAGE = TW_GUIDES[6];
 
 export default function TwRiskGuide() {
   return (
@@ -52,6 +52,8 @@ export default function TwRiskGuide() {
           <a href="/tw/us-deposit">美股入金與匯款</a>
           ，稅務表格見
           <a href="/tw/us-tax">W-8BEN 與美股預扣稅</a>
+          ，買上市 ETF 見
+          <a href="/tw/us-etf">台灣怎麼買美股 ETF</a>
           。READY、APPROACHING 只說明規則有沒有通過。
         </p>
       </section>

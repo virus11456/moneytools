@@ -73,6 +73,16 @@
       "source": "/tw/w-8ben/",
       "destination": "/tw/us-tax",
       "permanent": true
+    },
+    {
+      "source": "/tw/etf",
+      "destination": "/tw/us-etf",
+      "permanent": true
+    },
+    {
+      "source": "/tw/etf/",
+      "destination": "/tw/us-etf",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -155,6 +165,14 @@
     {
       "source": "/tw/us-tax/",
       "destination": "/tw/us-tax/index.html"
+    },
+    {
+      "source": "/tw/us-etf",
+      "destination": "/tw/us-etf/index.html"
+    },
+    {
+      "source": "/tw/us-etf/",
+      "destination": "/tw/us-etf/index.html"
     },
     {
       "source": "/tw/us-watchlist",
