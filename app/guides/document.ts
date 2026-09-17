@@ -41,7 +41,7 @@ function affiliateCta() {
   if (!url) return '';
   const safe = esc(url);
   return `<aside class="guide-cta" aria-label="外部開戶連結">
-    <p>以下為網站設定的外部開戶連結，不是 Moneytools 對特定券商的推薦，也不保證開戶條件或後續報酬。</p>
+    <p>以下為網站設定的外部開戶連結，不是 Stocktools 對特定券商的推薦，也不保證開戶條件或後續報酬。</p>
     <a class="guide-cta-button" href="${safe}" target="_blank" rel="nofollow sponsored noopener noreferrer">開立券商／複委託帳戶</a>
   </aside>`;
 }
@@ -67,7 +67,7 @@ function jsonLd(page: GuidePageDef) {
     description: page.description,
     inLanguage: 'zh-Hant',
     url: `${siteOrigin()}${page.path}`,
-    isPartOf: { '@type': 'WebSite', name: 'Moneytools', url: siteOrigin() },
+    isPartOf: { '@type': 'WebSite', name: 'Stocktools', url: siteOrigin() },
   };
   const nodes: object[] = [webpage];
   if (page.faqs?.length) {
@@ -101,7 +101,7 @@ export function renderGuideBody(page: GuidePageDef) {
     <div class="header-lead">
       <a class="brand" href="/">
         <span class="brand-icon">${ACTIVITY_ICON}</span>
-        moneytools<span class="beta">說明</span>
+        stocktools<span class="beta">說明</span>
       </a>
       <nav class="market-switch" aria-label="股票市場">
         <a href="/">美股</a>
@@ -139,7 +139,7 @@ export function renderGuideBody(page: GuidePageDef) {
     </div>
     <footer>
       <div>
-        <strong>moneytools</strong>
+        <strong>stocktools</strong>
         <p>規則透明，判斷留給你。</p>
         <a class="simples-fingerprint" href="https://simples.com.tw/" target="_blank" rel="noreferrer" aria-label="SIMPLES 簡單行銷">SIMPLES</a>
         ${guideLinksHtml(page.path)}
@@ -172,6 +172,7 @@ export function renderGuideDocument(
 <link rel="canonical" href="${esc(canonical)}"/>
 <meta property="og:title" content="${esc(page.title)}"/>
 <meta property="og:description" content="${esc(page.description)}"/>
+<meta property="og:site_name" content="Stocktools"/>
 <meta property="og:locale" content="zh_TW"/>
 <meta property="og:type" content="article"/>
 <meta property="og:url" content="${esc(canonical)}"/>

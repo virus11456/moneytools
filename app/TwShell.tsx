@@ -45,7 +45,7 @@ export function TwShell({
             <span className="brand-icon">
               <Activity size={21} />
             </span>
-            moneytools<span className="beta">TW EQUITIES</span>
+            stocktools<span className="beta">TW EQUITIES</span>
           </a>
           <nav className="market-switch" aria-label="股票市場">
             <a href="/">美股</a>

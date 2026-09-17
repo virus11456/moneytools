@@ -1,4 +1,4 @@
-# Moneytools — 美股雙重分析
+# Stocktools — 美股雙重分析
 
 A transparent, rule-based US-stock research dashboard with daily setup transitions and ticker/company lookup. No weighted recommendation score and no fabricated market data.
 

@@ -11,7 +11,7 @@ export default function TwRiskGuide() {
       description={PAGE.description}
       eyebrow="風險規劃"
       heading="風險先寫下來，再決定要不要靠近。"
-      lede="moneytools 的雙重分析先看企業品質，再看趨勢與位置。通過條件不是下單指令，也還沒扣手續費。"
+      lede="stocktools 的雙重分析先看企業品質，再看趨勢與位置。通過條件不是下單指令，也還沒扣手續費。"
     >
       <section className="tw-panel">
         <h2>雙重分析在防什麼</h2>
