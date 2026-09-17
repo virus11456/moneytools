@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://moneytools-eight.vercel.app/sitemap.xml
+Sitemap: https://stocktools.cc/sitemap.xml

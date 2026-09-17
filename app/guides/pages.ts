@@ -22,10 +22,7 @@ export function siteOrigin() {
   const raw =
     process.env.NEXT_PUBLIC_SITE_URL ||
     fromVite?.NEXT_PUBLIC_SITE_URL ||
-    (process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : '') ||
-    'https://moneytools-eight.vercel.app';
+    'https://stocktools.cc';
   return raw.replace(/\/$/, '');
 }
 
@@ -43,19 +40,19 @@ export function affiliateUrl() {
 }
 
 export const RISK_DISCLAIMER =
-  '本頁與 Moneytools 僅提供公開資料的研究整理，不是投資建議、買賣委託或獲利保證。股票可能下跌、停牌或損失本金；缺口、匯率、稅務與交易成本未完整納入模型。請以你自己的風險承受度做判斷。';
+  '本頁與 Stocktools 僅提供公開資料的研究整理，不是投資建議、買賣委託或獲利保證。股票可能下跌、停牌或損失本金；缺口、匯率、稅務與交易成本未完整納入模型。請以你自己的風險承受度做判斷。';
 
 export const GUIDE_PAGES: GuidePageDef[] = [
   {
     slug: 'us-account',
     path: '/tw/us-account',
     navLabel: '美股開戶',
-    title: '美股開戶與複委託比較｜Moneytools',
+    title: '美股開戶與複委託比較｜Stocktools',
     description:
-      '用檢查清單比較台灣投資人常見的美股複委託與海外券商開戶條件，不含推薦券商。開戶後可用 Moneytools 每日雙重分析觀察名單。',
+      '用檢查清單比較台灣投資人常見的美股複委託與海外券商開戶條件，不含推薦券商。開戶後可用 Stocktools 每日雙重分析觀察名單。',
     eyebrow: '開戶前先看懂路徑',
     h1: '美股開戶：複委託還是海外帳戶？',
-    lead: '先分清帳戶類型與費用、交易時間、報稅責任，再決定要不要開戶。Moneytools 不是券商，也不替任何經紀商排名。',
+    lead: '先分清帳戶類型與費用、交易時間、報稅責任，再決定要不要開戶。Stocktools 不是券商，也不替任何經紀商排名。',
     toolHref: '/',
     toolLabel: '開啟美股雙重分析',
     sections: [
@@ -94,12 +91,12 @@ export const GUIDE_PAGES: GuidePageDef[] = [
   <li>確認公司行動、股利入帳幣別，以及萬一要終止帳戶時如何把資金轉回台灣。</li>
   <li>寫下你能接受的最大單筆損失，再開戶；工具不會替你下單或控管部位。</li>
 </ol>
-<p>檢查完若仍要開戶，可使用頁面下方的外部連結（僅在網站設定了網址時顯示）。連結由設定檔提供，Moneytools 不預設任何券商或追蹤代碼。</p>`,
+<p>檢查完若仍要開戶，可使用頁面下方的外部連結（僅在網站設定了網址時顯示）。連結由設定檔提供，Stocktools 不預設任何券商或追蹤代碼。</p>`,
       },
       {
         id: 'after',
         title: '開戶之後：用本站做研究，而不是追當沖訊號',
-        html: `<p>帳戶只解決「能不能下單」。Moneytools 解決的是「這家公司目前有沒有通過本站公開規則」：</p>
+        html: `<p>帳戶只解決「能不能下單」。Stocktools 解決的是「這家公司目前有沒有通過本站公開規則」：</p>
 <ul>
   <li><a href="/">美股首頁</a>：每日掃描後，基本面通過者分成第一區（基本面＋技術面）與第二區（等待趨勢）。</li>
   <li><a href="/#watchlist">觀察池</a>：尚未通過基本面的名單，避免只看到「已合格」而忽略大多數標的。</li>
@@ -113,12 +110,12 @@ export const GUIDE_PAGES: GuidePageDef[] = [
     slug: 'watchlist-guide',
     path: '/tw/watchlist-guide',
     navLabel: '觀察名單',
-    title: '美股觀察名單與雙重分析怎麼用｜Moneytools',
+    title: '美股觀察名單與雙重分析怎麼用｜Stocktools',
     description:
-      '說明 Moneytools 美股基本面與技術面雙重篩選、兩區分類、觀察池與收藏名單，並連到每日工具與個股頁。通過條件不是獲利保證。',
+      '說明 Stocktools 美股基本面與技術面雙重篩選、兩區分類、觀察池與收藏名單，並連到每日工具與個股頁。通過條件不是獲利保證。',
     eyebrow: '產品使用說明',
     h1: '怎麼用本站的美股觀察名單與雙重分析',
-    lead: '先看企業品質，再看趨勢是否跟上。Moneytools 把通過基本面的股票分成兩區，其餘留在觀察池，沒有綜合推薦分數。',
+    lead: '先看企業品質，再看趨勢是否跟上。Stocktools 把通過基本面的股票分成兩區，其餘留在觀察池，沒有綜合推薦分數。',
     toolHref: '/#watchlist',
     toolLabel: '前往美股觀察池',
     sections: [
@@ -162,12 +159,12 @@ export const GUIDE_PAGES: GuidePageDef[] = [
     slug: 'risk-plan',
     path: '/tw/risk-plan',
     navLabel: '風險規劃',
-    title: '美股風險與停損規劃｜失效價位說明｜Moneytools',
+    title: '美股風險與停損規劃｜失效價位說明｜Stocktools',
     description:
-      '說明 Moneytools 如何計算成交密集觀察區、失效價位、參考目標與報酬風險比，並提醒缺口、費用與滑價未納入。不是獲利保證。',
+      '說明 Stocktools 如何計算成交密集觀察區、失效價位、參考目標與報酬風險比，並提醒缺口、費用與滑價未納入。不是獲利保證。',
     eyebrow: '先寫失效條件',
     h1: '風險與停損：本站怎麼標失效價位',
-    lead: '進場研究前先知道「錯了就離開」的價格。Moneytools 用日線成交量近似區與 ATR 算出失效價，沒有幫你下停損單。',
+    lead: '進場研究前先知道「錯了就離開」的價格。Stocktools 用日線成交量近似區與 ATR 算出失效價，沒有幫你下停損單。',
     toolHref: '/',
     toolLabel: '在美股工具查看個股風險欄',
     sections: [
@@ -205,9 +202,9 @@ export const GUIDE_PAGES: GuidePageDef[] = [
     slug: 'us-vs-tw',
     path: '/tw/us-vs-tw',
     navLabel: '台股 vs 美股',
-    title: '台股與美股篩選工具差在哪｜Moneytools',
+    title: '台股與美股篩選工具差在哪｜Stocktools',
     description:
-      '比較 Moneytools 美股與台股頁的規則、資料來源、更新方式與進場模組差異，協助選擇要使用哪一邊的每日篩選。',
+      '比較 Stocktools 美股與台股頁的規則、資料來源、更新方式與進場模組差異，協助選擇要使用哪一邊的每日篩選。',
     eyebrow: '同一品牌，兩套獨立規則',
     h1: '台股頁和美股頁，差在哪裡？',
     lead: '美股與台股是兩套獨立研究頁，門檻、財報口徑與資料來源都不同。不要把一邊的通過，理解成另一邊也通過。',
@@ -256,17 +253,17 @@ export const GUIDE_PAGES: GuidePageDef[] = [
     slug: 'faq',
     path: '/tw/faq',
     navLabel: '常見問題',
-    title: '常見問題｜Moneytools 美股與台股研究工具',
+    title: '常見問題｜Stocktools 美股與台股研究工具',
     description:
-      '關於 Moneytools 雙重分析、觀察名單、美股複委託開戶、風險標示與資料來源的常見問題。本站不保證獲利。',
+      '關於 Stocktools 雙重分析、觀察名單、美股複委託開戶、風險標示與資料來源的常見問題。本站不保證獲利。',
     eyebrow: 'FAQ',
-    h1: 'Moneytools 常見問題',
+    h1: 'Stocktools 常見問題',
     lead: '先找答案，再進工具。若頁面與實際畫面不一致，以工具上的門檻與資料時間為準。',
     toolHref: '/',
     toolLabel: '返回美股工具',
     faqs: [
       {
-        q: 'Moneytools 會幫我下單或推薦買哪一檔嗎？',
+        q: 'Stocktools 會幫我下單或推薦買哪一檔嗎？',
         a: '不會。本站只顯示規則有沒有通過，以及資料時間。沒有綜合分數、沒有目標報酬承諾，也沒有券商下單介面。',
       },
       {

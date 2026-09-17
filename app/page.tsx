@@ -724,7 +724,7 @@ export default function Home() {
             <span className="brand-icon">
               <Activity size={21} />
             </span>
-            moneytools<span className="beta">US EQUITIES</span>
+            stocktools<span className="beta">US EQUITIES</span>
           </button>
           <nav className="market-switch" aria-label="股票市場"><a href="/" aria-current="page">美股</a><a href="/tw">台股</a></nav>
           <SiblingNav />
@@ -1925,7 +1925,7 @@ export default function Home() {
         )}
         <footer>
           <div>
-            <strong>moneytools</strong>
+            <strong>stocktools</strong>
             <p>規則透明，判斷留給你。</p>
             <GuideLinks />
             <SimplesFingerprint />

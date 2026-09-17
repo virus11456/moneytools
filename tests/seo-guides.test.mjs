@@ -65,8 +65,13 @@ for (const page of GUIDE_PAGES) {
     new RegExp(`<h1>${page.h1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</h1>`),
   );
   assert.match(html, /<link rel="canonical"/);
+  assert.match(html, /https:\/\/stocktools\.cc/);
+  assert.match(html, /Stocktools/);
+  assert.doesNotMatch(html, /Moneytools/);
+  assert.match(html, /og:site_name" content="Stocktools"/);
   assert.match(html, /warhubs\.com/);
   assert.match(html, /hypeboss\.cc/);
+  assert.match(html, /toolist\.cc/);
   assert.match(html, /simples\.com\.tw/);
   assert.match(html, /href="\/"/);
   assert.match(html, /href="\/tw"/);
@@ -101,10 +106,10 @@ assert.match(faq, /FAQPage/);
 
 const sitemap = sitemapXml();
 for (const page of GUIDE_PAGES) assert.match(sitemap, new RegExp(page.path));
-assert.match(sitemap, /moneytools-eight\.vercel\.app\/tw</);
+assert.match(sitemap, /stocktools\.cc\/tw</);
 assert.match(
   robotsTxt(),
-  /Sitemap: https:\/\/moneytools-eight\.vercel\.app\/sitemap\.xml/,
+  /Sitemap: https:\/\/stocktools\.cc\/sitemap\.xml/,
 );
 
 const distPage = new URL('../dist/tw/us-account/index.html', import.meta.url);

@@ -1,7 +1,4 @@
-const SIBLING_TOOLS = [
-  { href: 'https://warhubs.com/', label: 'WARHUBS', hint: '戰情觀測站' },
-  { href: 'https://hypeboss.cc/', label: 'HypeBoss', hint: '大戶觀察' },
-] as const;
+import { SIBLING_TOOLS } from './siblingTools';
 
 export function SiblingNav() {
   return (
