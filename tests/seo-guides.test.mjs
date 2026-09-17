@@ -67,6 +67,7 @@ for (const page of GUIDE_PAGES) {
   assert.match(html, /<link rel="canonical"/);
   assert.match(html, /warhubs\.com/);
   assert.match(html, /hypeboss\.cc/);
+  assert.match(html, /toolist\.cc/);
   assert.match(html, /simples\.com\.tw/);
   assert.match(html, /href="\/"/);
   assert.match(html, /href="\/tw"/);

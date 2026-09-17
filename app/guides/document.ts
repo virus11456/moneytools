@@ -1,3 +1,4 @@
+import { SIBLING_TOOLS } from '../siblingTools.ts';
 import {
   affiliateUrl,
   GUIDE_PAGES,
@@ -19,9 +20,12 @@ function esc(s: string) {
 }
 
 function siblingNav() {
+  const links = SIBLING_TOOLS.map(
+    (tool) =>
+      `<a href="${tool.href}" target="_blank" rel="noreferrer">${tool.label}<small>${tool.hint}</small></a>`,
+  ).join('\n      ');
   return `<nav class="sibling-nav" aria-label="相關工具">
-      <a href="https://warhubs.com/" target="_blank" rel="noreferrer">WARHUBS<small>戰情觀測站</small></a>
-      <a href="https://hypeboss.cc/" target="_blank" rel="noreferrer">HypeBoss<small>大戶觀察</small></a>
+      ${links}
     </nav>`;
 }
 
