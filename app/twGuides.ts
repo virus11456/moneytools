@@ -7,11 +7,11 @@ export const TW_GUIDES = [
       '台灣投資人比較海外直開與複委託的開戶路徑、資金與費用結構。示意區間非即時報價，請核對券商官網。',
   },
   {
-    href: '/tw/fee-calculator',
+    href: '/tw/us-fee-calculator',
     label: '手續費試算',
-    title: '美股手續費／匯費試算｜Stocktools',
+    title: '美股複委託 vs 海外券商費用試算｜Stocktools',
     description:
-      '用本機試算器估算佣金、匯費與匯率對一次進出的摩擦成本。預設為示意區間，可改成你的券商費率。',
+      '用示意數字比較複委託與海外直開的佣金、最低費用、匯費與來回成本。預設不是報價，可改成你的券商費率。',
   },
   {
     href: '/tw/us-watchlist',

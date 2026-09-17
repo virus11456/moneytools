@@ -261,9 +261,74 @@
   font-size: 12px;
   color: #6b7665;
 }
+.fee-calc {
+  margin: 12px 0 8px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: #f4f7f0;
+  border: 1px solid #dbe2d2;
+}
+.fee-calc-note,
+.fee-calc-delta {
+  font-size: 13px;
+  color: #516052;
+  margin: 0 0 12px;
+}
+.fee-calc-delta {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: #31463c;
+}
+.fee-calc-form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.fee-calc fieldset {
+  margin: 0;
+  border: 1px solid #e3eadb;
+  border-radius: 12px;
+  padding: 12px 14px 14px;
+  background: #fcfdf9;
+  min-width: 0;
+}
+.fee-calc legend {
+  font-size: 13px;
+  font-weight: 650;
+  padding: 0 4px;
+}
+.fee-calc-grid,
+.fee-calc-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.fee-calc label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: #4d5f52;
+  min-width: 0;
+}
+.fee-calc input,
+.fee-calc select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #dbe2d2;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: inherit;
+  background: #fff;
+  color: #243d32;
+}
+.fee-calc-table {
+  margin-top: 4px;
+}
 @media (max-width: 900px) {
   .guide-layout,
-  .guide-cards {
+  .guide-cards,
+  .fee-calc-grid,
+  .fee-calc-compare {
     grid-template-columns: 1fr;
   }
   .guide-aside {

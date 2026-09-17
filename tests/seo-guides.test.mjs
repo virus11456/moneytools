@@ -16,13 +16,14 @@ import { FIRSTRADE_OPEN_URL } from '../app/affiliate.ts';
 const REFERRAL =
   'https://www.firstrade.com/accounts/referral?im_ref=bIQJ59ginr1r';
 
-assert.equal(GUIDE_PAGES.length, 9);
+assert.equal(GUIDE_PAGES.length, 10);
 assert.deepEqual(
   GUIDE_PAGES.map((page) => page.path),
   [
     '/tw/us-market-hours',
     '/tw/us-broker',
     '/tw/us-fees',
+    '/tw/us-fee-calculator',
     '/tw/us-watchlist',
     '/tw/us-account',
     '/tw/watchlist-guide',
@@ -37,6 +38,8 @@ assert.equal(isGuidePath('/tw/faq/'), true);
 assert.equal(isGuidePath('/tw/us-broker'), true);
 assert.equal(isGuidePath('/tw/us-watchlist/'), true);
 assert.equal(isGuidePath('/tw/us-fees'), true);
+assert.equal(isGuidePath('/tw/us-fee-calculator'), true);
+assert.equal(isGuidePath('/tw/us-fee-calculator/'), true);
 assert.equal(isGuidePath('/tw/us-market-hours'), true);
 assert.equal(isGuidePath('/tw/us-market-hours/'), true);
 assert.equal(isGuidePath('/tw/stock/2330'), false);
@@ -115,6 +118,7 @@ for (const page of GUIDE_PAGES) {
   assert.match(html, /href="\/tw\/us-broker"/);
   assert.match(html, /href="\/tw\/us-market-hours"/);
   assert.match(html, /href="\/tw\/us-fees"/);
+  assert.match(html, /href="\/tw\/us-fee-calculator"/);
   assert.match(html, /href="\/tw\/us-watchlist"/);
   assert.match(html, /href="\/tw\/us-account"/);
   assert.match(html, /href="\/tw\/watchlist-guide"/);
@@ -168,6 +172,7 @@ const publicSitemap = readFileSync(
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-broker/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-market-hours/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-fees/);
+assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-fee-calculator/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-watchlist/);
 
 const distPage = new URL('../dist/tw/us-broker/index.html', import.meta.url);
@@ -194,6 +199,7 @@ if (existsSync(distPage)) {
   assert.match(builtSitemap, /\/tw\/us-broker/);
   assert.match(builtSitemap, /\/tw\/us-market-hours/);
   assert.match(builtSitemap, /\/tw\/us-fees/);
+  assert.match(builtSitemap, /\/tw\/us-fee-calculator/);
   assert.match(builtSitemap, /\/tw\/us-watchlist/);
   assert.match(builtSitemap, /stocktools\.cc/);
   const builtRobots = readFileSync(
@@ -207,6 +213,12 @@ if (existsSync(distPage)) {
   );
   assert.match(hoursHtml, /id="us-market-now"/);
   assert.match(hoursHtml, /<script type="module" src="\/assets\/[^"]*us-market-hours/);
+  const feeHtml = readFileSync(
+    new URL('../dist/tw/us-fee-calculator/index.html', import.meta.url),
+    'utf8',
+  );
+  assert.match(feeHtml, /id="us-fee-calc"/);
+  assert.match(feeHtml, /<script type="module" src="\/assets\/[^"]*us-fee-calculator/);
 }
 
 console.log(

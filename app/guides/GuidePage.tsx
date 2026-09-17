@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { findGuide } from './pages.ts';
 import { renderGuideBody } from './document.ts';
+import { mountUsFeeCalculator } from './feeCalculatorWidget.ts';
 import { mountUsMarketHours } from './marketHoursWidget.ts';
 
 export default function GuidePage() {
@@ -18,8 +19,8 @@ export default function GuidePage() {
     meta.setAttribute('content', page.description);
   }, [page]);
   useEffect(() => {
-    if (page?.slug !== 'us-market-hours') return;
-    return mountUsMarketHours();
+    if (page?.slug === 'us-market-hours') return mountUsMarketHours();
+    if (page?.slug === 'us-fee-calculator') return mountUsFeeCalculator();
   }, [page]);
   if (!page) {
     return (

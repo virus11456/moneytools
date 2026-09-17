@@ -22,7 +22,7 @@ export default function TwBrokerCompare() {
         <h2>先選路徑，再談哪一家</h2>
         <p>
           開戶比較常被簡化成「哪家最便宜」。實際差異多半出在資金怎麼換成美元、你能不能接受英文對帳單，以及下單時間是否卡在台灣營業時間。費用可以之後用
-          <a href="/tw/fee-calculator">手續費／匯費試算</a>自己代入。
+          <a href="/tw/us-fee-calculator">手續費／匯費試算</a>自己代入。
         </p>
       </section>
       <section className="tw-panel">
