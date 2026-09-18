@@ -55,6 +55,13 @@ export const TW_GUIDES = [
     description:
       '看美股現在開不開盤、下次開盤／收盤的台北與紐約時間，以及今年與明年 NYSE 休市日。',
   },
+  {
+    href: '/tw/us-open-account',
+    label: '開戶步驟',
+    title: '台灣怎麼開美股帳戶：步驟、文件與複委託｜Stocktools',
+    description:
+      '台灣投資人開美股帳戶的常見步驟：選券商、線上申請、護照／身分證明、W-8BEN、入金到第一筆交易。教育整理，不是投資建議。',
+  },
 ] as const;
 
 export type TwGuideHref = (typeof TW_GUIDES)[number]['href'];

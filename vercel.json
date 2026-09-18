@@ -83,6 +83,16 @@
       "source": "/tw/etf/",
       "destination": "/tw/us-etf",
       "permanent": true
+    },
+    {
+      "source": "/tw/open-account",
+      "destination": "/tw/us-open-account",
+      "permanent": true
+    },
+    {
+      "source": "/tw/open-account/",
+      "destination": "/tw/us-open-account",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -149,6 +159,14 @@
     {
       "source": "/tw/us-broker/",
       "destination": "/tw/us-broker/index.html"
+    },
+    {
+      "source": "/tw/us-open-account",
+      "destination": "/tw/us-open-account/index.html"
+    },
+    {
+      "source": "/tw/us-open-account/",
+      "destination": "/tw/us-open-account/index.html"
     },
     {
       "source": "/tw/us-deposit",
