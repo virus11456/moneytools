@@ -21,10 +21,10 @@
 .screening-sheets h4 { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; margin: 0; }
 .screening-sheets h4 small { font-weight: 400; font-size: 12px; color: #58694e; }
 .screening-sheets dl { margin: 10px 0 0; }
-.screening-sheets dl > div { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid #dce3d7; }
-.screening-sheets dt { font-size: 13px; line-height: 1.6; }
+.screening-sheets dl > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid #dce3d7; }
+.screening-sheets dt { font-size: 13px; line-height: 1.6; min-width: 0; }
 .screening-sheets dt small { display: block; font-size: 12px; color: #63705a; }
-.screening-sheets dd { margin: 0; text-align: right; font-size: 13px; line-height: 1.6; font-weight: 600; max-width: 200px; }
+.screening-sheets dd { margin: 0; text-align: right; font-size: 13px; line-height: 1.6; font-weight: 600; max-width: 200px; overflow-wrap: anywhere; }
 .screening-notes { padding: 0 24px 16px; font-size: 12px; line-height: 1.85; color: #54624c; }
 .screening-notes p { margin: 8px 0; }
 .screening-notes ul { padding-left: 20px; }

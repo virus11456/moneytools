@@ -68,43 +68,45 @@ export default function TwBrokerCompare() {
         <p className="tw-muted">
           數字僅供理解費率「長什麼樣子」。本站沒有券商官方授權的即時費率表，因此不寫成確定報價。
         </p>
-        <table className="tw-compare">
-          <caption>示意區間，非即時報價 · 更新 2026-09-16</caption>
-          <thead>
-            <tr>
-              <th>項目</th>
-              <th>海外直開（示意）</th>
-              <th>台灣複委託（示意）</th>
-              <th>要比對的官方出處</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>股票佣金</td>
-              <td>約 USD 0–1／筆，或每股 USD 0–0.005</td>
-              <td>約每股 USD 0.01–0.03，或更高的最低消費</td>
-              <td>佣金／美國市場收費表</td>
-            </tr>
-            <tr>
-              <td>匯出手續費</td>
-              <td>銀行電匯常見約 TWD 100–800／筆</td>
-              <td>常內含在兌換或「國外交易手續費」</td>
-              <td>銀行／券商匯款與兌換說明</td>
-            </tr>
-            <tr>
-              <td>匯率價差</td>
-              <td>看你用哪家換匯，可能大於匯費本身</td>
-              <td>看複委託採用的牌告或議價匯率</td>
-              <td>當日兌換匯率與價差說明</td>
-            </tr>
-            <tr>
-              <td>平台／帳戶費</td>
-              <td>有的免收，有的收低活動費</td>
-              <td>較少獨立帳戶費，但可能有最低佣金</td>
-              <td>帳戶條件、休眠與最低收費</td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="tw-compare-wrap">
+          <table className="tw-compare">
+            <caption>示意區間，非即時報價 · 更新 2026-09-16</caption>
+            <thead>
+              <tr>
+                <th>項目</th>
+                <th>海外直開（示意）</th>
+                <th>台灣複委託（示意）</th>
+                <th>要比對的官方出處</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>股票佣金</td>
+                <td>約 USD 0–1／筆，或每股 USD 0–0.005</td>
+                <td>約每股 USD 0.01–0.03，或更高的最低消費</td>
+                <td>佣金／美國市場收費表</td>
+              </tr>
+              <tr>
+                <td>匯出手續費</td>
+                <td>銀行電匯常見約 TWD 100–800／筆</td>
+                <td>常內含在兌換或「國外交易手續費」</td>
+                <td>銀行／券商匯款與兌換說明</td>
+              </tr>
+              <tr>
+                <td>匯率價差</td>
+                <td>看你用哪家換匯，可能大於匯費本身</td>
+                <td>看複委託採用的牌告或議價匯率</td>
+                <td>當日兌換匯率與價差說明</td>
+              </tr>
+              <tr>
+                <td>平台／帳戶費</td>
+                <td>有的免收，有的收低活動費</td>
+                <td>較少獨立帳戶費，但可能有最低佣金</td>
+                <td>帳戶條件、休眠與最低收費</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
       <section className="tw-panel">
         <h2>開戶前可自問的五件事</h2>
