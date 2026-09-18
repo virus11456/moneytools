@@ -185,6 +185,9 @@
   font-weight: 600;
   text-decoration: none;
 }
+.guide-app footer .sibling-nav {
+  margin-top: 10px;
+}
 .guide-app footer .guide-links,
 .guide-panel .guide-links {
   display: grid;

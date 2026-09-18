@@ -1,6 +1,6 @@
 import { ScreeningGuide } from './ScreeningGuide';
 import { MarketStatus } from './MarketStatus';
-import { SiblingNav, SimplesFingerprint } from './SiblingNav';
+import { SiblingNav } from './SiblingNav';
 import { AffiliateCta } from './AffiliateCta';
 import { GuideLinks } from './guides/GuideLinks';
 import { OverviewSummary } from './OverviewSummary';
@@ -1847,7 +1847,7 @@ export default function Home() {
             <strong>stocktools</strong>
             <p>規則透明，判斷留給你。</p>
             <GuideLinks />
-            <SimplesFingerprint />
+            <SiblingNav variant="footer" />
           </div>
           <p>
             來源：Yahoo Finance /

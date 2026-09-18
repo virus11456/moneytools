@@ -91,9 +91,20 @@ a {
   letter-spacing: 0;
   font-weight: 400;
 }
+.sibling-nav-footer {
+  padding-left: 0;
+  border-left: 0;
+  margin-top: 12px;
+  row-gap: 8px;
+}
+.sibling-nav-static {
+  margin: 0;
+  padding: 16px 5% 28px;
+  border-top: 1px solid #dfe5db;
+  background: #fcfdf9;
+}
 .simples-fingerprint {
   display: inline-block;
-  margin-top: 10px;
   font-size: 10px;
   letter-spacing: 0.28em;
   color: #b7c2ad;
@@ -101,6 +112,11 @@ a {
 }
 .simples-fingerprint:hover {
   color: #627457;
+}
+.sibling-nav .simples-fingerprint {
+  margin-top: 0;
+  letter-spacing: 0.08em;
+  font-size: 11px;
 }
 .brand {
   display: flex;
@@ -961,6 +977,12 @@ footer a {
   white-space: nowrap;
   align-self: center;
 }
+footer .sibling-nav a,
+.tw-footer .sibling-nav a {
+  display: inline-flex;
+  align-self: auto;
+  text-decoration: none;
+}
 .spin {
   animation: spin 1s linear infinite;
 }
@@ -980,10 +1002,10 @@ footer a {
     padding: 12px 5%;
     min-height: 70px;
   }
-  .sibling-nav small {
+  .header .sibling-nav small {
     display: none;
   }
-  .sibling-nav {
+  .header .sibling-nav {
     padding-left: 0;
     border-left: 0;
   }

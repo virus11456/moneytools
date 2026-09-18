@@ -1,6 +1,6 @@
 import { ScreeningGuide } from './ScreeningGuide';
 import { MarketStatus } from './MarketStatus';
-import { SiblingNav, SimplesFingerprint } from './SiblingNav';
+import { SiblingNav } from './SiblingNav';
 import { AffiliateCta } from './AffiliateCta';
 import { TwGuideNav } from './TwGuideNav';
 import { useEffect, useState } from 'react';
@@ -683,7 +683,7 @@ export default function TaiwanPage() {
           <div>
             <p>台股獨立研究規則 · 公開資料可查核 · 無推薦分數</p>
             <GuideLinks />
-            <SimplesFingerprint />
+            <SiblingNav variant="footer" />
           </div>
           <button
             className="tw-action"
