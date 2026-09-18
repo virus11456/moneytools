@@ -24,6 +24,7 @@
 .tw-app main {
   max-width: 1350px;
   margin: auto;
+  min-width: 0;
 }
 .tw-intro {
   display: flex;
@@ -339,6 +340,7 @@
   border-radius: 12px;
   padding: 20px;
   transition: border-color 0.15s;
+  min-width: 0;
 }
 .tw-card:hover {
   border-color: #899f72;
@@ -444,6 +446,8 @@
   border: 1px solid #d8e0ce;
   border-radius: 12px;
   margin: 20px 0;
+  min-width: 0;
+  max-width: 100%;
 }
 .tw-panel h2 {
   font-size: 19px;
@@ -513,6 +517,10 @@
   gap: 20px;
   align-items: center;
   margin: 10px 0 25px;
+  min-width: 0;
+}
+.tw-stock-title > div {
+  min-width: 0;
 }
 .tw-stock-title h1 {
   font-size: 36px;
@@ -530,11 +538,12 @@
 }
 .tw-gate {
   display: grid;
-  grid-template-columns: 30px 1fr auto;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
   border-top: 1px solid #e0e7d7;
   padding: 16px 0;
+  min-width: 0;
 }
 .tw-gate strong,
 .tw-gate b {
@@ -544,6 +553,14 @@
   font-size: 12px;
   color: #748168;
   margin: 5px 0 0;
+  overflow-wrap: anywhere;
+}
+.tw-gate > div {
+  min-width: 0;
+}
+.tw-gate > b {
+  overflow-wrap: anywhere;
+  text-align: right;
 }
 .tw-result {
   border-radius: 50%;
@@ -652,11 +669,19 @@
     grid-template-columns: 1fr;
   }
   .tw-gate {
-    grid-template-columns: 24px 1fr;
+    grid-template-columns: 24px minmax(0, 1fr);
     gap: 9px;
   }
   .tw-gate > b {
     grid-column: 2;
+    text-align: left;
+  }
+  .tw-stock-title {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .tw-stock-title > div:last-child {
+    text-align: left;
   }
   .tw-filters .tw-search {
     flex-basis: 100%;
@@ -779,6 +804,13 @@
 .tw-seo-list li + li {
   margin-top: 8px;
 }
+.tw-compare-wrap {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
 .tw-compare {
   width: 100%;
   border-collapse: collapse;
@@ -797,6 +829,7 @@
   padding: 12px 10px 12px 0;
   text-align: left;
   vertical-align: top;
+  overflow-wrap: anywhere;
 }
 .tw-compare th {
   font-size: 12px;
@@ -887,9 +920,5 @@
   }
   .affiliate-cta a {
     justify-content: center;
-  }
-  .tw-compare {
-    display: block;
-    overflow-x: auto;
   }
 }
