@@ -752,7 +752,8 @@
 .tw-seo .tw-guide-links a,
 .tw-seo .affiliate-cta a,
 .tw-seo .affiliate-header,
-.tw-seo .simples-fingerprint {
+.tw-seo .simples-fingerprint,
+.tw-seo .sibling-nav a {
   text-decoration: none;
 }
 .tw-seo-grid {

@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import { Activity } from 'lucide-react';
-import { SiblingNav, SimplesFingerprint } from './SiblingNav';
+import { SiblingNav } from './SiblingNav';
 import { AffiliateCta } from './AffiliateCta';
 import { TwGuideNav } from './TwGuideNav';
 import { type TwGuideHref } from './twGuides';
@@ -74,7 +74,7 @@ export function TwShell({
         <div className="tw-footer">
           <div>
             <p>說明頁不改篩選規則 · 費用請以券商官網為準</p>
-            <SimplesFingerprint />
+            <SiblingNav variant="footer" />
           </div>
         </div>
       </main>

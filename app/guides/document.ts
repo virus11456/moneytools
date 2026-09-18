@@ -1,4 +1,4 @@
-import { SIBLING_TOOLS } from '../siblingTools.ts';
+import { siblingNavHtml } from '../siblingTools.ts';
 import {
   affiliateUrl,
   GUIDE_PAGES,
@@ -17,16 +17,6 @@ function esc(s: string) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
-}
-
-function siblingNav() {
-  const links = SIBLING_TOOLS.map(
-    (tool) =>
-      `<a href="${tool.href}" target="_blank" rel="noreferrer">${tool.label}<small>${tool.hint}</small></a>`,
-  ).join('\n      ');
-  return `<nav class="sibling-nav" aria-label="相關工具">
-      ${links}
-    </nav>`;
 }
 
 export function guideLinksHtml(currentPath?: string) {
@@ -116,7 +106,7 @@ export function renderGuideBody(page: GuidePageDef) {
         <a href="/">美股</a>
         <a href="/tw">台股</a>
       </nav>
-      ${siblingNav()}
+      ${siblingNavHtml()}
     </div>
   </header>
   <main>
@@ -150,7 +140,7 @@ export function renderGuideBody(page: GuidePageDef) {
       <div>
         <strong>stocktools</strong>
         <p>規則透明，判斷留給你。</p>
-        <a class="simples-fingerprint" href="https://simples.com.tw/" target="_blank" rel="noreferrer" aria-label="SIMPLES 簡單行銷">SIMPLES</a>
+        ${siblingNavHtml('footer')}
         ${guideLinksHtml(page.path)}
       </div>
       <p>${RISK_DISCLAIMER}</p>

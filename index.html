@@ -19,9 +19,32 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://stocktools.cc/" />
     <link rel="icon" href="/favicon.svg" />
+    <style>
+      .sibling-nav-static {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        padding: 16px 5% 24px;
+        font: 12px/1.5 sans-serif;
+        color: #5f6f62;
+      }
+      .sibling-nav-static a {
+        color: inherit;
+        text-decoration: none;
+      }
+      body:has(#root .app) .sibling-nav-static {
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <nav class="sibling-nav sibling-nav-footer sibling-nav-static" aria-label="SIMPLES 工具網">
+      <a href="https://warhubs.com/" target="_blank" rel="noreferrer">Warhubs<small>戰情觀測</small></a>
+      <a href="https://hypeboss.cc/" target="_blank" rel="noreferrer">HypeBoss<small>加密工具</small></a>
+      <a href="https://toolist.cc/" target="_blank" rel="noreferrer">Toolist<small>工具捷徑</small></a>
+      <a class="simples-fingerprint" href="https://simples.com.tw/" target="_blank" rel="noreferrer">SIMPLES 工具網</a>
+    </nav>
     <script type="module" src="/main.tsx"></script>
   </body>
 </html>

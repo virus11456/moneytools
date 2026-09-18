@@ -122,6 +122,8 @@ for (const page of GUIDE_PAGES) {
   assert.match(html, /hypeboss\.cc/);
   assert.match(html, /toolist\.cc/);
   assert.match(html, /simples\.com\.tw/);
+  assert.match(html, /sibling-nav-footer/);
+  assert.match(html, /SIMPLES 工具網/);
   assert.match(html, /href="\/"/);
   assert.match(html, /href="\/tw"/);
   assert.match(html, /href="\/tw\/us-broker"/);
