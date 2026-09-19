@@ -103,6 +103,16 @@
       "source": "/tw/dividend/",
       "destination": "/tw/us-dividend",
       "permanent": true
+    },
+    {
+      "source": "/tw/first-buy",
+      "destination": "/tw/us-first-buy",
+      "permanent": true
+    },
+    {
+      "source": "/tw/first-buy/",
+      "destination": "/tw/us-first-buy",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -177,6 +187,14 @@
     {
       "source": "/tw/us-open-account/",
       "destination": "/tw/us-open-account/index.html"
+    },
+    {
+      "source": "/tw/us-first-buy",
+      "destination": "/tw/us-first-buy/index.html"
+    },
+    {
+      "source": "/tw/us-first-buy/",
+      "destination": "/tw/us-first-buy/index.html"
     },
     {
       "source": "/tw/us-deposit",

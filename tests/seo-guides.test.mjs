@@ -16,11 +16,12 @@ import { FIRSTRADE_OPEN_URL } from '../app/affiliate.ts';
 const REFERRAL =
   'https://www.firstrade.com/accounts/referral?im_ref=bIQJ59ginr1r';
 
-assert.equal(GUIDE_PAGES.length, 15);
+assert.equal(GUIDE_PAGES.length, 16);
 assert.deepEqual(
   GUIDE_PAGES.map((page) => page.path),
   [
     '/tw/us-market-hours',
+    '/tw/us-first-buy',
     '/tw/us-broker',
     '/tw/us-open-account',
     '/tw/us-deposit',
@@ -41,6 +42,8 @@ assert.deepEqual(
 assert.equal(isGuidePath('/tw/faq'), true);
 assert.equal(isGuidePath('/tw/faq/'), true);
 assert.equal(isGuidePath('/tw/us-broker'), true);
+assert.equal(isGuidePath('/tw/us-first-buy'), true);
+assert.equal(isGuidePath('/tw/us-first-buy/'), true);
 assert.equal(isGuidePath('/tw/us-open-account'), true);
 assert.equal(isGuidePath('/tw/us-open-account/'), true);
 assert.equal(isGuidePath('/tw/us-watchlist/'), true);
@@ -133,6 +136,7 @@ for (const page of GUIDE_PAGES) {
   assert.match(html, /href="\/"/);
   assert.match(html, /href="\/tw"/);
   assert.match(html, /href="\/tw\/us-broker"/);
+  assert.match(html, /href="\/tw\/us-first-buy"/);
   assert.match(html, /href="\/tw\/us-open-account"/);
   assert.match(html, /href="\/tw\/us-deposit"/);
   assert.match(html, /href="\/tw\/us-tax"/);
@@ -192,6 +196,7 @@ const publicSitemap = readFileSync(
   'utf8',
 );
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-broker/);
+assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-first-buy/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-open-account/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-deposit/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-tax/);
@@ -224,6 +229,7 @@ if (existsSync(distPage)) {
     'utf8',
   );
   assert.match(builtSitemap, /\/tw\/us-broker/);
+  assert.match(builtSitemap, /\/tw\/us-first-buy/);
   assert.match(builtSitemap, /\/tw\/us-open-account/);
   assert.match(builtSitemap, /\/tw\/us-deposit/);
   assert.match(builtSitemap, /\/tw\/us-tax/);

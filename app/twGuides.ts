@@ -63,6 +63,13 @@ export const TW_GUIDES = [
       '台灣投資人開美股帳戶的常見步驟：選券商、線上申請、護照／身分證明、W-8BEN、入金到第一筆交易。教育整理，不是投資建議。',
   },
   {
+    href: '/tw/us-first-buy',
+    label: '第一次買',
+    title: '第一次買美股：複委託與海外直開路徑｜Stocktools',
+    description:
+      '台灣投資人第一次買美股的端到端路徑：選路徑、開戶、W-8BEN、入金、開盤時間與第一筆。教育總覽，不是投資建議。',
+  },
+  {
     href: '/tw/us-dividend',
     label: '美股配息',
     title: '美股除息日與配息：台灣投資人怎麼領｜Stocktools',
