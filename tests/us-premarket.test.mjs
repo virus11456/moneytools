@@ -31,6 +31,7 @@ assert.match(html, /<html lang="zh-Hant">/);
 assert.match(html, /不是投資建議/);
 assert.match(html, /FAQPage/);
 assert.match(html, /href="\/tw\/us-market-hours"/);
+assert.match(html, /href="\/tw\/us-order-types"/);
 assert.match(html, /href="\/tw\/us-first-buy"/);
 assert.match(html, /href="\/tw\/us-open-account"/);
 assert.match(html, /href="\/tw\/us-etf"/);

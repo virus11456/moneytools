@@ -38,6 +38,7 @@ assert.match(html, /href="\/tw\/us-fee-calculator"/);
 assert.match(html, /href="\/tw\/us-deposit"/);
 assert.match(html, /href="\/tw\/us-tax"/);
 assert.match(html, /href="\/tw\/us-market-hours"/);
+assert.match(html, /href="\/tw\/us-order-types"/);
 assert.match(html, /firstrade\.com\/accounts\/referral\?im_ref=bIQJ59ginr1r/);
 assert.match(html, /開美股帳戶/);
 assert.match(html, /rel="nofollow sponsored noopener noreferrer"/);

@@ -63,6 +63,13 @@ export const TW_GUIDES = [
       '盤前、盤後與一般交易時段的差異：常見台北時間窗口、流動性與價差、委託限制與隔夜缺口。教育整理，不是投資建議。',
   },
   {
+    href: '/tw/us-order-types',
+    label: '市價限價',
+    title: '美股市價單 vs 限價單：滑價、部分成交與不成交｜Stocktools',
+    description:
+      '市價單與限價單的差異：常見用法、滑價、部分成交、限價不成交，以及盤前盤後委託限制。教育整理，不是投資建議。',
+  },
+  {
     href: '/tw/us-open-account',
     label: '開戶步驟',
     title: '台灣怎麼開美股帳戶：步驟、文件與複委託｜Stocktools',

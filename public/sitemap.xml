@@ -45,6 +45,10 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
+    <loc>https://stocktools.cc/tw/us-order-types</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://stocktools.cc/tw/us-fees</loc>
     <changefreq>weekly</changefreq>
   </url>
