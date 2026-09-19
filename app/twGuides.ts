@@ -56,6 +56,13 @@ export const TW_GUIDES = [
       '看美股現在開不開盤、下次開盤／收盤的台北與紐約時間，以及今年與明年 NYSE 休市日。',
   },
   {
+    href: '/tw/us-premarket',
+    label: '盤前盤後',
+    title: '美股盤前盤後是什麼？台灣時間與注意事項｜Stocktools',
+    description:
+      '盤前、盤後與一般交易時段的差異：常見台北時間窗口、流動性與價差、委託限制與隔夜缺口。教育整理，不是投資建議。',
+  },
+  {
     href: '/tw/us-open-account',
     label: '開戶步驟',
     title: '台灣怎麼開美股帳戶：步驟、文件與複委託｜Stocktools',
