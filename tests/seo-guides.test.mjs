@@ -16,7 +16,7 @@ import { FIRSTRADE_OPEN_URL } from '../app/affiliate.ts';
 const REFERRAL =
   'https://www.firstrade.com/accounts/referral?im_ref=bIQJ59ginr1r';
 
-assert.equal(GUIDE_PAGES.length, 14);
+assert.equal(GUIDE_PAGES.length, 15);
 assert.deepEqual(
   GUIDE_PAGES.map((page) => page.path),
   [
@@ -26,6 +26,7 @@ assert.deepEqual(
     '/tw/us-deposit',
     '/tw/us-tax',
     '/tw/us-etf',
+    '/tw/us-dividend',
     '/tw/us-fees',
     '/tw/us-fee-calculator',
     '/tw/us-watchlist',
@@ -49,6 +50,8 @@ assert.equal(isGuidePath('/tw/us-tax'), true);
 assert.equal(isGuidePath('/tw/us-tax/'), true);
 assert.equal(isGuidePath('/tw/us-etf'), true);
 assert.equal(isGuidePath('/tw/us-etf/'), true);
+assert.equal(isGuidePath('/tw/us-dividend'), true);
+assert.equal(isGuidePath('/tw/us-dividend/'), true);
 assert.equal(isGuidePath('/tw/us-fees'), true);
 assert.equal(isGuidePath('/tw/us-fee-calculator'), true);
 assert.equal(isGuidePath('/tw/us-fee-calculator/'), true);
@@ -134,6 +137,7 @@ for (const page of GUIDE_PAGES) {
   assert.match(html, /href="\/tw\/us-deposit"/);
   assert.match(html, /href="\/tw\/us-tax"/);
   assert.match(html, /href="\/tw\/us-etf"/);
+  assert.match(html, /href="\/tw\/us-dividend"/);
   assert.match(html, /href="\/tw\/us-market-hours"/);
   assert.match(html, /href="\/tw\/us-fees"/);
   assert.match(html, /href="\/tw\/us-fee-calculator"/);
@@ -192,6 +196,7 @@ assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-open-account/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-deposit/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-tax/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-etf/);
+assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-dividend/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-market-hours/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-fees/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-fee-calculator/);
@@ -223,6 +228,7 @@ if (existsSync(distPage)) {
   assert.match(builtSitemap, /\/tw\/us-deposit/);
   assert.match(builtSitemap, /\/tw\/us-tax/);
   assert.match(builtSitemap, /\/tw\/us-etf/);
+  assert.match(builtSitemap, /\/tw\/us-dividend/);
   assert.match(builtSitemap, /\/tw\/us-market-hours/);
   assert.match(builtSitemap, /\/tw\/us-fees/);
   assert.match(builtSitemap, /\/tw\/us-fee-calculator/);

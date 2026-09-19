@@ -93,6 +93,16 @@
       "source": "/tw/open-account/",
       "destination": "/tw/us-open-account",
       "permanent": true
+    },
+    {
+      "source": "/tw/dividend",
+      "destination": "/tw/us-dividend",
+      "permanent": true
+    },
+    {
+      "source": "/tw/dividend/",
+      "destination": "/tw/us-dividend",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -191,6 +201,14 @@
     {
       "source": "/tw/us-etf/",
       "destination": "/tw/us-etf/index.html"
+    },
+    {
+      "source": "/tw/us-dividend",
+      "destination": "/tw/us-dividend/index.html"
+    },
+    {
+      "source": "/tw/us-dividend/",
+      "destination": "/tw/us-dividend/index.html"
     },
     {
       "source": "/tw/us-watchlist",

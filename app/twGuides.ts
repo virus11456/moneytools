@@ -62,6 +62,13 @@ export const TW_GUIDES = [
     description:
       '台灣投資人開美股帳戶的常見步驟：選券商、線上申請、護照／身分證明、W-8BEN、入金到第一筆交易。教育整理，不是投資建議。',
   },
+  {
+    href: '/tw/us-dividend',
+    label: '美股配息',
+    title: '美股除息日與配息：台灣投資人怎麼領｜Stocktools',
+    description:
+      '說明除息日、股權登記日與發放日，以及海外券商或複委託怎麼入帳。教育整理，不是投資建議。',
+  },
 ] as const;
 
 export type TwGuideHref = (typeof TW_GUIDES)[number]['href'];
