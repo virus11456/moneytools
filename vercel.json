@@ -113,6 +113,16 @@
       "source": "/tw/first-buy/",
       "destination": "/tw/us-first-buy",
       "permanent": true
+    },
+    {
+      "source": "/tw/premarket",
+      "destination": "/tw/us-premarket",
+      "permanent": true
+    },
+    {
+      "source": "/tw/premarket/",
+      "destination": "/tw/us-premarket",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -251,6 +261,14 @@
     {
       "source": "/tw/us-market-hours/",
       "destination": "/tw/us-market-hours/index.html"
+    },
+    {
+      "source": "/tw/us-premarket",
+      "destination": "/tw/us-premarket/index.html"
+    },
+    {
+      "source": "/tw/us-premarket/",
+      "destination": "/tw/us-premarket/index.html"
     },
     {
       "source": "/tw/us-fee-calculator",
