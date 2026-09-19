@@ -133,6 +133,16 @@
       "source": "/tw/order-types/",
       "destination": "/tw/us-order-types",
       "permanent": true
+    },
+    {
+      "source": "/tw/adr",
+      "destination": "/tw/us-adr",
+      "permanent": true
+    },
+    {
+      "source": "/tw/adr/",
+      "destination": "/tw/us-adr",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -239,6 +249,14 @@
     {
       "source": "/tw/us-etf/",
       "destination": "/tw/us-etf/index.html"
+    },
+    {
+      "source": "/tw/us-adr",
+      "destination": "/tw/us-adr/index.html"
+    },
+    {
+      "source": "/tw/us-adr/",
+      "destination": "/tw/us-adr/index.html"
     },
     {
       "source": "/tw/us-dividend",

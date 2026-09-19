@@ -90,6 +90,13 @@ export const TW_GUIDES = [
     description:
       '說明除息日、股權登記日與發放日，以及海外券商或複委託怎麼入帳。教育整理，不是投資建議。',
   },
+  {
+    href: '/tw/us-adr',
+    label: '美股 ADR',
+    title: '美股 ADR 是什麼？台灣投資人怎麼理解｜Stocktools',
+    description:
+      '台灣投資人看美國存託憑證（ADR）：非美國公司如何在美股市場交易、跟普通股與 ETF 差在哪。教育整理，不是投資建議。',
+  },
 ] as const;
 
 export type TwGuideHref = (typeof TW_GUIDES)[number]['href'];
