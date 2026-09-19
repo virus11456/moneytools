@@ -9,6 +9,10 @@
     <changefreq>daily</changefreq>
   </url>
   <url>
+    <loc>https://stocktools.cc/tw/us-first-buy</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://stocktools.cc/tw/us-broker</loc>
     <changefreq>weekly</changefreq>
   </url>
