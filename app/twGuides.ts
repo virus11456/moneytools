@@ -63,6 +63,13 @@ export const TW_GUIDES = [
       '盤前、盤後與一般交易時段的差異：常見台北時間窗口、流動性與價差、委託限制與隔夜缺口。教育整理，不是投資建議。',
   },
   {
+    href: '/tw/us-earnings',
+    label: '美股財報',
+    title: '美股財報日與財報季：台灣投資人要知道什麼｜Stocktools',
+    description:
+      '財報日與財報季：收盤後／開盤前常見公布窗口、為什麼價格可能跳空，以及時差與複委託窗口。教育整理，不是投資建議。',
+  },
+  {
     href: '/tw/us-order-types',
     label: '市價限價',
     title: '美股市價單 vs 限價單：滑價、部分成交與不成交｜Stocktools',
