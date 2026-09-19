@@ -16,7 +16,7 @@ import { FIRSTRADE_OPEN_URL } from '../app/affiliate.ts';
 const REFERRAL =
   'https://www.firstrade.com/accounts/referral?im_ref=bIQJ59ginr1r';
 
-assert.equal(GUIDE_PAGES.length, 19);
+assert.equal(GUIDE_PAGES.length, 20);
 assert.deepEqual(
   GUIDE_PAGES.map((page) => page.path),
   [
@@ -32,6 +32,7 @@ assert.deepEqual(
     '/tw/us-adr',
     '/tw/us-dividend',
     '/tw/us-fees',
+    '/tw/us-fx',
     '/tw/us-fee-calculator',
     '/tw/us-watchlist',
     '/tw/us-account',
@@ -61,6 +62,8 @@ assert.equal(isGuidePath('/tw/us-adr/'), true);
 assert.equal(isGuidePath('/tw/us-dividend'), true);
 assert.equal(isGuidePath('/tw/us-dividend/'), true);
 assert.equal(isGuidePath('/tw/us-fees'), true);
+assert.equal(isGuidePath('/tw/us-fx'), true);
+assert.equal(isGuidePath('/tw/us-fx/'), true);
 assert.equal(isGuidePath('/tw/us-fee-calculator'), true);
 assert.equal(isGuidePath('/tw/us-fee-calculator/'), true);
 assert.equal(isGuidePath('/tw/us-market-hours'), true);
@@ -156,6 +159,7 @@ for (const page of GUIDE_PAGES) {
   assert.match(html, /href="\/tw\/us-premarket"/);
   assert.match(html, /href="\/tw\/us-order-types"/);
   assert.match(html, /href="\/tw\/us-fees"/);
+  assert.match(html, /href="\/tw\/us-fx"/);
   assert.match(html, /href="\/tw\/us-fee-calculator"/);
   assert.match(html, /href="\/tw\/us-watchlist"/);
   assert.match(html, /href="\/tw\/us-account"/);
@@ -219,6 +223,7 @@ assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-market-hours/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-premarket/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-order-types/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-fees/);
+assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-fx/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-fee-calculator/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-watchlist/);
 
@@ -255,6 +260,7 @@ if (existsSync(distPage)) {
   assert.match(builtSitemap, /\/tw\/us-premarket/);
   assert.match(builtSitemap, /\/tw\/us-order-types/);
   assert.match(builtSitemap, /\/tw\/us-fees/);
+  assert.match(builtSitemap, /\/tw\/us-fx/);
   assert.match(builtSitemap, /\/tw\/us-fee-calculator/);
   assert.match(builtSitemap, /\/tw\/us-watchlist/);
   assert.match(builtSitemap, /stocktools\.cc/);

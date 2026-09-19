@@ -143,6 +143,16 @@
       "source": "/tw/adr/",
       "destination": "/tw/us-adr",
       "permanent": true
+    },
+    {
+      "source": "/tw/fx",
+      "destination": "/tw/us-fx",
+      "permanent": true
+    },
+    {
+      "source": "/tw/fx/",
+      "destination": "/tw/us-fx",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -281,6 +291,14 @@
     {
       "source": "/tw/us-fees/",
       "destination": "/tw/us-fees/index.html"
+    },
+    {
+      "source": "/tw/us-fx",
+      "destination": "/tw/us-fx/index.html"
+    },
+    {
+      "source": "/tw/us-fx/",
+      "destination": "/tw/us-fx/index.html"
     },
     {
       "source": "/tw/us-market-hours",
