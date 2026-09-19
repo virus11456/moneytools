@@ -29,6 +29,10 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
+    <loc>https://stocktools.cc/tw/us-dividend</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://stocktools.cc/tw/us-market-hours</loc>
     <changefreq>weekly</changefreq>
   </url>
