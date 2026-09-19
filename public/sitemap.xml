@@ -57,6 +57,10 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
+    <loc>https://stocktools.cc/tw/us-fx</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://stocktools.cc/tw/us-fee-calculator</loc>
     <changefreq>weekly</changefreq>
   </url>

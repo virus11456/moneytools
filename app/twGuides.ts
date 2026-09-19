@@ -97,6 +97,13 @@ export const TW_GUIDES = [
     description:
       '台灣投資人看美國存託憑證（ADR）：非美國公司如何在美股市場交易、跟普通股與 ETF 差在哪。教育整理，不是投資建議。',
   },
+  {
+    href: '/tw/us-fx',
+    label: '匯率匯損',
+    title: '美股匯損與匯率價差：台幣換成美元要注意什麼｜Stocktools',
+    description:
+      '台幣與美元兌換會碰到匯率價差與匯損：銀行電匯、券商換匯、複委託與海外直開。股票損益與匯率損益是兩層。教育整理，不是投資建議。',
+  },
 ] as const;
 
 export type TwGuideHref = (typeof TW_GUIDES)[number]['href'];
