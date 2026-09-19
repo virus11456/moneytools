@@ -104,6 +104,13 @@ export const TW_GUIDES = [
     description:
       '台幣與美元兌換會碰到匯率價差與匯損：銀行電匯、券商換匯、複委託與海外直開。股票損益與匯率損益是兩層。教育整理，不是投資建議。',
   },
+  {
+    href: '/tw/us-fractional',
+    label: '美股碎股',
+    title: '美股碎股是什麼？台灣投資人怎麼理解｜Stocktools',
+    description:
+      '美股碎股（fractional shares）：為什麼小資金會買不到一整股、複委託與海外券商支援不一，以及配息、投票與委託限制。教育整理，不是投資建議。',
+  },
 ] as const;
 
 export type TwGuideHref = (typeof TW_GUIDES)[number]['href'];
