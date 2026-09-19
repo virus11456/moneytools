@@ -16,13 +16,14 @@ import { FIRSTRADE_OPEN_URL } from '../app/affiliate.ts';
 const REFERRAL =
   'https://www.firstrade.com/accounts/referral?im_ref=bIQJ59ginr1r';
 
-assert.equal(GUIDE_PAGES.length, 20);
+assert.equal(GUIDE_PAGES.length, 21);
 assert.deepEqual(
   GUIDE_PAGES.map((page) => page.path),
   [
     '/tw/us-market-hours',
     '/tw/us-premarket',
     '/tw/us-order-types',
+    '/tw/us-fractional',
     '/tw/us-first-buy',
     '/tw/us-broker',
     '/tw/us-open-account',
@@ -72,6 +73,8 @@ assert.equal(isGuidePath('/tw/us-premarket'), true);
 assert.equal(isGuidePath('/tw/us-premarket/'), true);
 assert.equal(isGuidePath('/tw/us-order-types'), true);
 assert.equal(isGuidePath('/tw/us-order-types/'), true);
+assert.equal(isGuidePath('/tw/us-fractional'), true);
+assert.equal(isGuidePath('/tw/us-fractional/'), true);
 assert.equal(isGuidePath('/tw/stock/2330'), false);
 assert.equal(isGuidePath('/tw'), false);
 
@@ -158,6 +161,7 @@ for (const page of GUIDE_PAGES) {
   assert.match(html, /href="\/tw\/us-market-hours"/);
   assert.match(html, /href="\/tw\/us-premarket"/);
   assert.match(html, /href="\/tw\/us-order-types"/);
+  assert.match(html, /href="\/tw\/us-fractional"/);
   assert.match(html, /href="\/tw\/us-fees"/);
   assert.match(html, /href="\/tw\/us-fx"/);
   assert.match(html, /href="\/tw\/us-fee-calculator"/);
@@ -222,6 +226,7 @@ assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-dividend/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-market-hours/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-premarket/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-order-types/);
+assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-fractional/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-fees/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-fx/);
 assert.match(publicSitemap, /https:\/\/stocktools\.cc\/tw\/us-fee-calculator/);
@@ -259,6 +264,7 @@ if (existsSync(distPage)) {
   assert.match(builtSitemap, /\/tw\/us-market-hours/);
   assert.match(builtSitemap, /\/tw\/us-premarket/);
   assert.match(builtSitemap, /\/tw\/us-order-types/);
+  assert.match(builtSitemap, /\/tw\/us-fractional/);
   assert.match(builtSitemap, /\/tw\/us-fees/);
   assert.match(builtSitemap, /\/tw\/us-fx/);
   assert.match(builtSitemap, /\/tw\/us-fee-calculator/);

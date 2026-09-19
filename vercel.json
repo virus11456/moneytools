@@ -153,6 +153,16 @@
       "source": "/tw/fx/",
       "destination": "/tw/us-fx",
       "permanent": true
+    },
+    {
+      "source": "/tw/fractional",
+      "destination": "/tw/us-fractional",
+      "permanent": true
+    },
+    {
+      "source": "/tw/fractional/",
+      "destination": "/tw/us-fractional",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -323,6 +333,14 @@
     {
       "source": "/tw/us-order-types/",
       "destination": "/tw/us-order-types/index.html"
+    },
+    {
+      "source": "/tw/us-fractional",
+      "destination": "/tw/us-fractional/index.html"
+    },
+    {
+      "source": "/tw/us-fractional/",
+      "destination": "/tw/us-fractional/index.html"
     },
     {
       "source": "/tw/us-fee-calculator",
