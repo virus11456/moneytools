@@ -49,6 +49,10 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
+    <loc>https://stocktools.cc/tw/us-earnings</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://stocktools.cc/tw/us-order-types</loc>
     <changefreq>weekly</changefreq>
   </url>

@@ -125,6 +125,16 @@
       "permanent": true
     },
     {
+      "source": "/tw/earnings",
+      "destination": "/tw/us-earnings",
+      "permanent": true
+    },
+    {
+      "source": "/tw/earnings/",
+      "destination": "/tw/us-earnings",
+      "permanent": true
+    },
+    {
       "source": "/tw/order-types",
       "destination": "/tw/us-order-types",
       "permanent": true
@@ -325,6 +335,14 @@
     {
       "source": "/tw/us-premarket/",
       "destination": "/tw/us-premarket/index.html"
+    },
+    {
+      "source": "/tw/us-earnings",
+      "destination": "/tw/us-earnings/index.html"
+    },
+    {
+      "source": "/tw/us-earnings/",
+      "destination": "/tw/us-earnings/index.html"
     },
     {
       "source": "/tw/us-order-types",
