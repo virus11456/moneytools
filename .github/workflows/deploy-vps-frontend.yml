@@ -1,0 +1,40 @@
+name: Deploy Stocktools frontend to VPS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '11.19.0'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Install SSH identity
+        env:
+          DEPLOY_KEY: ${{ secrets.STOCKTOOLS_VPS_DEPLOY_KEY }}
+        run: |
+          test -n "$DEPLOY_KEY"
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          cp deploy/vps/stocktools-known-hosts ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+      - name: Upload and activate release
+        env:
+          RELEASE_ID: ${{ github.sha }}
+        run: |
+          ssh -o BatchMode=yes stocktools-deploy@72.62.247.218 "mkdir -p /var/www/stocktools-frontend/releases/$RELEASE_ID"
+          rsync -az --delete dist/ "stocktools-deploy@72.62.247.218:/var/www/stocktools-frontend/releases/$RELEASE_ID/"
+          rsync -az deploy/vps/activate_frontend.sh "stocktools-deploy@72.62.247.218:/var/www/stocktools-frontend/bin/activate.sh"
+          ssh -o BatchMode=yes stocktools-deploy@72.62.247.218 "bash /var/www/stocktools-frontend/bin/activate.sh $RELEASE_ID"
