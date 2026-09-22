@@ -14,7 +14,7 @@ export function usePublishedSnapshot<T extends { generatedAt: string }>() {
     const controller = new AbortController();
     request.current = controller;
     setRefreshing(true);
-    const timeout = setTimeout(() => controller.abort(), 20000);
+    const timeout = setTimeout(() => controller.abort(), 60000);
     try {
       let response = await fetch('/data/dashboard.json', {
         cache: 'no-cache',
