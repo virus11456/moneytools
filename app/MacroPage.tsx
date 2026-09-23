@@ -26,7 +26,7 @@ function MacroPlot({ chart, payload }: { chart: MacroChart; payload: Payload | n
   const latest = available.map((s) => ({ s, p: payload!.series[s.id].points.at(-1)! }));
   return <>
     <div className="macro-range" aria-label={`${chart.title} 圖表範圍`}>{ranges.map((r) => <button key={r.label} className={months === r.months ? 'active' : ''} onClick={() => setMonths(r.months)}>{r.label}</button>)}</div>
-    {rows.length > 1 ? <div className="macro-plot"><ResponsiveContainer width="100%" height="100%"><LineChart data={rows} margin={{ top: 12, right: 12, bottom: 0, left: -18 }}>
+    {rows.length > 1 ? <div className="macro-plot"><ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={210}><LineChart data={rows} margin={{ top: 12, right: 12, bottom: 0, left: -18 }}>
       <CartesianGrid stroke="#e2e7de" vertical={false} />
       <XAxis dataKey="date" tick={{ fontSize: 11 }} minTickGap={42} tickFormatter={(v) => String(v).slice(0,4)} />
       {available.map((s) => <YAxis key={s.id} yAxisId={s.id} hide domain={['auto','auto']} />)}
