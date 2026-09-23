@@ -32,13 +32,45 @@
         color: inherit;
         text-decoration: none;
       }
-      body:has(#root .app) .sibling-nav-static {
+      .guide-crawl-static {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        padding: 16px 5% 0;
+        font: 12px/1.5 sans-serif;
+        color: #5f6f62;
+      }
+      .guide-crawl-static a {
+        color: inherit;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      body:has(#root .app) .sibling-nav-static,
+      body:has(#root .app) .guide-crawl-static {
         display: none;
       }
     </style>
   </head>
   <body>
     <div id="root"></div>
+    <nav class="guide-crawl-static" aria-label="美股說明">
+      <a href="/tw">台灣投資人美股指南</a>
+      <a href="/tw/us-open-account">開戶步驟</a>
+      <a href="/tw/us-deposit">入金匯款</a>
+      <a href="/tw/us-fees">手續費與匯費</a>
+      <a href="/tw/us-fee-calculator">費用試算</a>
+      <a href="/tw/us-etf">美股 ETF</a>
+      <a href="/tw/us-first-buy">第一次買美股</a>
+      <a href="/tw/us-dividend">配息除息</a>
+      <a href="/tw/us-market-hours">開盤時間</a>
+      <a href="/tw/us-premarket">盤前盤後</a>
+      <a href="/tw/us-order-types">市價與限價</a>
+      <a href="/tw/us-adr">ADR</a>
+      <a href="/tw/us-fx">匯率匯損</a>
+      <a href="/tw/us-fractional">碎股</a>
+      <a href="/tw/us-earnings">財報日</a>
+      <a href="/tw/us-tax">預扣稅</a>
+    </nav>
     <nav class="sibling-nav sibling-nav-footer sibling-nav-static" aria-label="SIMPLES 工具網">
       <a href="https://warhubs.com/" target="_blank" rel="noreferrer">Warhubs<small>戰情觀測</small></a>
       <a href="https://hypeboss.cc/" target="_blank" rel="noreferrer">HypeBoss<small>加密工具</small></a>

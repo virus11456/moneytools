@@ -2,8 +2,8 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { Plugin, ViteDevServer } from 'vite';
 import { loadEnv } from 'vite';
+import { applyTwHubDocument, renderGuideDocument, robotsTxt, sitemapXml } from './document.ts';
 import { GUIDE_PAGES, findGuide, normalizePath } from './pages.ts';
-import { renderGuideDocument, robotsTxt, sitemapXml } from './document.ts';
 
 const GUIDE_WIDGETS: Record<string, { entry: string; assetPrefix: string }> = {
   'us-market-hours': {
@@ -75,6 +75,23 @@ export function moneytoolsSeoPlugin(): Plugin {
           res.end(robotsTxt());
           return;
         }
+        if (path === '/tw') {
+          try {
+            const indexHtml = await readFile(
+              join(server.config.root, 'index.html'),
+              'utf8',
+            );
+            const html = await server.transformIndexHtml(
+              '/tw',
+              applyTwHubDocument(indexHtml),
+            );
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            res.end(html);
+          } catch (error) {
+            next(error);
+          }
+          return;
+        }
         const page = findGuide(path);
         if (!page) {
           next();
@@ -96,6 +113,12 @@ export function moneytoolsSeoPlugin(): Plugin {
     },
     async closeBundle() {
       const indexHtml = await readFile(join(distDir, 'index.html'), 'utf8');
+      await mkdir(join(distDir, 'tw'), { recursive: true });
+      await writeFile(
+        join(distDir, 'tw', 'index.html'),
+        applyTwHubDocument(indexHtml),
+        'utf8',
+      );
       const stylesheets = stylesheetHrefs(indexHtml);
       const widgets = await builtWidgetHrefs(distDir);
       for (const page of GUIDE_PAGES) {
