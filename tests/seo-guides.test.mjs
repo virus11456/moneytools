@@ -7,10 +7,12 @@ import {
   isGuidePath,
 } from '../app/guides/pages.ts';
 import {
+  applyTwHubDocument,
   renderGuideDocument,
   sitemapXml,
   robotsTxt,
 } from '../app/guides/document.ts';
+import { TW_HUB } from '../app/guides/hub.ts';
 import { FIRSTRADE_OPEN_URL } from '../app/affiliate.ts';
 
 const REFERRAL =
@@ -215,6 +217,73 @@ assert.match(sitemap, /stocktools\.cc\/tw</);
 assert.doesNotMatch(sitemap, /vercel\.app/);
 assert.match(robotsTxt(), /Sitemap: https:\/\/stocktools\.cc\/sitemap\.xml/);
 
+const INDEX = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const HOME_GUIDE_LINKS = [
+  '/tw/us-open-account',
+  '/tw/us-deposit',
+  '/tw/us-fees',
+  '/tw/us-fee-calculator',
+  '/tw/us-etf',
+  '/tw/us-first-buy',
+  '/tw/us-dividend',
+  '/tw/us-market-hours',
+  '/tw/us-premarket',
+  '/tw/us-order-types',
+  '/tw/us-adr',
+  '/tw/us-fx',
+  '/tw/us-fractional',
+  '/tw/us-earnings',
+  '/tw/us-tax',
+];
+assert.match(INDEX, /<title>Stocktools｜美股雙重分析<\/title>/);
+assert.match(INDEX, /href="\/tw">台灣投資人美股指南<\/a>/);
+assert.doesNotMatch(INDEX, /<h1>/);
+assert.doesNotMatch(INDEX, /id="tw-hub"/);
+assert.doesNotMatch(INDEX, /firstrade/i);
+for (const href of HOME_GUIDE_LINKS) {
+  assert.match(INDEX, new RegExp(`href="${href}"`));
+}
+
+const twRewrite = vercel.rewrites.find((entry) => entry.source === '/tw');
+const twSlashRewrite = vercel.rewrites.find((entry) => entry.source === '/tw/');
+assert.equal(twRewrite?.destination, '/tw/index.html');
+assert.equal(twSlashRewrite?.destination, '/tw/index.html');
+
+const hub = applyTwHubDocument(INDEX);
+assert.notEqual(hub, INDEX);
+assert.match(hub, new RegExp(`<title>${TW_HUB.title}</title>`));
+assert.match(
+  hub,
+  new RegExp(
+    `<meta\\s[^>]*name="description"[^>]*content="${TW_HUB.description.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`,
+  ),
+);
+assert.match(hub, new RegExp(`<h1>${TW_HUB.h1}</h1>`));
+assert.match(hub, /id="tw-hub"/);
+assert.match(hub, /href="https:\/\/stocktools\.cc\/tw"/);
+assert.doesNotMatch(hub, /href="https:\/\/stocktools\.cc\/"/);
+assert.doesNotMatch(hub, /<title>Stocktools｜美股雙重分析<\/title>/);
+assert.match(hub, /開美股帳戶/);
+assert.match(
+  hub,
+  /href="https:\/\/www\.firstrade\.com\/accounts\/referral\?im_ref=bIQJ59ginr1r"/,
+);
+assert.match(hub, /rel="nofollow sponsored noopener noreferrer"/);
+assert.match(hub, /可能為聯盟連結/);
+assert.doesNotMatch(hub, /Moneytools/);
+for (const page of GUIDE_PAGES) {
+  assert.match(hub, new RegExp(`href="${page.path}"`));
+}
+for (const phrase of forbidden) {
+  assert.equal(
+    hub.toLowerCase().includes(phrase.toLowerCase()),
+    false,
+    `tw hub contains ${phrase}`,
+  );
+}
+const usAnchors = hub.match(/href="\/tw\/us-[^"]+"/g) || [];
+assert.ok(usAnchors.length >= HOME_GUIDE_LINKS.length, 'hub missing /tw/us-* anchors');
+
 const publicSitemap = readFileSync(
   new URL('../public/sitemap.xml', import.meta.url),
   'utf8',
@@ -281,6 +350,28 @@ if (existsSync(distPage)) {
     'utf8',
   );
   assert.match(builtRobots, /Sitemap: https:\/\/stocktools\.cc\/sitemap\.xml/);
+  const distHome = readFileSync(
+    new URL('../dist/index.html', import.meta.url),
+    'utf8',
+  );
+  const distHub = readFileSync(
+    new URL('../dist/tw/index.html', import.meta.url),
+    'utf8',
+  );
+  assert.notEqual(distHome, distHub);
+  assert.match(distHome, /<title>Stocktools｜美股雙重分析<\/title>/);
+  assert.match(distHome, /href="\/tw\/us-open-account"/);
+  assert.match(distHome, /href="\/tw\/us-fee-calculator"/);
+  assert.doesNotMatch(distHome, /id="tw-hub"/);
+  assert.match(distHub, /<title>台灣投資人美股指南｜開戶、費用與交易時段｜Stocktools<\/title>/);
+  assert.match(distHub, /<h1>台灣投資人美股指南<\/h1>/);
+  assert.match(distHub, /href="https:\/\/stocktools\.cc\/tw"/);
+  assert.doesNotMatch(distHub, /href="https:\/\/stocktools\.cc\/"/);
+  assert.match(distHub, /<script type="module"/);
+  for (const href of HOME_GUIDE_LINKS) {
+    assert.match(distHub, new RegExp(`href="${href}"`));
+    assert.match(distHome, new RegExp(`href="${href}"`));
+  }
   const hoursHtml = readFileSync(
     new URL('../dist/tw/us-market-hours/index.html', import.meta.url),
     'utf8',

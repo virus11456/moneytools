@@ -17,6 +17,7 @@ import {
 import './taiwan.css';
 import { TaiwanHistory } from './TaiwanHistory';
 import { GuideLinks } from './guides/GuideLinks';
+import { TW_HUB } from './guides/hub';
 import { isGuidePath } from './guides/pages.ts';
 type Gate = {
   key: string;
@@ -227,7 +228,7 @@ export default function TaiwanPage() {
   useEffect(() => {
     document.title = symbol
       ? `${symbol} 台股分析｜Stocktools`
-      : '台股篩選｜Stocktools';
+      : TW_HUB.title;
     const sync = (e: StorageEvent) => {
       if (e.key === SAVED || e.key === null) setSaved(loadSaved());
     };
@@ -468,9 +469,9 @@ export default function TaiwanPage() {
           <>
             <section className="tw-intro">
               <div>
-                <span className="eyebrow">台股・獨立篩選</span>
-                <h1>看懂企業，等趨勢到位。</h1>
-                <p>基本面先篩選，技術面再分類。</p>
+                <span className="eyebrow">繁中說明</span>
+                <h1>{TW_HUB.h1}</h1>
+                <p>{TW_HUB.lead}</p>
                 <TwGuideNav current="/tw" />
               </div>
               <div className="tw-date">

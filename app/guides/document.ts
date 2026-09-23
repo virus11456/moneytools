@@ -1,4 +1,5 @@
 import { siblingNavHtml } from '../siblingTools.ts';
+import { TW_HUB } from './hub.ts';
 import {
   affiliateUrl,
   GUIDE_PAGES,
@@ -210,4 +211,81 @@ Allow: /
 
 Sitemap: ${siteOrigin()}/sitemap.xml
 `;
+}
+
+export function twHubArticleHtml() {
+  const items = GUIDE_PAGES.map(
+    (page) =>
+      `<li><a href="${page.path}">${esc(page.navLabel)}</a><span>${esc(page.description)}</span></li>`,
+  ).join('');
+  return `<article class="tw-crawl-hub" id="tw-hub">
+  <p class="eyebrow">繁中說明</p>
+  <h1>${esc(TW_HUB.h1)}</h1>
+  <p class="guide-lead">${esc(TW_HUB.lead)}</p>
+  <ul class="tw-crawl-directory">${items}</ul>
+  <p><a href="/">美股雙重分析</a></p>
+  ${affiliateCta()}
+  <p class="guide-disclaimer">${esc(RISK_DISCLAIMER)}</p>
+</article>`;
+}
+
+function replaceAttr(
+  html: string,
+  pattern: RegExp,
+  content: string,
+  label: string,
+) {
+  const next = html.replace(pattern, (_match, prefix: string, suffix: string) => {
+    return `${prefix}${content}${suffix}`;
+  });
+  if (next === html) throw new Error(`moneytools seo: missing ${label}`);
+  return next;
+}
+
+/** Distinct /tw document derived from the built SPA shell so the screener still hydrates. */
+export function applyTwHubDocument(indexHtml: string) {
+  const canonical = `${siteOrigin()}${TW_HUB.path}`;
+  let html = indexHtml;
+  html = replaceAttr(
+    html,
+    /(<title>)[^<]*(<\/title>)/,
+    esc(TW_HUB.title),
+    'title',
+  );
+  html = replaceAttr(
+    html,
+    /(<meta\s[^>]*name="description"[^>]*content=")[^"]*(")/,
+    esc(TW_HUB.description),
+    'description',
+  );
+  html = replaceAttr(
+    html,
+    /(<meta\s[^>]*property="og:title"[^>]*content=")[^"]*(")/,
+    esc(TW_HUB.title),
+    'og:title',
+  );
+  html = replaceAttr(
+    html,
+    /(<meta\s[^>]*property="og:description"[^>]*content=")[^"]*(")/,
+    esc(TW_HUB.description),
+    'og:description',
+  );
+  html = replaceAttr(
+    html,
+    /(<link\s[^>]*rel="canonical"[^>]*href=")[^"]*(")/,
+    esc(canonical),
+    'canonical',
+  );
+  html = replaceAttr(
+    html,
+    /(<meta\s[^>]*property="og:url"[^>]*content=")[^"]*(")/,
+    esc(canonical),
+    'og:url',
+  );
+  const withHub = html.replace(
+    /<div id="root">\s*<\/div>/,
+    `<div id="root">${twHubArticleHtml()}</div>`,
+  );
+  if (withHub === html) throw new Error('moneytools seo: missing #root');
+  return withHub;
 }

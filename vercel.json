@@ -190,7 +190,11 @@
     },
     {
       "source": "/tw",
-      "destination": "/index.html"
+      "destination": "/tw/index.html"
+    },
+    {
+      "source": "/tw/",
+      "destination": "/tw/index.html"
     },
     {
       "source": "/tw/us-account",
