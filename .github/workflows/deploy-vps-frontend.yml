@@ -2,6 +2,9 @@ name: Deploy Stocktools frontend to VPS
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
