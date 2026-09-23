@@ -19,6 +19,8 @@ jobs:
           node-version: '22'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Build public US macro dataset
+        run: python3 scripts/build_us_macro.py
       - run: pnpm build
       - name: Install SSH identity
         env:

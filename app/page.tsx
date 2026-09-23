@@ -727,7 +727,7 @@ export default function Home() {
             </span>
             stocktools<span className="beta">US EQUITIES</span>
           </button>
-          <nav className="market-switch" aria-label="股票市場"><a href="/" aria-current="page">美股</a><a href="/tw">台股</a></nav>
+          <nav className="market-switch" aria-label="研究頁面"><a href="/" aria-current="page">美股</a><a href="/tw">台股</a><a href="/macro">美國總經</a></nav>
           <SiblingNav />
         </div>
         <AffiliateCta variant="header" locale="zh-Hant" />

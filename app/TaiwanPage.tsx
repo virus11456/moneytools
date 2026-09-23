@@ -331,6 +331,7 @@ export default function TaiwanPage() {
             <a href="/tw" aria-current="page">
               台股
             </a>
+            <a href="/macro">美國總經</a>
           </nav>
           <SiblingNav />
         </div>

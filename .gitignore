@@ -41,3 +41,4 @@ __pycache__/
 *.pyc
 .venv/
 *.tsbuildinfo
+/public/macro-data/us-macro.json
