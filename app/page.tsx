@@ -790,6 +790,19 @@ export default function Home() {
         <p className="footnote" id="stock-search-help">
           輸入代號或公司名稱；按搜尋可查其他美股。
         </p>
+        <a className="macro-entry" href="/macro">
+          <span className="macro-entry-icon" aria-hidden="true">
+            <Activity size={22} />
+          </span>
+          <span>
+            <small>US MACRO · 每日檢查更新</small>
+            <strong>美國總體經濟 20 張圖</strong>
+            <em>就業、消費、房市、通膨、利率與市場籌碼</em>
+          </span>
+          <span className="macro-entry-action">
+            查看圖表 <ArrowUpRight size={17} />
+          </span>
+        </a>
         <div className="publication-controls">
           <button type="button" onClick={() => refresh()} disabled={refreshing}>
             <RefreshCw size={15} className={refreshing ? 'spin' : ''} />

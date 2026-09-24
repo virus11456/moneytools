@@ -27,6 +27,12 @@
 .macro-range button.active { background: #e5ecdf; color: #2f4c3d; font-weight: 700; }
 .macro-plot { height: 245px; width: 100%; }
 .macro-empty { height: 245px; border-radius: 12px; background: repeating-linear-gradient(135deg,#f4f6f1,#f4f6f1 8px,#f1f4ee 8px,#f1f4ee 16px); display: flex; align-items: center; justify-content: center; gap: 10px; color: #899489; }
+.macro-loading { height: 278px; margin-top: 18px; border-radius: 12px; background: #f1f4ee; display: flex; flex-direction: column; justify-content: center; gap: 9px; padding: 28px; color: #647269; }
+.macro-loading-bar { display: block; width: 72%; height: 9px; border-radius: 99px; background: linear-gradient(90deg,#e0e7dc,#edf1e9,#e0e7dc); background-size: 200% 100%; animation: macro-shimmer 1.4s ease-in-out infinite; }
+.macro-loading-bar.short { width: 46%; }
+.macro-loading strong { margin-top: 8px; font-size: 12px; }
+@keyframes macro-shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .macro-loading-bar { animation: none; } }
 .macro-empty div { display: flex; flex-direction: column; gap: 3px; }
 .macro-empty strong { color: #5c6a61; font-size: 13px; }.macro-empty span { font-size: 11px; }
 .macro-latest { display: flex; gap: 8px; overflow-x: auto; padding: 9px 0 5px; scrollbar-width: thin; }
