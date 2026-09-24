@@ -25,6 +25,17 @@
   ],
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.stocktools.cc"
+        }
+      ],
+      "destination": "https://stocktools.cc/:path*",
+      "permanent": true
+    },
+    {
       "source": "/tw/broker-compare",
       "destination": "/tw/us-broker",
       "permanent": true
