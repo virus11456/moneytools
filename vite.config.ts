@@ -22,6 +22,7 @@ export default defineConfig({
     },
   },
   preview: {
+    allowedHosts: ['.stocktools.cc'],
     proxy: {
       '/api': { target: 'https://srv1527356.hstgr.cloud', changeOrigin: true },
       '/data': { target: 'https://srv1527356.hstgr.cloud', changeOrigin: true },
@@ -29,6 +30,7 @@ export default defineConfig({
   },
   server: {
     host: '127.0.0.1',
+    allowedHosts: ['.stocktools.cc'],
     watch: { usePolling: true },
     proxy: { '/api': 'http://127.0.0.1:8788' },
   },

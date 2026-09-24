@@ -2,6 +2,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { Plugin, ViteDevServer } from 'vite';
 import { loadEnv } from 'vite';
+import { applyWwwHostRedirect } from '../wwwHostRedirect.ts';
 import { applyTwHubDocument, renderGuideDocument, robotsTxt, sitemapXml } from './document.ts';
 import { GUIDE_PAGES, findGuide, normalizePath } from './pages.ts';
 
@@ -63,6 +64,10 @@ export function moneytoolsSeoPlugin(): Plugin {
       }
     },
     configureServer(server: ViteDevServer) {
+      server.middlewares.use((req, res, next) => {
+        if (applyWwwHostRedirect(req, res)) return;
+        next();
+      });
       server.middlewares.use(async (req, res, next) => {
         const path = requestPath(req.url);
         if (path === '/sitemap.xml') {
@@ -109,6 +114,12 @@ export function moneytoolsSeoPlugin(): Plugin {
         } catch (error) {
           next(error);
         }
+      });
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (applyWwwHostRedirect(req, res)) return;
+        next();
       });
     },
     async closeBundle() {

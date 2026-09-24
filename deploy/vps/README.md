@@ -9,3 +9,7 @@ Private scan state: /var/lib/moneytools/scan (full daily/previous/history, watch
 moneytools-scan.timer checks every five minutes. It scans only after the latest NYSE close plus 75 minutes, within a 12-hour catch-up window, and uses a file lock and completed-session marker to prevent overlapping/completed scans. No GitHub commit or Vercel build is needed for data updates. GitHub's old workflow is replaced by a read-only migration notice.
 
 Keep the current production and a verified rollback deployment until cutover validation is complete. Never delete all old deployments before verifying the new production domain. For frontend rollback, restore the previous Vercel deployment; do not re-enable GitHub scanning while the VPS timer is active.
+
+## www → apex
+
+Canonical origin is `https://stocktools.cc`. `deploy/vps/www-stocktools.redirect.conf` is the nginx server block that 301s `www.stocktools.cc` to that origin and keeps the path and query (`$request_uri`). The frontend deploy does not copy this file or reload nginx; a root install on the VPS is required before `curl -sI https://www.stocktools.cc/...` will show the redirect. The Vite dev/preview server and `vercel.json` apply the same host rule for non-nginx hosts.
