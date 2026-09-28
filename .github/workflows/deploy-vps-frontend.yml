@@ -22,6 +22,8 @@ jobs:
           node-version: '22'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Install market data dependency
+        run: python3 -m pip install --disable-pip-version-check -r requirements.txt
       - name: Build public US macro dataset
         run: python3 scripts/build_us_macro.py
       - run: pnpm build
