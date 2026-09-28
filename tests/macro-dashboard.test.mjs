@@ -22,7 +22,7 @@ test('mixed inflation directions stay mixed and expose each rule', () => {
   const inflation = buildMacroDashboard(payload({
     CPIAUCSL: [3, 3, 3, 3, 2.5],
     CPILFESL: [3, 3, 3, 3, 3.5],
-    PPIACO: [2, 2, 2, 2, 2.05],
+    PPIFIS: [2, 2, 2, 2, 2.05],
   }))[2];
   assert.equal(inflation.tone, 'mixed');
   assert.deepEqual(inflation.evidence.map((row) => row.tone), ['positive', 'caution', 'neutral']);

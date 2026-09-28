@@ -182,7 +182,7 @@ export function buildMacroDashboard(payload: MacroPayload | null): MacroLens[] {
     buildLens('inflation', '通膨壓力', [
       directionEvidence(payload, 'CPIAUCSL', '整體 CPI 年增', 'oil-cpi', '%', 3, 0.2, true),
       directionEvidence(payload, 'CPILFESL', '核心 CPI 年增', 'oil-cpi', '%', 3, 0.2, true),
-      directionEvidence(payload, 'PPIACO', '工業品 PPI 年增', 'copper-ppi', '%', 3, 0.2, true),
+      directionEvidence(payload, 'PPIFIS', '最終需求 PPI 年增', 'copper-ppi', '%', 3, 0.2, true),
     ], {
       positive: '通膨正在降溫', mixed: '通膨方向分歧', caution: '通膨壓力升高', insufficient: '資料不足',
     }, {
