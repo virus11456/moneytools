@@ -31,7 +31,7 @@ function MacroPlot({ chart, payload, loading }: { chart: MacroChart; payload: Ma
       <XAxis dataKey="date" tick={{ fontSize: 11 }} minTickGap={42} tickFormatter={(v) => String(v).slice(0,4)} />
       {available.map((s) => <YAxis key={s.id} yAxisId={s.id} hide domain={['auto','auto']} />)}
       <Tooltip labelFormatter={(v) => String(v)} formatter={(v, name) => [Number(v).toLocaleString('zh-TW',{ maximumFractionDigits: 2 }), chart.series.find((s) => s.id === name)?.label || name]} />
-      {available.map((s) => <Line key={s.id} yAxisId={s.id} type="monotone" dataKey={s.id} name={s.id} stroke={s.color} strokeWidth={2} dot={false} connectNulls={false} isAnimationActive={false} />)}
+      {available.map((s) => <Line key={s.id} yAxisId={s.id} type="monotone" dataKey={s.id} name={s.id} stroke={s.color} strokeWidth={2} dot={false} connectNulls isAnimationActive={false} />)}
     </LineChart></ResponsiveContainer></div> : <div className="macro-empty"><AlertCircle size={20}/><div><strong>資料尚未發布</strong><span>可查來源已列在下方；授權或資料管線完成後才會畫線。</span></div></div>}
     <div className="macro-latest">{latest.map(({s,p}) => <span key={s.id} style={{'--series':s.color} as React.CSSProperties}><i/>{s.label}<b>{p.value.toLocaleString('zh-TW',{maximumFractionDigits:2})} {s.unit}</b><small>{p.date}</small></span>)}</div>
   </>;
