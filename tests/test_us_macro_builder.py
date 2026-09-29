@@ -53,6 +53,21 @@ class UsMacroBuilderTests(unittest.TestCase):
         self.assertEqual(len(averaged), 2)
         self.assertEqual(averaged[0], {"date": "2026-01-20", "value": 10.5})
 
+    def test_parse_cboe_daily_rsc(self):
+        payload = b'1f:{"optionsData":{"ratios":[{"name":"EQUITY PUT/CALL RATIO","value":"0.67"}]}}'
+        self.assertEqual(macro.parse_cboe_daily(payload, "2026-09-25"), {
+            "date": "2026-09-25", "value": 0.67,
+        })
+
+    def test_moving_average_resets_after_long_gap(self):
+        old = [{"date": f"2019-09-{day:02d}", "value": 1.0} for day in range(1, 21)]
+        recent = [{"date": f"2026-09-{day:02d}", "value": 2.0} for day in range(1, 21)]
+        averaged = macro.moving_average_with_gap_reset(old + recent, 20)
+        self.assertEqual(averaged, [
+            {"date": "2019-09-20", "value": 1.0},
+            {"date": "2026-09-20", "value": 2.0},
+        ])
+
 
 if __name__ == "__main__":
     unittest.main()

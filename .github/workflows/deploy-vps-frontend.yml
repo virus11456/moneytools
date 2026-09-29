@@ -24,6 +24,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Install market data dependency
         run: python3 -m pip install --disable-pip-version-check -r requirements.txt
+      - name: Restore the last published macro dataset
+        run: |
+          mkdir -p public/macro-data
+          curl --fail --location --silent --show-error --max-time 30 https://stocktools.cc/macro-data/us-macro.json -o public/macro-data/us-macro.json || true
       - name: Build public US macro dataset
         run: python3 scripts/build_us_macro.py
       - run: pnpm build
