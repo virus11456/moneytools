@@ -151,4 +151,4 @@ Rejected substitutes for all three ISM series:
 - A successful refresh merges by date. The new value wins on a date that both sides have, so revisions land, and older dates that the refresh did not return are kept.
 - Series ids in `LICENSED_SERIES` are cleared even if a previous file contains points for them.
 - Output is JSON with `allow_nan=False`. Dates are `YYYY-MM-DD`. Duplicate dates collapse to the last finite number. Gaps are not interpolated.
-- The chart inserts a null break between observations farther apart than the series' normal spacing, and does not connect across that null. A null tooltip is an em dash, not 0.
+- The chart inserts a null break between observations farther apart than the series' normal spacing, and does not connect across that null. A null tooltip is an em dash, not 0. Ratios smaller than 0.01 keep four significant digits so a real value such as the copper/gold ratio is not rounded to 0 on the card.
