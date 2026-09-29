@@ -18,12 +18,12 @@ DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 # Survey series with no legal, complete, auto-updating redistribution path.
 # They are written as empty on purpose. Do not fill them from a baseline file.
 LICENSED_SERIES = {
- "REDBOOK": "Johnson Redbook 同店銷售為專有週資料，官方未提供可再散布的完整歷史，不能用新聞或普查零售代替。",
- "ISM_PMI": "ISM 製造業 PMI 為專有調查。FRED NAPM 已於 2016-06-24 應 ISM 要求刪除，未取得再散布授權前不發布。",
- "ISM_NEWORDERS": "ISM 製造業新訂單指數為專有調查。FRED NAPMNOI 已隨 ISM 序列刪除，未取得再散布授權前不發布。",
- "ISM_SERVICES": "ISM 服務業（非製造業）PMI 為專有調查。FRED 已刪除全部 ISM 序列，未取得再散布授權前不發布。",
- "NAAIM": "NAAIM 曝險指數自 2026-08-01 起需訂閱；公開頁禁止未經許可的商業再散布，不抓取圖表或表格。",
- "NAAIM_MA20": "20 期均線只能源自可再散布的 NAAIM 原始序列。目前沒有該序列，因此不計算、不手填、不從圖片描點。",
+ "REDBOOK": "Johnson Redbook 同店銷售為專有週資料，官方未提供可再散布的完整歷史。普查月零售已畫在同一張圖，頻率與樣本都不同，這個欄位是非替代指標，不把普查數字當成 Redbook。",
+ "ISM_PMI": "ISM 製造業 PMI 為專有調查。FRED NAPM 已於 2016-06-24 應 ISM 要求刪除，未取得再散布授權前不發布。地區聯準會調查不是全國 PMI，不畫成替代指標。",
+ "ISM_NEWORDERS": "ISM 製造業新訂單指數為專有調查。FRED NAPMNOI 已隨 ISM 序列刪除，未取得再散布授權前不發布。地區聯準會新訂單以 0 為中心，不畫成替代指標。",
+ "ISM_SERVICES": "ISM 服務業（非製造業）PMI 為專有調查。FRED 已刪除全部 ISM 序列，未取得再散布授權前不發布。紐約、費城、達拉斯的服務業調查只涵蓋一個地區且以 0 為中心，不畫成替代指標。",
+ "NAAIM": "NAAIM 曝險指數自 2026-08-01 起需訂閱；公開頁禁止未經許可的商業再散布，不抓取圖表或表格。沒有可再散布的公開替代序列，這個欄位是非替代指標。",
+ "NAAIM_MA20": "20 期均線只能源自可再散布的 NAAIM 原始序列。目前沒有該序列，因此不計算、不手填、不從圖片描點。這個欄位是非替代指標。",
 }
 SERIES = {
  "ICSA":("level",.001),"CCSA":("level",.001),"PAYEMS":("change",1),

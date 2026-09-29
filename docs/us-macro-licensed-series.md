@@ -9,8 +9,9 @@ copied from news summaries, chart images, MacroMicro, or unofficial files.
 Buckets:
 
 - **Fully filled:** none.
-- **Substitute only:** none. Nearby public series are already on the same
-  charts or were rejected because they are a different indicator.
+- **Substitute only:** none. Public regional Fed surveys and Census retail
+  sales were checked on 2026-09-29. They are a different indicator, so they
+  are not drawn in these six slots and are not labeled as substitutes.
 - **Still needs a paid license:** REDBOOK, ISM_PMI, ISM_NEWORDERS,
   ISM_SERVICES, NAAIM, NAAIM_MA20.
 
@@ -35,10 +36,7 @@ The builder still writes each id with `status: "missing"`, `substitute: false`,
 | Identical to the chart's indicator | The chart slot is this index. It is not filled. |
 | Latest-value check | No current machine-readable release is posted on the public site. A 2015 sample PDF is not a current value and was not stored. Census retail sales are not used as a stand-in. |
 
-Rejected substitutes:
-
-- FRED `RSAFS` and `MRTSSM4541USN` are already drawn on the retail chart. They are Census monthly sales, not a weekly same-store sample of about 9,000 general-merchandise stores. Different coverage, frequency, and seasonal basis.
-- News headlines and CEIC tables are not a complete licensed history.
+Rejected substitutes: see [Substitutes checked on 2026-09-29](#substitutes-checked-on-2026-09-29). Census monthly retail sales stay on the retail chart under their own names. They are not labeled as Redbook.
 
 ## ISM_PMI
 
@@ -99,11 +97,7 @@ Census `DGORDER` and `NEWORDER` stay on the chart as official order dollars and 
 | Identical to the chart's indicator | Yes. It is not the S&P Global services PMI. |
 | Latest-value check | ISM's August 2026 Services PMI write-up (Inside Supply Management, 9 September 2026) states the Services PMI registered **55.4 percent**. July's public report stated **54.1 percent**. Neither number was stored. |
 
-Rejected substitutes for all three ISM series:
-
-- S&P Global (Markit) US PMI is a different panel and is itself proprietary.
-- Empire State, Philadelphia, Richmond, Dallas, and Kansas City Fed surveys are free and updated, but they are regional and use their own respondents and seasonal factors. Putting one in an `ISM_*` id would present a different indicator as ISM.
-- Industrial production (`INDPRO`) is a Federal Reserve output index, not a diffusion survey.
+Rejected substitutes for all three ISM series are recorded in [Substitutes checked on 2026-09-29](#substitutes-checked-on-2026-09-29). None is written into an `ISM_*` id.
 
 ## NAAIM
 
@@ -143,6 +137,130 @@ Rejected substitutes for all three ISM series:
 | Latest-value check | Not computed. One public reading is not 20 consecutive observations, and that reading was not stored. |
 
 `moving_average()` is covered by tests: it starts on the 20th consecutive observation, keeps ordinary weekend gaps in a daily series, and clears the window when a weekly gap exceeds 12 days. That function is not pointed at NAAIM while `NAAIM` is blocked.
+
+## Licensing paths
+
+Checked 2026-09-29. "Public redistribution" below means only what that organization's own page says about posting the series on a public website. A vendor page that never names the series is not treated as a yes or a no for that series.
+
+MacroMicro is a paid option only. It is not called and its charts are not scraped. The API documentation is at https://en.macromicro.me/access-api/documentation. On https://en.macromicro.me/subscribe the API Essential plan is described as historical API access "to meet internal research and development needs." The same page says the Custom plan "provides complete commercial licensing, allowing the use of data, charts, and reports for commercial purposes," and its data-licensing line lists "internal research, business decision-making, investment analysis, public presentations, and more." The same FAQ says exclusive MacroMicro indicators are available for download or API integration only on the Custom plan, and "some data provided by MacroMicro's data partners cannot be offered for download or API access due to contractual limitations." The API Essential FAQ also says MacroMicro does not permit data from subscription plans to be used for commercial profit, and that provider agreements prohibit re-licensing, transfer, sale, loan, or distribution. Nothing on that page names Redbook, ISM, or NAAIM, so Custom is not treated here as a license those publishers have already granted.
+
+### REDBOOK
+
+| Path | What the page says about public redistribution |
+| --- | --- |
+| Redbook Research (https://www.redbookresearch.com/) | Paid subscriber reports (PDF, email, or fax). The publisher's sample report says reproduction or redistribution is prohibited except with written permission. That is a no, unless Redbook gives written permission. |
+| Haver Analytics | No Haver page reviewed names the Johnson Redbook Index or says a subscriber may post it on a public website. Haver articles that mention ISM describe delivery inside Haver databases, not a public-redistribution right. |
+| LSEG | The Eikon .NET API page (https://developers.lseg.com/en/api-catalog/eikon/-net-apis-for-use-in-custom-applications) says: "The Refinitiv Eikon end user license agreement prohibits any type of data redistribution." It points redistribution to a separate platform product. That page does not name Redbook. LSEG's redistribution product page (https://www.lseg.com/en/data-analytics/market-data/data-redistribution) describes real-time, pricing, reference, tick history, and news, and says delivering data to a firm's customers is redistribution that still needs a license. It does not say Redbook may be posted on a public site. |
+| Bloomberg | The Data License page retrieved at https://professional.bloomberg.com/products/data/data-license/ describes an enterprise content catalog. The text retrieved does not say public website redistribution of Redbook is allowed. |
+| Trading Economics | https://tradingeconomics.com/api/ says the API "can be used to feed a custom developed application, a public website" and that price depends on features, request volume, and "the distribution you make." The page does not say Redbook is included, and it does not say Redbook authorized that redistribution. |
+| MacroMicro | Paid option only, as above. Not used. |
+
+### ISM_PMI, ISM_NEWORDERS, ISM_SERVICES
+
+| Path | What the page says about public redistribution |
+| --- | --- |
+| ISM data license | Historical Manufacturing and Services files are a paid subscription. The 12 February 2014 ISM announcement said annual access was expected to cost $2,500 and that history reached as far as 1948; the contact given then was `kcahill@ism.ws`. Current report pages point historical purchases to `pmireports@ismworld.org`. ISM's PMI content notice grants a limited license to display the content on the reader's own device for personal, non-commercial use, and says the reader shall not copy, archive, publish, or otherwise use the content except as explicitly allowed in writing. It also says the reader shall not create, recreate, distribute, or advertise an index without prior written authorization. Requests go to ISM Research or `corpinfo@ismworld.org` / `kcahill@ismworld.org` with subject "Content Request." That is a no for this public site unless ISM gives written authorization. |
+| Haver Analytics | Haver articles state that ISM figures "can be found in Haver's USECON database; further detail is found in the SURVEYS database." Those articles do not say a Haver subscriber may republish the series on a public website. |
+| LSEG | Same Eikon sentence as above: the Eikon end user license "prohibits any type of data redistribution." The redistribution product page does not name ISM or grant a public-website right for it. |
+| Bloomberg | The Data License page retrieved does not say public website redistribution of ISM is allowed. |
+| Trading Economics | The API page allows a paid feed into a public website, with price set by the distribution. It does not say ISM authorized customers to republish ISM series. |
+| MacroMicro | Paid option only. Partner series can be excluded by contract. Not used. |
+
+### NAAIM and NAAIM_MA20
+
+| Path | What the page says about public redistribution |
+| --- | --- |
+| NAAIM public page (https://naaim.org/programs/naaim-exposure-index/) | The figure on that page is delayed three months. "Express permission must be sought from NAAIM for use of this data for commercial purposes." That page alone is a no. |
+| NAAIM Program Partner (https://members.naaim.org/ap/Membership/Application/GrZAe6L1) | "Organizations that intend to incorporate the NAAIM Exposure Index data into their platform, redistribute or republish the data, or resell or provide the data to customers or other third parties must subscribe as a Program Partner." The same terms say subscribers "are granted permission to republish and redistribute" the data, including through commercial platforms, if the content includes: `Source: NAAIM Exposure Index® (National Association of Active Investment Managers).` The data "may not be modified or presented in a manner that misrepresents the information." So the Program Partner page does allow public redistribution, with attribution and without modifying the data. This repo does not have that subscription. `NAAIM_MA20` is a derived average, which the same sentence may treat as a modification, so it is not computed from a Program Partner feed until that point is allowed in writing. |
+| NAAIM members | The public page says current members keep complimentary login access. The Program Partner text is the one that grants redistribution. Member access is not treated as permission to post the series here. |
+| Haver, LSEG, Bloomberg, Trading Economics | No page reviewed names the NAAIM Exposure Index or says that vendor's customer may post it on a public website. LSEG's Eikon page still prohibits redistribution of Eikon data. Trading Economics' public-website sentence does not name NAAIM. |
+| MacroMicro | Paid option only. Not used. The subscribe page does not say NAAIM is in the API. |
+
+## Substitutes checked on 2026-09-29
+
+None of these series is stored in `us-macro.json` or drawn in an `ISM_*`, `REDBOOK`, `NAAIM`, or `NAAIM_MA20` slot. The chart source line for those six ids says 非替代指標. Correlation with ISM, Redbook, or NAAIM was not computed: those histories are not held in this repo. Pearson correlations below use only the public files downloaded for this check, on overlapping months, with no rescaling and no gap fill.
+
+FRED tags on every regional series below are "Copyrighted: Citation Required." FRED's terms (https://fred.stlouisfed.org/legal/terms/) say that label allows use with attribution when displaying or publishing, and that those series "may be used for internal commercial uses and may be displayed in textbooks, newsletters, or reports to clients" with attribution. The same terms also say not to redistribute a third party's proprietary content for commercial use without express written permission from the data provider. This public dashboard is not a client report, so the histories were read for the comparison and were not published.
+
+### ISM manufacturing and new orders
+
+ISM Manufacturing PMI is a national composite, equal-weighted across New Orders, Production, Employment, Supplier Deliveries, and Inventories, centered at 50. ISM New Orders is one national component, also centered at 50. The regional indexes below are centered at 0 (share reporting increase minus share reporting decrease) and cover one Federal Reserve district. They were not shifted onto a 50-line.
+
+Downloaded from FRED CSV on 2026-09-29 (HTTP 200):
+
+| Series | FRED id | Span | Points | Latest |
+| --- | --- | --- | --- | --- |
+| Empire State current general business conditions, SA | `GACDISA066MSFRBNY` | 2001-07-01 to 2026-09-01 | 303 | 7.6 |
+| Empire State current new orders, SA | `NOCDISA066MSFRBNY` | 2001-07-01 to 2026-09-01 | 303 | 2.0 |
+| Philadelphia current general activity, SA | `GACDFSA066MSFRBPHI` | 1968-05-01 to 2026-09-01 | 701 | 37.8 |
+| Philadelphia current new orders, SA | `NOCDFSA066MSFRBPHI` | 1968-05-01 to 2026-09-01 | 701 | 29.2 |
+| Dallas current general business activity, SA | `BACTSAMFRBDAL` | 2004-06-01 to 2026-09-01 | 268 | 9.8 |
+| Dallas current new orders, SA | `VNWOSAMFRBDAL` | 2004-06-01 to 2026-09-01 | 268 | 30.7 |
+
+FRED's own notes say the Empire and Philadelphia general-activity readings, and the Dallas general-business-activity reading, are a distinct survey question, not a weighted composite. Dallas new orders is the Texas Manufacturing Outlook Survey new-orders diffusion index. Guessed Dallas ids `NOCDSAMFRBDAL` and `NEWORDSAMFRBDAL` returned HTTP 404; `VNWOSAMFRBDAL` is the series that exists.
+
+Not on FRED. A FRED search for the Kansas City manufacturing composite returned no series links. A Richmond search returned industrial-production series, not the Fifth District survey. Guessed ids `RICHMONDMFG`, `MNFGIDX`, and `KCCOMPOSITE` returned HTTP 404. The publishers do post files:
+
+| Series | File checked | Span | Points | Latest |
+| --- | --- | --- | --- | --- |
+| Richmond composite, SA (`sa_mfg_composite`) | https://www.richmondfed.org/-/media/RichmondFedOrg/region_communities/regional_data_analysis/regional_economy/surveys_of_business_conditions/manufacturing/data/mfg_historicaldata.xlsx | 1993-11-01 to 2026-09-01 | 395 | -2 |
+| Richmond new orders, SA (`sa_mfg_new_orders_c`) | same workbook | 1993-11-01 to 2026-09-01 | 395 | -6 |
+| Kansas City composite, SA, versus a month ago | https://www.kansascityfed.org/documents/19152/2026Sept24historicalmfg.xlsx | monthly columns 2001-07-31 through 2026-09-26 | 303 | 14 |
+| Kansas City volume of new orders, SA | same workbook | same columns | 303 | 24 |
+
+Richmond's page asks for the citation "Manufacturing Survey." Federal Reserve Bank of Richmond, and the retrieved page does not grant redistribution. The September 2026 Richmond release text matches the workbook: composite -2. Kansas City's 24 September 2026 release says the month-over-month composite was 14, which matches the workbook. Kansas City's page offers "Historical Monthly Data" and the retrieved page does not state a redistribution right. Kansas City describes its composite as an average of production, new orders, employment, supplier delivery time, and raw materials inventory. That is still a Tenth District survey, not ISM.
+
+Pearson r among these public activity indexes (levels, overlapping months):
+
+| Pair | Overlap | r |
+| --- | --- | --- |
+| Empire general vs Philadelphia general | 303 | 0.694 |
+| Empire general vs Dallas general activity | 268 | 0.766 |
+| Philadelphia general vs Dallas general activity | 268 | 0.779 |
+| Kansas City composite vs Empire general | 303 | 0.713 |
+| Kansas City composite vs Philadelphia general | 303 | 0.704 |
+| Kansas City composite vs Dallas general activity | 268 | 0.776 |
+| Kansas City composite vs Richmond composite | 303 | 0.656 |
+| Richmond composite vs Empire general | 303 | 0.650 |
+| Richmond composite vs Philadelphia general | 395 | 0.696 |
+| Richmond composite vs Dallas general activity | 268 | 0.715 |
+
+New-orders indexes against each other:
+
+| Pair | Overlap | r |
+| --- | --- | --- |
+| Empire vs Philadelphia | 303 | 0.638 |
+| Empire vs Dallas | 268 | 0.713 |
+| Philadelphia vs Dallas | 268 | 0.717 |
+| Kansas City vs Empire | 303 | 0.654 |
+| Kansas City vs Philadelphia | 303 | 0.634 |
+| Kansas City vs Dallas | 268 | 0.786 |
+| Richmond vs Empire | 303 | 0.590 |
+| Richmond vs Philadelphia | 395 | 0.651 |
+| Richmond vs Dallas | 268 | 0.675 |
+| Richmond vs Kansas City | 303 | 0.613 |
+
+Within one survey, the headline and new orders move together (Empire 0.930 on 303 months, Philadelphia 0.917 on 701, Dallas 0.896 on 268). That does not make either one the ISM composite.
+
+### ISM services
+
+ISM Services PMI is a national composite of Business Activity, New Orders, Employment, and Supplier Deliveries, centered at 50. The public services surveys below are regional and centered at 0.
+
+| Series | Id or file | Span | Points | Latest | Difference from ISM Services |
+| --- | --- | --- | --- | --- | --- |
+| NY Fed Business Leaders current business activity, NSA | FRED `BACDINA066MNFRBNY` | 2004-09-01 to 2026-09-01 | 265 | -8.7 | Service firms in New York, northern New Jersey, and Fairfield County. FRED says the headline is a distinct question. Not seasonally adjusted. |
+| Philadelphia nonmanufacturing firm general activity, SA | FRED `GABNDIF066MSFRBPHI` | 2011-03-01 to 2026-09-01 | 187 | 0.3 | Third District nonmanufacturing firms. A firm-activity diffusion index, not the four-part ISM composite. |
+| Dallas TSSOS current revenue, SA | FRED `TSSOSREVSAMFRBDAL` | 2007-01-01 to 2026-08-01 | 236 | 6.6 | Texas service-sector revenue. Not a composite, and the September 2026 month was not in the file on this download. |
+
+Pearson r: NY vs Philadelphia 0.698 (187 months), NY vs Dallas revenue 0.670 (236), Philadelphia vs Dallas revenue 0.671 (186). No correlation with ISM Services was computed.
+
+### S&P Global PMI
+
+Not a free legal source for this site. The S&P Global Marketplace page says PMI data "are available only via subscription." Press releases say the intellectual property is owned by or licensed to S&P Global and that unauthorized copying, distributing, or transmitting is not permitted without prior consent. FRED CSV requests for `MARKITUSM`, `USPMI`, and `SPMFGPMI` returned HTTP 404. S&P's methodology note on the manufacturing press release says the US manufacturing panel is about 600 firms, collection began in May 2007, and the index is centered at 50. That is a different panel from ISM even before the license block. No history was stored, so no correlation with ISM or with the regional surveys was computed.
+
+### Redbook
+
+Census advance retail sales are already on the retail chart as `RSAFS` (12-month percent change), with `MRTSSM4541USN` for nonstore retail. FRED tags `RSAFS` "Public Domain: Citation Requested." The series is monthly dollars, seasonally adjusted, and the latest month is an advance estimate from a subsample of the Monthly Retail Trade Survey. The Census retail pages list monthly MARTS and MRTS releases. No Census weekly retail series was found. Redbook is a weekly same-store percent change. Those differences are why `RSAFS` keeps its own name and `REDBOOK` stays empty. Correlation with Redbook was not computed.
 
 ## Pipeline rules that apply even though these six stay empty
 
