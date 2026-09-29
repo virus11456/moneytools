@@ -9,7 +9,11 @@ import { SiblingNav } from './SiblingNav';
 import './macro.css';
 
 const ranges = [{ label: '1年', months: 12 }, { label: '5年', months: 60 }, { label: '10年', months: 120 }, { label: '全部', months: 0 }];
-const formatNumber = (value: number) => value.toLocaleString('zh-TW', { maximumFractionDigits: 2 });
+function formatNumber(value: number) {
+  const abs = Math.abs(value);
+  if (abs !== 0 && abs < 0.01) return value.toLocaleString('zh-TW', { maximumSignificantDigits: 4 });
+  return value.toLocaleString('zh-TW', { maximumFractionDigits: 2 });
+}
 
 function finitePoints(payload: MacroPayload | null, id: string) {
   return (payload?.series[id]?.points || []).filter((point) => Number.isFinite(point.value));
