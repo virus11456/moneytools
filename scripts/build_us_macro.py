@@ -6,12 +6,25 @@ added only when their exact source and formula can be disclosed on the site.
 Unavailable licensed surveys remain absent instead of being approximated.
 """
 from __future__ import annotations
-import csv, io, json, math, subprocess, zipfile
+import csv, io, json, math, re, subprocess, zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
 OUT = Path(__file__).resolve().parents[1] / "public/macro-data/us-macro.json"
+PUBLISHED_URL = "https://stocktools.cc/macro-data/us-macro.json"
+USER_AGENT = "stocktools-macro-builder/1.0 (+https://stocktools.cc)"
+DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+# Survey series with no legal, complete, auto-updating redistribution path.
+# They are written as empty on purpose. Do not fill them from a baseline file.
+LICENSED_SERIES = {
+ "REDBOOK": "Johnson Redbook 同店銷售為專有週資料，官方未提供可再散布的完整歷史。普查月零售已畫在同一張圖，頻率與樣本都不同，這個欄位是非替代指標，不把普查數字當成 Redbook。",
+ "ISM_PMI": "ISM 製造業 PMI 為專有調查。FRED NAPM 已於 2016-06-24 應 ISM 要求刪除，未取得再散布授權前不發布。地區聯準會調查不是全國 PMI，不畫成替代指標。",
+ "ISM_NEWORDERS": "ISM 製造業新訂單指數為專有調查。FRED NAPMNOI 已隨 ISM 序列刪除，未取得再散布授權前不發布。地區聯準會新訂單以 0 為中心，不畫成替代指標。",
+ "ISM_SERVICES": "ISM 服務業（非製造業）PMI 為專有調查。FRED 已刪除全部 ISM 序列，未取得再散布授權前不發布。紐約、費城、達拉斯的服務業調查只涵蓋一個地區且以 0 為中心，不畫成替代指標。",
+ "NAAIM": "NAAIM 曝險指數自 2026-08-01 起需訂閱；公開頁禁止未經許可的商業再散布，不抓取圖表或表格。沒有可再散布的公開替代序列，這個欄位是非替代指標。",
+ "NAAIM_MA20": "20 期均線只能源自可再散布的 NAAIM 原始序列。目前沒有該序列，因此不計算、不手填、不從圖片描點。這個欄位是非替代指標。",
+}
 SERIES = {
  "ICSA":("level",.001),"CCSA":("level",.001),"PAYEMS":("change",1),
  "PCE":("yoy",1),"PI":("yoy",1),"PSAVERT":("level",1),
@@ -33,9 +46,23 @@ MARKET_SYMBOLS = {
 SECTOR_ETFS = ("VOX", "VCR", "VDC", "VDE", "VFH", "VHT", "VIS", "VAW", "VNQ", "VGT", "VPU")
 CFTC_CODES = {"SP500_COT": "13874+", "NASDAQ_COT": "20974+"}
 
+def http_get(url: str, timeout: int = 45) -> bytes:
+    """GET with a timeout, retries, and an identifying User-Agent."""
+    result = subprocess.run(
+        [
+            "curl", "--fail", "--location", "--silent", "--show-error",
+            "--retry", "3", "--retry-delay", "1", "--retry-all-errors",
+            "--max-time", str(timeout), "--user-agent", USER_AGENT, url,
+        ],
+        check=False, capture_output=True,
+    )
+    if result.returncode != 0:
+        detail = (result.stderr or b"").decode("utf-8", "replace").strip()
+        raise RuntimeError(detail or f"curl exit {result.returncode}")
+    return result.stdout
+
 def fetch(series: str):
-    result=subprocess.run(["curl","--fail","--location","--silent","--show-error","--max-time","30",f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}"],check=True,capture_output=True,text=True)
-    raw=result.stdout
+    raw = http_get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}", timeout=90).decode("utf-8", "replace")
     rows=[]
     for row in csv.DictReader(io.StringIO(raw)):
         try: v=float(row.get(series,""))
@@ -44,11 +71,7 @@ def fetch(series: str):
     return rows
 
 def fetch_bytes(url: str, timeout: int = 90) -> bytes:
-    result = subprocess.run(
-        ["curl", "--fail", "--location", "--silent", "--show-error", "--max-time", str(timeout), url],
-        check=True, capture_output=True,
-    )
-    return result.stdout
+    return http_get(url, timeout=timeout)
 
 def transform(rows, mode, scale):
     lag=4 if mode=="yoy4" else 12
@@ -206,15 +229,163 @@ def fetch_cftc_series():
             output[series_id]["error"] = "; ".join(errors)
     return output
 
+def coerce_number(value):
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, float)):
+        number = float(value)
+    elif isinstance(value, str):
+        text = value.strip().replace(",", "")
+        if not text or text.upper() in {"NA", "N/A", ".", "NULL", "NONE"}:
+            return None
+        try:
+            number = float(text)
+        except ValueError:
+            return None
+    else:
+        return None
+    return number if math.isfinite(number) else None
+
+def normalize_points(rows):
+    """Dedupe dates, sort ascending, and drop non-finite or non-dated rows.
+
+    A changed file shape yields an empty list. Nothing is interpolated.
+    """
+    if not isinstance(rows, list):
+        return []
+    by_date = {}
+    for row in rows:
+        if isinstance(row, dict):
+            raw_date = row.get("date") or row.get("observation_date") or row.get("DATE")
+            raw_value = row.get("value")
+            if raw_value is None and raw_date is not None:
+                extras = [item for key, item in row.items() if key not in {"date", "observation_date", "DATE"}]
+                raw_value = extras[0] if len(extras) == 1 else None
+        elif isinstance(row, (list, tuple)) and len(row) >= 2:
+            raw_date, raw_value = row[0], row[1]
+        else:
+            continue
+        if not isinstance(raw_date, str) or not DATE_RE.match(raw_date.strip()[:10]):
+            continue
+        number = coerce_number(raw_value)
+        if number is None:
+            continue
+        by_date[raw_date.strip()[:10]] = number
+    return [{"date": date, "value": by_date[date]} for date in sorted(by_date)]
+
+def gap_limit_days(points):
+    """Calendar days after which a hole is a missed publication, not a weekend."""
+    if len(points) < 3:
+        return None
+    deltas = []
+    for prev, point in zip(points, points[1:]):
+        deltas.append((datetime.fromisoformat(point["date"]) - datetime.fromisoformat(prev["date"])).days)
+    deltas.sort()
+    median = deltas[len(deltas) // 2]
+    if median <= 5:
+        return 11
+    if median <= 12:
+        return 12
+    if median <= 40:
+        return 50
+    return max(int(median * 1.5), median + 1)
+
+def long_gap_breaks(points):
+    """Dates that must not be connected to the previous observation."""
+    limit = gap_limit_days(points)
+    if limit is None:
+        return []
+    breaks = []
+    for prev, point in zip(points, points[1:]):
+        delta = (datetime.fromisoformat(point["date"]) - datetime.fromisoformat(prev["date"])).days
+        if delta > limit:
+            breaks.append(point["date"])
+    return breaks
+
 def moving_average(points, window):
+    """Simple trailing average that restarts after a long publication gap."""
+    points = normalize_points(points)
+    limit = gap_limit_days(points)
     values = []
     output = []
+    previous = None
     for point in points:
+        if previous is not None and limit is not None:
+            delta = (datetime.fromisoformat(point["date"]) - datetime.fromisoformat(previous["date"])).days
+            if delta > limit:
+                values = []
+        previous = point
         values.append(point["value"])
         if len(values) > window:
             values.pop(0)
         if len(values) == window:
             output.append({"date": point["date"], "value": round(sum(values) / window, 6)})
+    return output
+
+def missing_record(series_id):
+    return {
+        "latestDate": None,
+        "points": [],
+        "status": "missing",
+        "substitute": False,
+        "reason": LICENSED_SERIES[series_id],
+    }
+
+def release_observation_series(series_id, rows):
+    """Publish parsed rows only when the series is not license-blocked."""
+    if series_id in LICENSED_SERIES:
+        return missing_record(series_id)
+    return points_result(normalize_points(rows))
+
+def parse_macro_payload(raw):
+    if isinstance(raw, bytes):
+        raw = raw.decode("utf-8", "replace")
+    payload = json.loads(raw)
+    if not isinstance(payload, dict) or not isinstance(payload.get("series"), dict):
+        raise ValueError("macro payload missing series")
+    return payload
+
+def load_published_baseline(fetch_url=http_get, path: Path = OUT):
+    """Restore the last good publish. The live site wins; the local file is fallback."""
+    try:
+        return parse_macro_payload(fetch_url(PUBLISHED_URL, 60))["series"]
+    except Exception as exc:
+        print(f"warning: live macro baseline unavailable: {type(exc).__name__}: {exc}")
+    if path.exists():
+        try:
+            return parse_macro_payload(path.read_text(encoding="utf-8"))["series"]
+        except Exception as exc:
+            print(f"warning: local macro baseline unreadable: {type(exc).__name__}: {exc}")
+    return {}
+
+def merge_one(new, old):
+    """Keep prior observations when a refresh fails. Never invent today's date."""
+    old_points = normalize_points(old.get("points") if isinstance(old, dict) else None)
+    new_points = normalize_points(new.get("points") if isinstance(new, dict) else None)
+    failed = not isinstance(new, dict) or bool(new.get("error")) or not new_points
+    if failed:
+        if old_points:
+            record = {"latestDate": old_points[-1]["date"], "points": old_points, "preserved": True}
+            if isinstance(new, dict) and new.get("error"):
+                record["error"] = str(new["error"])[:500]
+            return record
+        if isinstance(new, dict) and new.get("error"):
+            return {"latestDate": None, "points": [], "error": str(new["error"])[:500]}
+        return {"latestDate": None, "points": []}
+    combined = {point["date"]: point["value"] for point in old_points}
+    for point in new_points:
+        combined[point["date"]] = point["value"]
+    points = [{"date": date, "value": combined[date]} for date in sorted(combined)]
+    return {"latestDate": points[-1]["date"], "points": points}
+
+def merge_published(built, baseline):
+    output = {}
+    for key in list(baseline) + [key for key in built if key not in baseline]:
+        if key in LICENSED_SERIES:
+            continue
+        output[key] = merge_one(built.get(key), baseline.get(key))
+    for key in LICENSED_SERIES:
+        output[key] = missing_record(key)
     return output
 
 def fetch_cboe_put_call():
@@ -238,6 +409,7 @@ def fetch_cboe_put_call():
     }
 
 def main():
+    baseline = load_published_baseline()
     data={"generatedAt":datetime.now(timezone.utc).isoformat(),"series":{}}
     def build_one(item):
         sid,(mode,scale)=item
@@ -260,7 +432,12 @@ def main():
             data["series"].update(builder())
         except Exception as exc:
             print(f"warning: {builder.__name__} failed: {type(exc).__name__}: {exc}")
-    OUT.parent.mkdir(parents=True,exist_ok=True); OUT.write_text(json.dumps(data,separators=(",",":")),encoding="utf-8")
+    data["series"] = merge_published(data["series"], baseline)
+    OUT.parent.mkdir(parents=True,exist_ok=True)
+    OUT.write_text(json.dumps(data,separators=(",",":"),allow_nan=False),encoding="utf-8")
+    for series_id in LICENSED_SERIES:
+        record = data["series"][series_id]
+        print(f"{series_id}: status={record['status']} points={len(record['points'])} substitute={record['substitute']}")
     print(f"wrote {OUT} ({OUT.stat().st_size/1024:.1f} KiB)")
 
 if __name__ == "__main__": main()

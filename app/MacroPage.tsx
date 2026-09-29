@@ -2,39 +2,67 @@ import { Activity, AlertCircle, ArrowUpRight, CheckCircle2, Database, Gauge, Inf
 import { useEffect, useMemo, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { AffiliateCta } from './AffiliateCta';
-import { macroCharts, macroGroups, type MacroChart } from './macroCatalog';
+import { macroCharts, macroGroups, type MacroChart, type MacroSeries } from './macroCatalog';
 import { buildMacroDashboard, type MacroPayload } from './macroDashboard';
+import { linePoints } from './macroSeries';
 import { SiblingNav } from './SiblingNav';
 import './macro.css';
 
 const ranges = [{ label: '1年', months: 12 }, { label: '5年', months: 60 }, { label: '10年', months: 120 }, { label: '全部', months: 0 }];
+function formatNumber(value: number) {
+  const abs = Math.abs(value);
+  if (abs !== 0 && abs < 0.01) return value.toLocaleString('zh-TW', { maximumSignificantDigits: 4 });
+  return value.toLocaleString('zh-TW', { maximumFractionDigits: 2 });
+}
+
+function finitePoints(payload: MacroPayload | null, id: string) {
+  return (payload?.series[id]?.points || []).filter((point) => Number.isFinite(point.value));
+}
 
 function MacroPlot({ chart, payload, loading }: { chart: MacroChart; payload: MacroPayload | null; loading: boolean }) {
   const [months, setMonths] = useState(120);
-  const available = chart.series.filter((s) => (payload?.series[s.id]?.points?.length || 0) > 1);
   const cutoff = months ? new Date(Date.now() - months * 30.44 * 864e5).toISOString().slice(0, 10) : '';
-  const rows = useMemo(() => {
-    const byDate = new Map<string, Record<string, string | number>>();
-    available.forEach((s) => payload?.series[s.id]?.points.forEach((p) => {
-      if (cutoff && p.date < cutoff) return;
-      const row = byDate.get(p.date) || { date: p.date };
-      row[s.id] = p.value; byDate.set(p.date, row);
-    }));
-    return [...byDate.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
-  }, [payload, cutoff, chart.id]);
-  const latest = available.map((s) => ({ s, p: payload!.series[s.id].points.at(-1)! }));
+  const plotted = useMemo(() => chart.series.map((series) => {
+    const points = finitePoints(payload, series.id).filter((point) => !cutoff || point.date >= cutoff);
+    return { series, points, line: linePoints(points) };
+  }), [payload, cutoff, chart]);
+  const available = plotted.filter((item) => item.points.length > 1);
+  const axis = available.flatMap((item) => item.line.map((point) => point.date));
+  const domain: [number, number] = axis.length ? [Math.min(...axis), Math.max(...axis)] : [0, 1];
   if (loading) return <div className="macro-loading" role="status"><span className="macro-loading-bar"/><span className="macro-loading-bar short"/><strong>正在載入最新資料…</strong></div>;
   return <>
     <div className="macro-range" aria-label={`${chart.title} 圖表範圍`}>{ranges.map((r) => <button key={r.label} className={months === r.months ? 'active' : ''} onClick={() => setMonths(r.months)}>{r.label}</button>)}</div>
-    {rows.length > 1 ? <div className="macro-plot"><ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={210}><LineChart data={rows} margin={{ top: 12, right: 12, bottom: 0, left: -18 }}>
+    {available.length ? <div className="macro-plot"><ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={210}><LineChart data={[{ date: domain[0] }, { date: domain[1] }]} margin={{ top: 12, right: 12, bottom: 0, left: -18 }}>
       <CartesianGrid stroke="#e2e7de" vertical={false} />
-      <XAxis dataKey="date" tick={{ fontSize: 11 }} minTickGap={42} tickFormatter={(v) => String(v).slice(0,4)} />
-      {available.map((s) => <YAxis key={s.id} yAxisId={s.id} hide domain={['auto','auto']} />)}
-      <Tooltip labelFormatter={(v) => String(v)} formatter={(v, name) => [Number(v).toLocaleString('zh-TW',{ maximumFractionDigits: 2 }), chart.series.find((s) => s.id === name)?.label || name]} />
-      {available.map((s) => <Line key={s.id} yAxisId={s.id} type="monotone" dataKey={s.id} name={s.id} stroke={s.color} strokeWidth={2} dot={false} connectNulls isAnimationActive={false} />)}
+      <XAxis dataKey="date" type="number" scale="time" domain={domain} tick={{ fontSize: 11 }} minTickGap={42} tickFormatter={(value) => new Date(Number(value)).getUTCFullYear().toString()} />
+      {available.map(({ series, points }) => {
+        const values = points.map((point) => point.value);
+        const low = Math.min(...values);
+        const high = Math.max(...values);
+        const pad = low === high ? Math.max(Math.abs(low) * 0.05, 1) : (high - low) * 0.08;
+        return <YAxis key={series.id} yAxisId={series.id} hide domain={[low - pad, high + pad]} />;
+      })}
+      <Tooltip labelFormatter={(value) => new Date(Number(value)).toISOString().slice(0, 10)} formatter={(value, name) => {
+        const label = chart.series.find((series) => series.id === name)?.label || String(name);
+        const numeric = typeof value === 'number' ? value : Number(value);
+        if (value == null || !Number.isFinite(numeric)) return ['—', label];
+        return [formatNumber(numeric), label];
+      }} />
+      {available.map(({ series, line }) => <Line key={series.id} yAxisId={series.id} data={line} type="monotone" dataKey="value" name={series.id} stroke={series.color} strokeWidth={2} dot={false} connectNulls={false} isAnimationActive={false} />)}
     </LineChart></ResponsiveContainer></div> : <div className="macro-empty"><AlertCircle size={20}/><div><strong>資料尚未發布</strong><span>可查來源已列在下方；授權或資料管線完成後才會畫線。</span></div></div>}
-    <div className="macro-latest">{latest.map(({s,p}) => <span key={s.id} style={{'--series':s.color} as React.CSSProperties}><i/>{s.label}<b>{p.value.toLocaleString('zh-TW',{maximumFractionDigits:2})} {s.unit}</b><small>{p.date}</small></span>)}</div>
+    <div className="macro-latest">{chart.series.map((series) => {
+      const latest = finitePoints(payload, series.id).at(-1);
+      const preserved = payload?.series[series.id]?.preserved === true;
+      return <span key={series.id} className={latest ? undefined : 'is-missing'} data-series-status={latest ? 'ready' : 'missing'} style={{'--series':series.color} as React.CSSProperties}><i/>{series.label}<b>{latest ? `${formatNumber(latest.value)} ${series.unit}` : '未取得'}</b><small>{latest ? `${latest.date}${preserved ? ' · 沿用已發布' : ''}` : `尚無資料 · ${series.unit}`}</small></span>;
+    })}</div>
   </>;
+}
+
+function SeriesSource({ series, payload }: { series: MacroSeries; payload: MacroPayload | null }) {
+  const latest = finitePoints(payload, series.id).at(-1);
+  const stored = payload?.series[series.id];
+  const substitute = series.substitute === true || stored?.substitute === true;
+  return <a href={series.sourceUrl} target="_blank" rel="noreferrer"><i style={{background:series.color}}/><span><strong>{series.label}</strong><small>{series.source} · {series.frequency} · 單位 {series.unit}{series.formula ? ` · ${series.formula}` : ''} · 最新 {latest?.date || '尚無資料'} · {substitute ? '替代指標' : '非替代指標'}</small>{series.note ? <em>{series.note}</em> : null}</span><ArrowUpRight size={14}/></a>;
 }
 
 function ChartCard({ chart, payload, loading }: { chart: MacroChart; payload: MacroPayload | null; loading: boolean }) {
@@ -42,7 +70,7 @@ function ChartCard({ chart, payload, loading }: { chart: MacroChart; payload: Ma
   return <article className="macro-card" id={chart.id}>
     <div className="macro-card-head"><span className="macro-number">{String(chart.number).padStart(2,'0')}</span><div><small>{chart.group}</small><h2>{chart.title}</h2><p>{chart.takeaway}</p></div><span className={`macro-coverage ${!loading && availableCount === chart.series.length ? 'complete' : ''}`}>{loading ? '載入中' : `${availableCount}/${chart.series.length} 可繪`}</span></div>
     <MacroPlot chart={chart} payload={payload} loading={loading}/>
-    <details className="macro-details"><summary><Info size={15}/> 怎麼看、限制與資料來源</summary><div className="macro-reading"><p><b>解讀</b>{chart.explanation}</p><p><b>限制</b>{chart.caution}</p></div><div className="macro-sources">{chart.series.map((s) => <a key={s.id} href={s.sourceUrl} target="_blank" rel="noreferrer"><i style={{background:s.color}}/><span><strong>{s.label}</strong><small>{s.source} · {s.frequency}{s.formula ? ` · ${s.formula}` : ''}</small>{s.note ? <em>{s.note}</em> : null}</span><ArrowUpRight size={14}/></a>)}</div></details>
+    <details className="macro-details"><summary><Info size={15}/> 怎麼看、限制與資料來源</summary><div className="macro-reading"><p><b>解讀</b>{chart.explanation}</p><p><b>限制</b>{chart.caution}</p></div><div className="macro-sources">{chart.series.map((s) => <SeriesSource key={s.id} series={s} payload={payload}/>)}</div></details>
   </article>;
 }
 
