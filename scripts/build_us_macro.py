@@ -6,21 +6,21 @@ added only when their exact source and formula can be disclosed on the site.
 Unavailable licensed surveys remain absent instead of being approximated.
 """
 from __future__ import annotations
-import csv, io, json, math, subprocess, zipfile
+import csv, html, io, json, math, re, subprocess, zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 OUT = Path(__file__).resolve().parents[1] / "public/macro-data/us-macro.json"
 SERIES = {
  "ICSA":("level",.001),"CCSA":("level",.001),"PAYEMS":("change",1),
  "PCE":("yoy",1),"PI":("yoy",1),"PSAVERT":("level",1),
- "SPCS20RSA":("level",1),"MSPNHSUS":("level",.001),"HSN1F":("yoy",1),"EXHOSLUSM495S":("yoy",1),
+ "SPCS20RSA":("level",1),"MSPNHSUS":("level",.001),"HSN1F":("yoy",1),"EXHOSLUSM495S":("level",1),
  "TOTALSA":("level",1),"RSAFS":("yoy",1),"MRTSSM4541USN":("yoy",1),
- "HOUST":("yoy",1),"PERMIT":("yoy",1),"HOSINVUSM495N":("yoy",1),
+ "HOUST":("yoy",1),"PERMIT":("yoy",1),"HOSSUPUSM673N":("level",1),
  "DGORDER":("yoy",1),"NEWORDER":("yoy",1),"WEI":("level",1),"GDP":("yoy4",1),
  "PPIFIS":("yoy",1),"CPIAUCSL":("yoy",1),"CPILFESL":("yoy",1),
- "FEDFUNDS":("level",1),"DGS2":("level",1),"DGS5":("level",1),"DGS10":("level",1),"USD3MTD156N":("level",1),
+ "FEDFUNDS":("level",1),"DGS2":("level",1),"DGS5":("level",1),"DGS10":("level",1),"SOFR90DAYAVG":("level",1),
  "BAMLH0A3HYC":("level",1),"VIXCLS":("level",1),"SP500":("level",1),
 }
 
@@ -43,9 +43,16 @@ def fetch(series: str):
         if math.isfinite(v): rows.append((row.get("observation_date") or row.get("DATE"),v))
     return rows
 
-def fetch_bytes(url: str, timeout: int = 90) -> bytes:
+def fetch_bytes(url: str, timeout: int = 90, headers: dict[str, str] | None = None) -> bytes:
+    command = [
+        "curl", "--fail", "--location", "--silent", "--show-error", "--compressed",
+        "--retry", "3", "--retry-all-errors", "--retry-delay", "1", "--max-time", str(timeout),
+    ]
+    for name, value in (headers or {}).items():
+        command.extend(["--header", f"{name}: {value}"])
+    command.append(url)
     result = subprocess.run(
-        ["curl", "--fail", "--location", "--silent", "--show-error", "--max-time", str(timeout), url],
+        command,
         check=True, capture_output=True,
     )
     return result.stdout
@@ -217,8 +224,105 @@ def moving_average(points, window):
             output.append({"date": point["date"], "value": round(sum(values) / window, 6)})
     return output
 
+def moving_average_with_gap_reset(points, window, max_gap_days=10):
+    """Moving average that never bridges a long publication gap."""
+    values = []
+    output = []
+    previous = None
+    for point in points:
+        current = date.fromisoformat(point["date"])
+        if previous and (current - previous).days > max_gap_days:
+            values = []
+        previous = current
+        values.append(point["value"])
+        if len(values) > window:
+            values.pop(0)
+        if len(values) == window:
+            output.append({"date": point["date"], "value": round(sum(values) / window, 6)})
+    return output
+
+def fetch_aaii_series():
+    """Load AAII's complete public historical workbook and derive its 20-week mean."""
+    import xlrd
+
+    payload = fetch_bytes(
+        "https://www.aaii.com/files/surveys/sentiment.xls",
+        headers={
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/140.0.0.0 Safari/537.36",
+            "Referer": "https://www.aaii.com/sentimentsurvey/sent_results?reload=true",
+        },
+    )
+    book = xlrd.open_workbook(file_contents=payload)
+    sheet = book.sheet_by_name("SENTIMENT")
+    points = []
+    for row in range(5, sheet.nrows):
+        try:
+            raw_date = sheet.cell_value(row, 0)
+            parts = xlrd.xldate_as_tuple(raw_date, book.datemode)
+            reported = date(parts[0], parts[1], parts[2]).isoformat()
+            bullish = float(sheet.cell_value(row, 1))
+            bearish = float(sheet.cell_value(row, 3))
+            spread = (bullish - bearish) * 100
+        except (TypeError, ValueError, xlrd.XLDateError):
+            continue
+        if reported >= "2000-01-01" and math.isfinite(spread):
+            points.append({"date": reported, "value": round(spread, 4)})
+    points.sort(key=lambda item: item["date"])
+    return {
+        "AAII_SPREAD": points_result(points),
+        "AAII_MA20": points_result(moving_average(points, 20)),
+    }
+
+def fetch_manheim_series():
+    """Discover and parse Cox Automotive's latest official monthly MUVVI workbook."""
+    from openpyxl import load_workbook
+
+    query = "https://www.coxautoinc.com/wp-json/wp/v2/search?search=Manheim%20Used%20Vehicle%20Value%20Index&per_page=30"
+    results = json.loads(fetch_bytes(query, headers={"User-Agent": "Stocktools/1.0"}))
+    candidates = [
+        item["url"] for item in results
+        if re.fullmatch(r"Manheim Used Vehicle Value Index: (?!Mid-).+ Trends", item.get("title", ""), re.I)
+    ]
+    if not candidates:
+        raise ValueError("latest Manheim monthly report not found")
+    report = html.unescape(fetch_bytes(candidates[0], headers={"User-Agent": "Stocktools/1.0"}).decode("utf-8", "replace"))
+    match = re.search(r'https://www\.coxautoinc\.com/wp-content/uploads/[^"\']+\.xlsx', report, re.I)
+    if not match:
+        raise ValueError("Manheim workbook link not found")
+    workbook = load_workbook(io.BytesIO(fetch_bytes(match.group(0))), read_only=True, data_only=True)
+    sheet = workbook["DATA"]
+    points = []
+    for raw_date, value, *_ in sheet.iter_rows(min_row=2, values_only=True):
+        if not isinstance(raw_date, (date, datetime)):
+            continue
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            continue
+        reported = raw_date.strftime("%Y-%m-%d")
+        if reported >= "2000-01-01" and math.isfinite(number):
+            points.append({"date": reported, "value": round(number, 4)})
+    return {"MANHEIM": points_result(points)}
+
+def parse_cboe_daily(payload: bytes, requested: str):
+    """Extract the official equity put/call ratio from a Cboe daily RSC response."""
+    body = payload.decode("utf-8", "replace")
+    match = re.search(r'"name":"EQUITY PUT/CALL RATIO","value":"([0-9.]+)"', body)
+    if not match:
+        match = re.search(r'\\"name\\":\\"EQUITY PUT/CALL RATIO\\",\\"value\\":\\"([0-9.]+)\\"', body)
+    if not match:
+        return None
+    return {"date": requested, "value": float(match.group(1))}
+
+def fetch_cboe_daily(date_string: str):
+    payload = fetch_bytes(
+        f"https://www.cboe.com/us/options/market_statistics/daily/?dt={date_string}",
+        timeout=45, headers={"RSC": "1", "User-Agent": "Stocktools/1.0"},
+    )
+    return parse_cboe_daily(payload, date_string)
+
 def fetch_cboe_put_call():
-    """Load the official public Cboe history (currently ending in 2019)."""
+    """Join Cboe's archive to its public daily pages and increment from the last build."""
     raw = fetch_bytes("https://cdn.cboe.com/resources/options/volume_and_call_put_ratios/equitypc.csv").decode("utf-8-sig", "replace")
     header = raw.find("DATE,CALL,PUT,TOTAL,P/C Ratio")
     if header < 0:
@@ -226,15 +330,38 @@ def fetch_cboe_put_call():
     points = []
     for row in csv.DictReader(io.StringIO(raw[header:])):
         try:
-            date = datetime.strptime(row["DATE"].strip(), "%m/%d/%Y").strftime("%Y-%m-%d")
+            reported = datetime.strptime(row["DATE"].strip(), "%m/%d/%Y").strftime("%Y-%m-%d")
             value = float(row["P/C Ratio"])
         except (KeyError, TypeError, ValueError):
             continue
         if math.isfinite(value):
-            points.append({"date": date, "value": value})
+            points.append({"date": reported, "value": value})
+    by_date = {point["date"]: point for point in points}
+    try:
+        previous = json.loads(OUT.read_text(encoding="utf-8")).get("series", {}).get("CBOE_PC", {}).get("points", [])
+        by_date.update({point["date"]: point for point in previous if point.get("date") and isinstance(point.get("value"), (int, float))})
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    end = datetime.now(timezone.utc).date() - timedelta(days=1)
+    cursor = end - timedelta(days=365)
+    missing = []
+    while cursor <= end:
+        if cursor.weekday() < 5 and cursor.isoformat() not in by_date:
+            missing.append(cursor.isoformat())
+        cursor += timedelta(days=1)
+    if missing:
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            for future in as_completed([pool.submit(fetch_cboe_daily, item) for item in missing]):
+                try:
+                    point = future.result()
+                    if point:
+                        by_date[point["date"]] = point
+                except Exception:
+                    pass
+    points = [by_date[key] for key in sorted(by_date)]
     return {
         "CBOE_PC": points_result(points),
-        "CBOE_PC_MA20": points_result(moving_average(points, 20)),
+        "CBOE_PC_MA20": points_result(moving_average_with_gap_reset(points, 20)),
     }
 
 def main():
@@ -255,7 +382,7 @@ def main():
             points=transform(fetch(source),"yoy",1)
             data["series"][derived]=points_result(points)
         except Exception as exc: data["series"][derived]={"points":[],"error":str(exc)}
-    for builder in (fetch_market_series, fetch_cftc_series, fetch_breadth_series):
+    for builder in (fetch_market_series, fetch_cftc_series, fetch_breadth_series, fetch_aaii_series, fetch_manheim_series, fetch_cboe_put_call):
         try:
             data["series"].update(builder())
         except Exception as exc:
