@@ -1,6 +1,6 @@
 import { Activity, AlertCircle, ArrowUpRight, CheckCircle2, Database, Gauge, Info, LineChart as LineIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, CartesianGrid, Cell, ComposedChart, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { AffiliateCta } from './AffiliateCta';
 import { macroCharts, macroGroups, type MacroChart } from './macroCatalog';
 import { buildMacroDashboard, type MacroPayload } from './macroDashboard';
@@ -8,6 +8,7 @@ import { SiblingNav } from './SiblingNav';
 import './macro.css';
 
 const ranges = [{ label: '1年', months: 12 }, { label: '5年', months: 60 }, { label: '10年', months: 120 }, { label: '全部', months: 0 }];
+const positionBarSeries = new Set(['SP500_COT', 'NASDAQ_COT']);
 
 function MacroPlot({ chart, payload, loading }: { chart: MacroChart; payload: MacroPayload | null; loading: boolean }) {
   const [months, setMonths] = useState(120);
@@ -26,15 +27,18 @@ function MacroPlot({ chart, payload, loading }: { chart: MacroChart; payload: Ma
   if (loading) return <div className="macro-loading" role="status"><span className="macro-loading-bar"/><span className="macro-loading-bar short"/><strong>正在載入最新資料…</strong></div>;
   return <>
     <div className="macro-range" aria-label={`${chart.title} 圖表範圍`}>{ranges.map((r) => <button key={r.label} className={months === r.months ? 'active' : ''} onClick={() => setMonths(r.months)}>{r.label}</button>)}</div>
-    {rows.length > 1 ? <div className="macro-plot"><ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={210}><LineChart data={rows} margin={{ top: 12, right: 12, bottom: 0, left: -18 }}>
+    {rows.length > 1 ? <div className="macro-plot"><ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={210}><ComposedChart data={rows} margin={{ top: 12, right: 12, bottom: 0, left: -18 }}>
       <CartesianGrid stroke="#e2e7de" vertical={false} />
       <XAxis dataKey="date" tick={{ fontSize: 11 }} minTickGap={42} tickFormatter={(v) => String(v).slice(0,4)} />
       {available.map((s) => <YAxis key={s.id} yAxisId={s.id} hide domain={positionBarSeries.has(s.id)
         ? [(dataMin: number) => Math.min(0, dataMin), (dataMax: number) => Math.max(0, dataMax)]
         : ['auto','auto']} />)}
       <Tooltip labelFormatter={(v) => String(v)} formatter={(v, name) => [Number(v).toLocaleString('zh-TW',{ maximumFractionDigits: 2 }), chart.series.find((s) => s.id === name)?.label || name]} />
-      {available.map((s) => <Line key={s.id} yAxisId={s.id} type="monotone" dataKey={s.id} name={s.id} stroke={s.color} strokeWidth={2} dot={false} connectNulls={!s.id.startsWith('CBOE_PC')} isAnimationActive={false} />)}
-    </LineChart></ResponsiveContainer></div> : <div className="macro-empty"><AlertCircle size={20}/><div><strong>資料尚未發布</strong><span>可查來源已列在下方；授權或資料管線完成後才會畫線。</span></div></div>}
+      {available.filter((s) => positionBarSeries.has(s.id)).map((s) => <ReferenceLine key={`${s.id}-zero`} yAxisId={s.id} y={0} stroke="#aeb8ad" strokeWidth={1} />)}
+      {available.map((s) => positionBarSeries.has(s.id)
+        ? <Bar key={s.id} yAxisId={s.id} dataKey={s.id} name={s.id} maxBarSize={10} isAnimationActive={false}>{rows.map((row) => <Cell key={`${s.id}-${row.date}`} fill={Number(row[s.id]) < 0 ? '#c97755' : s.color} />)}</Bar>
+        : <Line key={s.id} yAxisId={s.id} type="monotone" dataKey={s.id} name={s.id} stroke={s.color} strokeWidth={2} dot={false} connectNulls={!s.id.startsWith('CBOE_PC')} isAnimationActive={false} />)}
+    </ComposedChart></ResponsiveContainer></div> : <div className="macro-empty"><AlertCircle size={20}/><div><strong>資料尚未發布</strong><span>可查來源已列在下方；授權或資料管線完成後才會畫線。</span></div></div>}
     <div className="macro-latest">{latest.map(({s,p}) => <span key={s.id} style={{'--series':s.color} as React.CSSProperties}><i/>{s.label}<b>{p.value.toLocaleString('zh-TW',{maximumFractionDigits:2})} {s.unit}</b><small>{p.date}</small></span>)}</div>
   </>;
 }
