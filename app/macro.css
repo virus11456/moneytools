@@ -56,9 +56,10 @@
 .macro-empty div { display: flex; flex-direction: column; gap: 3px; }
 .macro-empty strong { color: #5c6a61; font-size: 13px; }.macro-empty span { font-size: 11px; }
 .macro-latest { display: flex; gap: 8px; overflow-x: auto; padding: 9px 0 5px; scrollbar-width: thin; }
-.macro-latest > span { min-width: 130px; display: grid; grid-template-columns: auto 1fr; gap: 1px 6px; padding: 8px 10px; border: 1px solid #e4e9e0; border-radius: 10px; font-size: 10px; color: #6e7b72; }
+.macro-latest > span { min-width: 130px; max-width: 220px; display: grid; grid-template-columns: auto minmax(0,1fr); gap: 1px 6px; padding: 8px 10px; border: 1px solid #e4e9e0; border-radius: 10px; font-size: 10px; color: #6e7b72; }
 .macro-latest i { width: 7px; height: 7px; margin-top: 3px; border-radius: 50%; background: var(--series); }
-.macro-latest b,.macro-latest small { grid-column: 2; }.macro-latest b { color: #34493f; font-size: 12px; }.macro-latest small { color: #9aa49b; }
+.macro-latest b,.macro-latest small { grid-column: 2; overflow-wrap: anywhere; }.macro-latest b { color: #34493f; font-size: 12px; }.macro-latest small { color: #9aa49b; }
+.macro-latest > span.is-missing { background: #f8f4ec; }.macro-latest > span.is-missing b { color: #8c704c; font-weight: 650; }
 .macro-details { margin-top: 12px; border-top: 1px solid #e0e6dc; }
 .macro-details summary { display: flex; align-items: center; gap: 7px; list-style: none; color: #52675b; font-weight: 600; font-size: 12px; padding: 15px 2px 2px; }
 .macro-details summary::-webkit-details-marker { display: none; }
@@ -69,7 +70,7 @@
 .macro-sources a { display: grid; grid-template-columns: auto 1fr auto; gap: 9px; align-items: start; padding: 9px; border-radius: 9px; }
 .macro-sources a:hover { background: #f0f4ed; }
 .macro-sources i { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; }.macro-sources span { display: flex; flex-direction: column; min-width: 0; }
-.macro-sources strong { color: #3d5046; font-size: 11px; }.macro-sources small,.macro-sources em { color: #859087; font-size: 9px; font-style: normal; line-height: 1.5; }
+.macro-sources strong { color: #3d5046; font-size: 11px; }.macro-sources small,.macro-sources em { color: #859087; font-size: 9px; font-style: normal; line-height: 1.5; overflow-wrap: anywhere; }
 .macro-sources em { color: #a06c50; margin-top: 2px; }
 .macro-method { max-width: 900px; padding: 30px; border-radius: 20px; background: #e9eee3; color: #5d6d63; }
 .macro-method h2 { margin: 0 0 8px; color: #2a4336; }.macro-method p { font-size: 13px; margin: 6px 0; }

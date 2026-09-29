@@ -1,5 +1,13 @@
 export type MacroPoint = { date: string; value: number };
-export type MacroSeries = { latestDate?: string; points: MacroPoint[]; error?: string };
+export type MacroSeries = {
+  latestDate?: string | null;
+  points: MacroPoint[];
+  error?: string;
+  status?: 'missing';
+  substitute?: boolean;
+  reason?: string;
+  preserved?: boolean;
+};
 export type MacroPayload = { generatedAt: string; series: Record<string, MacroSeries> };
 
 export type EvidenceTone = 'positive' | 'neutral' | 'caution' | 'missing';
